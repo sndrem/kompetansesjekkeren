@@ -1,11 +1,14 @@
 import React from 'react';
-import './App.css';
+import Container from "@material-ui/core/Container";
+import './App.scss';
+import { Typography } from '@material-ui/core';
+import Sokpage from './pages/sokpage';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-
-    </div>
+    <Container maxWidth="md">
+      <Sokpage />
+    </Container>
   );
 }
 
