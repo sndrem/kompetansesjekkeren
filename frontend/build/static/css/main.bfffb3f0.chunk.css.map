@@ -1,1 +1,0 @@
-{"version":3,"sources":["index.scss"],"names":[],"mappings":"AAEA,KACI,cAAiB,CACjB,QAAS","file":"main.bfffb3f0.chunk.css","sourcesContent":["@import \"./styles/variables.scss\";\n\nbody {\n    padding: 50px 0px;\n    margin: 0;\n    // background-color: $mittAnbudBlaa;\n}"]}
