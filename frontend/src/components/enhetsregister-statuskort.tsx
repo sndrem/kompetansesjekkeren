@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Grid, Header, Loader, Message } from "semantic-ui-react";
+import { Loader, Message } from "semantic-ui-react";
 import { StateContext } from "../pages/sokpage";
 import { Appstate } from "../types/domain";
 import Kort from "./kort";

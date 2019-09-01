@@ -1,14 +1,10 @@
 import React, { useContext } from "react";
-import { Item, Loader, Segment } from "semantic-ui-react";
+import { Item, Segment } from "semantic-ui-react";
 import { StateContext } from "../pages/sokpage";
 import { Appstate } from "../types/domain";
 
 function OppsummeringEnhetsregister() {
     const state = useContext<Appstate>(StateContext);
-
-    if (state.loading) {
-        return <Loader active={state.loading} />;
-    }
 
     if (!state.enhetsregisterResult) {
         return null;

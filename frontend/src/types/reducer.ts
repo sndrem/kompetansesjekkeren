@@ -46,7 +46,8 @@ export function reducer(state: Appstate, action: EnhetsregisterActions): Appstat
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: action.error,
+                submitted: true
             };
         }
         default: {
