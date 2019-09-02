@@ -8,7 +8,6 @@ import { reducer } from "../types/reducer";
 import ArbeidstilsynetStatuskort from "../components/arbeidstilsynet-statuskort";
 import SentralGodkjenningStatuskort from "../components/sentralGodkjenning-statuskort";
 import "./sokpage.scss";
-import VatromIframe from "../components/vatrom-iframe";
 
 export const StateContext = React.createContext<Appstate>(initialState);
 export const DispatchContext = React.createContext({});
@@ -102,9 +101,6 @@ function Sokpage() {
                         <OppsummeringEnhetsregister />
                     </Grid.Column>
                 </Grid>
-
-                {state.submitted && <VatromIframe />}
-
             </StateContext.Provider>
         </DispatchContext.Provider>
     );
