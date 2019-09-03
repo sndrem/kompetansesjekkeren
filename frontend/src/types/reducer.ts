@@ -1,6 +1,6 @@
 import assertNever from "assert-never";
 import { EnhetsregisterActions } from "./actions";
-import { Appstate } from "./domain";
+import { Appstate, initialState } from "./domain";
 
 export function reducer(state: Appstate, action: EnhetsregisterActions): Appstate {
     switch (action.type) {
@@ -16,27 +16,10 @@ export function reducer(state: Appstate, action: EnhetsregisterActions): Appstat
                 loading: true,
                 error: ""
             };
-        case "ENHETSREGISTER/HENTET_FRA_ENHETSREGISTER_OK":
+        case "DATA/HENTET_DATA_OK": {
             return {
                 ...state,
-                enhetsregisterResult: action.data,
-                submitted: true,
-                loading: false,
-                error: "",
-            };
-        case "ARBEIDSTILSYNET/HENTET_FRA_ARBEIDSTILSYNET_OK": {
-            return {
-                ...state,
-                arbeidstilsynResult: action.data,
-                submitted: true,
-                loading: false,
-                error: ""
-            };
-        }
-        case "SENTRAL_GODKJENNING/HENTET_FRA_SENTRAL_GODKJENNING_OK": {
-            return {
-                ...state,
-                sentralGodkjenningResultat: action.data,
+                data: action.data,
                 submitted: true,
                 loading: false,
                 error: ""
@@ -49,6 +32,9 @@ export function reducer(state: Appstate, action: EnhetsregisterActions): Appstat
                 error: action.error,
                 submitted: true
             };
+        }
+        case "SOK/RESET": {
+            return initialState;
         }
         default: {
             assertNever(action);

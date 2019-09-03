@@ -4,30 +4,27 @@ import { Appstate } from '../types/domain';
 import { Message } from 'semantic-ui-react';
 import Kort from './kort';
 
-interface Props {
-    orgnr: string;
-}
-
-function ArbeidstilsynetStatuskort(props: Props) {
+function ArbeidstilsynetStatuskort() {
     const state = useContext<Appstate>(StateContext);
-    const { arbeidstilsynResult } = state;
+    const { arbeidstilsynet } = state.data;
+    console.log(state.data);
 
-    if (!arbeidstilsynResult) {
+    if (!arbeidstilsynet) {
         return (
-            <Message color="grey">
+            <Message color="red">
                 <Message.Header>Arbeidstilsynet</Message.Header>
-                <p>Fant ingen data for {props.orgnr} hos Arbeidstilsynet.</p>
+                <p>Fant ingen data for {state.orgnr} hos Arbeidstilsynet.</p>
             </Message>
         );
     }
 
-    const tekst = arbeidstilsynResult.RecordStatus.Valid ? `${arbeidstilsynResult.Organisation.Name} har status: ${arbeidstilsynResult.RecordStatus.Status} - ${arbeidstilsynResult.RecordStatus.Description}` : `${arbeidstilsynResult.Organisation.Name} er ikke godkjent i renholdsregisteret.`;
+    const tekst = arbeidstilsynet.RecordStatus.Valid ? `${arbeidstilsynet.Organisation.Name} har status: ${arbeidstilsynet.RecordStatus.Status} - ${arbeidstilsynet.RecordStatus.Description}` : `${arbeidstilsynet.Organisation.Name} er ikke godkjent i renholdsregisteret.`;
 
     return (
         <Kort
             tittel="Renholdsregisteret"
-            erOkStatus={arbeidstilsynResult.RecordStatus.Valid}
-            orgnr={props.orgnr}
+            erOkStatus={arbeidstilsynet.RecordStatus.Valid}
+            orgnr={state.orgnr}
         >
             <p>{tekst}</p>
         </Kort>

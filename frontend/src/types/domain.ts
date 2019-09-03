@@ -1,11 +1,28 @@
-import { Organisasjonsform } from "./domain";
+
 export interface Appstate {
     error: string;
+    orgnr: string;
     loading: boolean;
     submitted: boolean;
-    enhetsregisterResult: EnhetsregisterEnhet | null;
-    arbeidstilsynResult: ArbeidstilsynResult | null;
-    sentralGodkjenningResultat: SentralGodkjenningResultat | null;
+    data: Data;
+}
+
+export const initialState: Appstate = {
+    error: "",
+    orgnr: "",
+    loading: false,
+    submitted: false,
+    data: {
+        enhetsregisteret: null,
+        arbeidstilsynet: null,
+        sentralgodkjenning: null
+    }
+};
+
+export interface Data {
+    enhetsregisteret: EnhetsregisterEnhet | null;
+    arbeidstilsynet: ArbeidstilsynResult | null;
+    sentralgodkjenning: SentralGodkjenningResultat | null;
 }
 
 export interface Sokeresultat {
@@ -36,14 +53,6 @@ export interface Sokeresultat {
 
 }
 
-export const initialState: Appstate = {
-    error: "",
-    loading: false,
-    submitted: false,
-    enhetsregisterResult: null,
-    arbeidstilsynResult: null,
-    sentralGodkjenningResultat: null
-};
 
 export interface EnhetsregisterEnhet {
     organisasjonsnummer: string;

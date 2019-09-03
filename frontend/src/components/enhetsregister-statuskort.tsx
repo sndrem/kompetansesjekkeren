@@ -4,33 +4,25 @@ import { StateContext } from "../pages/sokpage";
 import { Appstate } from "../types/domain";
 import Kort from "./kort";
 
-interface Props {
-    orgnr: string;
-}
-
-function EnhetsregisterStatuskort(props: Props) {
+function EnhetsregisterStatuskort() {
     const state = useContext<Appstate>(StateContext);
 
-    if (state.loading) {
-        return <Loader active={state.loading} />;
-    }
+    const { enhetsregisteret } = state.data;
 
-    const { enhetsregisterResult } = state;
-
-    if (!enhetsregisterResult) {
+    if (!enhetsregisteret) {
         return (
-            <Message color="grey">
+            <Message color="red">
                 <Message.Header>Enhetsregisteret</Message.Header>
-                <p>Fant ingen data for {props.orgnr} i Enhetsregisteret</p>
+                <p>Fant ingen data for {state.orgnr} i Enhetsregisteret</p>
             </Message>
         );
     }
 
-    const erMvaRegistrert = enhetsregisterResult.registrertIMvaregisteret;
-    const tekst = erMvaRegistrert ? `${enhetsregisterResult.navn} er registrert i MVA-registeret ✅` : `${enhetsregisterResult.navn} er ikke registrert i MVA-registeret ❌`;
+    const erMvaRegistrert = enhetsregisteret.registrertIMvaregisteret;
+    const tekst = erMvaRegistrert ? `${enhetsregisteret.navn} er registrert i MVA-registeret ✅` : `${enhetsregisteret.navn} er ikke registrert i MVA-registeret ❌`;
     return (
         <Kort
-            orgnr={props.orgnr} tittel="MVA-register"
+            orgnr={state.orgnr} tittel="MVA-register"
             erOkStatus={erMvaRegistrert ? true : false}
         >
             <p>{tekst}</p>

@@ -1,43 +1,37 @@
 var express = require('express');
-var request = require('request');
+var rp = require('request-promise');
 var router = express.Router();
+
+const ENHETSREGISTERET_HOST_AND_PORT = 'https://data.brreg.no/enhetsregisteret/api/enheter';
+const ARBEIDSTILSYNET_HOST_AND_PORT = 'https://www.arbeidstilsynet.no/registre/renholdsregisteret/sok/GetRecordSearchModel';
+const SENTRAL_GODKJENNING_HOST_AND_PORT = 'https://sgregister.dibk.no/api/enterprises/';
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get("/enhetsregisteret", function (req, res, next) {
-  const ENHETSREGISTERET_HOST_AND_PORT = 'https://data.brreg.no/enhetsregisteret/api/enheter';
+router.get("/sok", function (req, res, next) {
   const organisasjonsnummer = req.query.organisasjonsnummer;
-  request(`${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`, function (err, response, body) {
-    if (err) {
-      res.error("Kunne ikke hente data fra Enhetsregisteret", err);
-    }
-    res.json(body);
-  });
-});
+  const enhetsregisteret = rp(`${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`);
+  const arbeidstilsynet = rp(`${ARBEIDSTILSYNET_HOST_AND_PORT}?query=${organisasjonsnummer}`);
+  const sentralgodkjenning = rp(`${SENTRAL_GODKJENNING_HOST_AND_PORT}${organisasjonsnummer}`, { simple: false });
+  Promise.all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
+    .then(data => {
+      const enhetsregisteret = data[0] ? JSON.parse(data[0])["_embedded"]["enheter"][0] : null;
+      const arbeidstilsynet = data[1] && data[1] !== "[]" ? JSON.parse(data[1])[0] : null;
+      const sentralgodkjenning = data[2] ? data[2] : null;
 
-router.get("/arbeidstilsynet", function (req, res, next) {
-  const ARBEIDSTILSYNET_HOST_AND_PORT = 'https://www.arbeidstilsynet.no/registre/renholdsregisteret/sok/GetRecordSearchModel';
-  const organisasjonsnummer = req.query.organisasjonsnummer;
-  request(`${ARBEIDSTILSYNET_HOST_AND_PORT}?query=${organisasjonsnummer}`, function (err, response, body) {
-    if (err) {
-      res.error("Kunne ikke hente data fra Arbeidstilsynet", err);
-    }
-    res.json(body);
-  });
-});
+      res.json({
+        enhetsregisteret: enhetsregisteret,
+        arbeidstilsynet: arbeidstilsynet,
+        sentralgodkjenning: sentralgodkjenning
+      });
 
-router.get("/sentralgodkjenning", function (req, res, next) {
-  const SENTRAL_GODKJENNING_HOST_AND_PORT = 'https://sgregister.dibk.no/api/enterprises/';
-  const organisasjonsnummer = req.query.organisasjonsnummer;
-  request(`${SENTRAL_GODKJENNING_HOST_AND_PORT}/${organisasjonsnummer}`, function (err, response, body) {
-    if (err) {
-      res.error("Kunne ikke hente data fra Sentral godkjenning", err);
-    }
-    res.json(body);
-  });
+    })
+    .catch(err => {
+      res.json(err);
+    })
 });
 
 module.exports = router;

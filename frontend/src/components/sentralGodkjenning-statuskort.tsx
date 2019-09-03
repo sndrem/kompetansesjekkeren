@@ -4,32 +4,29 @@ import { StateContext } from '../pages/sokpage';
 import { Message } from 'semantic-ui-react';
 import Kort from './kort';
 
-interface Props {
-    orgnr: string;
-}
 
-function SentralGodkjenningStatuskort(props: Props) {
+function SentralGodkjenningStatuskort() {
     const state = useContext<Appstate>(StateContext);
-    const { sentralGodkjenningResultat } = state;
+    const { sentralgodkjenning } = state.data;
 
-    if (!sentralGodkjenningResultat) {
+    if (!sentralgodkjenning) {
         return (
-            <Message color="grey">
+            <Message color="red">
                 <Message.Header>Sentral godkjenning</Message.Header>
-                <p>Fant ingen data for {props.orgnr} hos Sentral godkjenning.</p>
+                <p>Fant ingen data for {state.orgnr} hos Sentral godkjenning.</p>
             </Message>
         );
     }
 
-    const tekst = sentralGodkjenningResultat.status.approved ? `${sentralGodkjenningResultat.enterprise.name} finnes i Sentral godkjenning ✅` : `${sentralGodkjenningResultat.enterprise.name} er ikke sentralt godkjent ❌.`;
+    const tekst = sentralgodkjenning.status.approved ? `${sentralgodkjenning.enterprise.name} finnes i Sentral godkjenning ✅` : `${sentralgodkjenning.enterprise.name} er ikke sentralt godkjent ❌.`;
     return (
         <Kort
             tittel="Sentral godkjenning"
-            erOkStatus={sentralGodkjenningResultat.status.approved}
-            orgnr={props.orgnr}
+            erOkStatus={sentralgodkjenning.status.approved}
+            orgnr={state.orgnr}
         >
             <p>{tekst}</p>
-            <p><a href={sentralGodkjenningResultat.status.approval_certificate}>Lenke til sertifikat</a></p>
+            <p><a href={sentralgodkjenning.status.approval_certificate}>Lenke til sertifikat</a></p>
         </Kort>
     )
 }
