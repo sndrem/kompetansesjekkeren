@@ -20,7 +20,11 @@ router.get("/sok", function (req, res, next) {
     .then(data => {
       const enhetsregisteret = data[0] ? JSON.parse(data[0])["_embedded"]["enheter"][0] : null;
       const arbeidstilsynet = data[1] && data[1] !== "[]" ? JSON.parse(data[1])[0] : null;
-      const sentralgodkjenning = data[2] ? data[2] : null;
+      let sentralgodkjenning = data[2] ? data[2] : null;
+
+      if (sentralgodkjenning && sentralgodkjenning.toLowerCase().includes("Retry later")) {
+        sentralgodkjenning = null;
+      }
 
       res.json({
         enhetsregisteret: enhetsregisteret,

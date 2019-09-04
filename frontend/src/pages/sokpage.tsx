@@ -1,5 +1,5 @@
-import React, { useReducer, Context, createContext, Dispatch } from "react";
-import { Button, Divider, Form, Grid, Header, Message, Loader } from "semantic-ui-react";
+import React, { useReducer, Context, createContext, Dispatch, useEffect } from "react";
+import { Divider, Grid, Header, Message, Loader } from "semantic-ui-react";
 import OppsummeringEnhetsregister from "../components/oppsummering-enhetsregister";
 import EnhetsregisterStatuskort from "../components/enhetsregister-statuskort";
 import { SOK } from "../konstanter";
@@ -10,39 +10,55 @@ import SentralGodkjenningStatuskort from "../components/sentralGodkjenning-statu
 import { EnhetsregisterActions } from "../types/actions";
 import Sokefelt from "../components/sokefelt/sokefelt";
 import "./sokpage.scss";
+import { RouteComponentProps } from "react-router";
 
 export const StateContext = createContext<Appstate>(initialState);
 export const DispatchContext: Context<Dispatch<EnhetsregisterActions>> = createContext({} as any);
 
-function Sokpage() {
+interface MatchParams {
+    orgnr: string;
+}
+
+function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
+    if (orgnr.length === 9) {
+        dispatch({ type: "DATA/HENTER_DATA" });
+        fetch(`${SOK}?organisasjonsnummer=${orgnr}`)
+            .then((data) => {
+                return data.json();
+            })
+            .then((data) => {
+                if (data) {
+                    dispatch({ type: "DATA/HENTET_DATA_OK", data })
+                }
+            })
+            .catch((err) => {
+                dispatch({ type: "DATA/HENTING_AV_DATA_ERROR", error: `Klarte ikke hente data om orgnr: ${orgnr}. Prøv igjen senere.` });
+            });
+    } else {
+        dispatch({ type: "SOK/RESET" });
+    }
+}
+
+function Sokpage(props: RouteComponentProps<MatchParams>) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    function sok(orgnr: string) {
 
-        if (orgnr.length === 9) {
-            dispatch({ type: "DATA/HENTER_DATA" });
-            fetch(`${SOK}?organisasjonsnummer=${orgnr}`)
-                .then((data) => {
-                    return data.json();
-                })
-                .then((data) => {
-                    if (data) {
-                        dispatch({ type: "DATA/HENTET_DATA_OK", data })
-                    }
-                })
-                .catch((err) => {
-                    dispatch({ type: "DATA/HENTING_AV_DATA_ERROR", error: `Klarte ikke hente data om orgnr: ${orgnr}. Prøv igjen senere.` });
-                });
-        } else {
-            dispatch({ type: "SOK/RESET" });
+    useEffect(() => {
+        const { orgnr } = props.match.params;
+        if (orgnr) {
+            sok(orgnr, dispatch);
         }
+    }, [props.match.params]);
+
+    function sokPaOrgnr(orgnr: string) {
+        props.history.push(`/orgnr/${orgnr}`);
     }
 
     return (
         <DispatchContext.Provider value={dispatch}>
             <StateContext.Provider value={state}>
                 <div className="sokeside">
-                    <Sokefelt onSubmit={sok} />
+                    <Sokefelt onSubmit={sokPaOrgnr} />
                 </div>
                 <Divider />
 
