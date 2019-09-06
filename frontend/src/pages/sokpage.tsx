@@ -21,6 +21,7 @@ interface MatchParams {
 
 function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
     if (orgnr.length === 9) {
+        dispatch({ type: "SETT_ORGNR", data: orgnr });
         dispatch({ type: "DATA/HENTER_DATA" });
         fetch(`${SOK}?organisasjonsnummer=${orgnr}`)
             .then((data) => {

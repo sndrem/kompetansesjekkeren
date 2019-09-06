@@ -7,7 +7,6 @@ import Kort from './kort';
 function ArbeidstilsynetStatuskort() {
     const state = useContext<Appstate>(StateContext);
     const { arbeidstilsynet } = state.data;
-    console.log(state.data);
 
     if (!arbeidstilsynet) {
         return (

@@ -9,6 +9,11 @@ export function reducer(state: Appstate, action: EnhetsregisterActions): Appstat
                 ...state,
                 loading: true
             };
+        case "SETT_ORGNR":
+            return {
+                ...state,
+                orgnr: action.data
+            }
         case "DATA/SUBMITTED_FORM":
             return {
                 ...state,

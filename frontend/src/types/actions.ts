@@ -1,5 +1,6 @@
 import { Data } from "./domain";
 type RESET_SOK = "SOK/RESET";
+type SETT_ORGNR = "SETT_ORGNR";
 type HENT_DATA = "DATA/HENTER_DATA";
 type SUBMITTED = "DATA/SUBMITTED_FORM";
 type HENTET_DATA_OK = "DATA/HENTET_DATA_OK";
@@ -7,6 +8,11 @@ type HENT_DATA_ERROR = "DATA/HENTING_AV_DATA_ERROR";
 
 export interface hentDataAction {
     type: HENT_DATA;
+}
+
+export interface settOrgnrAction {
+    type: SETT_ORGNR,
+    data: string;
 }
 
 export interface resetSokAction {
@@ -29,6 +35,7 @@ export interface hentDataError {
 
 export type EnhetsregisterActions =
     | hentDataAction
+    | settOrgnrAction
     | resetSokAction
     | submitFormAction
     | hentetDataOkAction
