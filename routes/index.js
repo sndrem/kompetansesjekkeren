@@ -12,10 +12,14 @@ router.get('/', function (req, res, next) {
 });
 
 router.get("/sok", function (req, res, next) {
+  if (!req.query.organisasjonsnummer) {
+    res.status(400).json({ status: 400, message: "Du mangler query-param 'organisasjonsnummer'" });
+  }
   const organisasjonsnummer = req.query.organisasjonsnummer;
   const enhetsregisteret = rp(`${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`);
   const arbeidstilsynet = rp(`${ARBEIDSTILSYNET_HOST_AND_PORT}?query=${organisasjonsnummer}`);
   const sentralgodkjenning = rp(`${SENTRAL_GODKJENNING_HOST_AND_PORT}${organisasjonsnummer}`, { simple: false });
+
   Promise.all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
     .then(data => {
       const enhetsregisteret = data[0] ? JSON.parse(data[0])["_embedded"]["enheter"][0] : null;

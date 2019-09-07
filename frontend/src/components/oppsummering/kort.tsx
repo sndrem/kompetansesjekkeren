@@ -1,11 +1,12 @@
 import React from 'react';
-import { Message } from 'semantic-ui-react';
+import { Message, MessageSizeProp } from 'semantic-ui-react';
 
 interface Props {
     tittel: string;
     erOkStatus: boolean;
     children?: JSX.Element[] | JSX.Element;
     orgnr: string;
+    size: MessageSizeProp;
 }
 
 function Kort(props: Props) {
@@ -22,7 +23,7 @@ function Kort(props: Props) {
     }
 
     return (
-        <Message color={color}>
+        <Message size={props.size} color={color}>
             <Message.Header>{props.tittel}</Message.Header>
             {props.children}
         </Message>

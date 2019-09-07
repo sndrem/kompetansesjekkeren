@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { Item, Segment } from "semantic-ui-react";
-import { StateContext } from "../pages/sokpage";
-import { Appstate } from "../types/domain";
+import { StateContext } from "../../pages/sokpage";
+import { Appstate } from "../../types/domain";
+import { oppdaterWebadresse } from "../../utils/utils";
 
 function OppsummeringEnhetsregister() {
     const state = useContext<Appstate>(StateContext);
@@ -18,6 +19,7 @@ function OppsummeringEnhetsregister() {
                 <Item.Content>
                     <Item.Header>{enhet.navn} - Orgnr: {enhet.organisasjonsnummer}</Item.Header>
                     <Item.Meta>{enhet.organisasjonsform.beskrivelse}</Item.Meta>
+                    {enhet.hjemmeside && <Item.Meta><a target="_blank" rel="noopener noreferrer" href={oppdaterWebadresse(enhet.hjemmeside)}>{oppdaterWebadresse(enhet.hjemmeside)}</a></Item.Meta>}
                     <Item.Description>
                         <dl>
                             <dt>Jobber med:</dt>
@@ -44,6 +46,7 @@ function OppsummeringEnhetsregister() {
                             <dd>{enhet.stiftelsesdato}</dd>
                         </dl>
                     </Item.Description>
+                    <Item.Meta><a target="_blank" rel="noopener noreferrer" href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`}>Se mer om bedriften hos Brønnøysundregistrene</a></Item.Meta>
                 </Item.Content>
             </Item>
         </Segment>

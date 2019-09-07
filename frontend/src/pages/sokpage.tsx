@@ -1,16 +1,15 @@
 import React, { useReducer, Context, createContext, Dispatch, useEffect } from "react";
-import { Divider, Grid, Header, Message, Loader } from "semantic-ui-react";
-import OppsummeringEnhetsregister from "../components/oppsummering-enhetsregister";
-import EnhetsregisterStatuskort from "../components/enhetsregister-statuskort";
+import { Divider, Grid, Header, Message, Loader, Icon } from "semantic-ui-react";
 import { SOK } from "../konstanter";
 import { Appstate, initialState } from "../types/domain";
 import { reducer } from "../types/reducer";
-import ArbeidstilsynetStatuskort from "../components/arbeidstilsynet-statuskort";
-import SentralGodkjenningStatuskort from "../components/sentralGodkjenning-statuskort";
 import { EnhetsregisterActions } from "../types/actions";
 import Sokefelt from "../components/sokefelt/sokefelt";
 import "./sokpage.scss";
 import { RouteComponentProps } from "react-router";
+import OppsummeringPage from "../components/oppsummering/oppsummering-page";
+import { nyttigeLenker } from "../konstanter/konstanter";
+import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 
 export const StateContext = createContext<Appstate>(initialState);
 export const DispatchContext: Context<Dispatch<EnhetsregisterActions>> = createContext({} as any);
@@ -62,18 +61,20 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
                     <Sokefelt onSubmit={sokPaOrgnr} />
                 </div>
                 <Divider />
-
                 {state.loading && <Loader active={state.loading} />}
                 {state.error && <Message color="red"><Message.Header>Oisann <span role="img" aria-label="Oisann-ikon">🙈</span></Message.Header>{state.error}</Message>}
-                {state.data.enhetsregisteret && <Header as="h3">Du har søkt på {state.data.enhetsregisteret.navn} med orgnr: {state.data.enhetsregisteret.organisasjonsnummer}</Header>}
+
                 <Grid>
-                    <Grid.Column width={10}>
-                        {state.submitted && <EnhetsregisterStatuskort />}
-                        {state.submitted && <ArbeidstilsynetStatuskort />}
-                        {state.submitted && <SentralGodkjenningStatuskort />}
+                    <Grid.Column width="16">
+                        {state.data.enhetsregisteret && <Header as="h3">Du har søkt på {state.data.enhetsregisteret.navn} med orgnr: {state.data.enhetsregisteret.organisasjonsnummer}</Header>}
                     </Grid.Column>
-                    <Grid.Column width={5}>
-                        <OppsummeringEnhetsregister />
+                    <OppsummeringPage />
+                    <Grid.Column width="3">
+                        <Header as="h4">
+                            <Icon name="linkify" />
+                            <Header.Content>Nyttige lenker</Header.Content>
+                        </Header>
+                        <NyttigeLenker lenker={nyttigeLenker} />
                     </Grid.Column>
                 </Grid>
             </StateContext.Provider>

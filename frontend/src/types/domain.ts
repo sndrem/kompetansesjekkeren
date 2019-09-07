@@ -57,6 +57,7 @@ export interface Sokeresultat {
 export interface EnhetsregisterEnhet {
     organisasjonsnummer: string;
     navn: string;
+    hjemmeside?: string;
     organisasjonsform: Organisasjonsform;
     registreringsdatoEnhetsregisteret: string;
     registrertIMvaregisteret: boolean;
@@ -84,6 +85,13 @@ export interface EnhetsregisterEnhet {
 export interface Organisasjonsform {
     kode: string;
     beskrivelse: string;
+}
+
+
+export interface Lenke {
+    target?: string;
+    tekst: string;
+    url: string;
 }
 
 export interface Adresse {
