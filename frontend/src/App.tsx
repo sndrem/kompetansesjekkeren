@@ -3,6 +3,7 @@ import { Container } from "semantic-ui-react";
 import "./App.scss";
 import Sokpage from "./pages/sokpage";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import Feedback from "./components/feedback/feedback";
 
 const App: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const App: React.FC = () => {
           <Redirect from="*" to="/" />
         </Switch>
       </HashRouter>
+      {/* <Feedback /> */}
     </Container>
   );
 };

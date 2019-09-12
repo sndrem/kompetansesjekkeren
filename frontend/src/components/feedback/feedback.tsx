@@ -37,7 +37,7 @@ function Feedback() {
                     <Form>
                         <Form.Field>
                             <label>Type tilbakemelding:</label>
-                            <Select onChange={} placeholder="Velg type tilbakemelding" options={options} />
+                            <Select onChange={() => alert("Not yet implemented")} placeholder="Velg type tilbakemelding" options={options} />
                         </Form.Field>
                         <Form.Field>
                             <label>Tilbakemelding</label>
