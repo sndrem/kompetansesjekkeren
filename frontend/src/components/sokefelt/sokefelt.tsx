@@ -20,7 +20,7 @@ function Sokefelt(props: Props) {
 
     return (
         <Form className="sokeform" action="#" onSubmit={(e) => e.preventDefault()}>
-            <Header as="h1">Kompetansesjekk</Header>
+            <Header as="h1">Kompetansesjekkeren</Header>
             <p>Sjekk organisasjon opp mot <a target="_blank" rel="noopener noreferrer" href="https://www.brreg.no/">Brønnøysundregisteret (Enhetsregisteret)</a>, <a target="_blank" rel="noopener noreferrer" href="https://sgregister.dibk.no/">Sentral godkjenning</a> og Arbeidstilsynet sitt <a target="_blank" rel="noopener noreferrer" href="https://www.arbeidstilsynet.no/registre/renholdsregisteret/sok/">renholdsregister</a>.</p>
             {feilmelding && <Message negative>{feilmelding}</Message>}
             <Form.Field>
