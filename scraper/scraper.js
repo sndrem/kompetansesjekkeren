@@ -30,6 +30,11 @@ async function scrapeAndPopulateDb() {
     }
 }
 
+// Må repopulere databasen når vi deployer appen
+if (db.get("bedrifter").size().value() === 0) {
+    scrapeAndPopulateDb();
+}
+
 async function scrapeVatromgodkjenning(url) {
     const htmlString = await rp.get(url);
     const $ = cheerio.load(htmlString);
