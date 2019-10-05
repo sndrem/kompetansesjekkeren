@@ -15,7 +15,8 @@ export const initialState: Appstate = {
     data: {
         enhetsregisteret: null,
         arbeidstilsynet: null,
-        sentralgodkjenning: null
+        sentralgodkjenning: null,
+        vatromsregisteret: null
     }
 };
 
@@ -23,6 +24,7 @@ export interface Data {
     enhetsregisteret: EnhetsregisterEnhet | null;
     arbeidstilsynet: ArbeidstilsynResult | null;
     sentralgodkjenning: SentralGodkjenningResultat | null;
+    vatromsregisteret: VatromregisterResultat | null;
 }
 
 export interface Sokeresultat {
@@ -169,4 +171,19 @@ export interface SentralGodkjenningResultat {
         email: string | null;
         phone: string | null;
     };
+}
+
+export interface VatromregisterResultat {
+    bedriftsnavn: string;
+    fylke: string;
+    poststed: string;
+    typeVirksomhet: string;
+    orgnr: string;
+    adresse: string;
+    tlf: string;
+    nettside: string;
+    navn: string;
+    epost: string;
+    mobnr: string,
+    godkjent: boolean;
 }

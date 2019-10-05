@@ -5,6 +5,7 @@ import EnhetsregisterStatuskort from './enhetsregister-statuskort';
 import ArbeidstilsynetStatuskort from './arbeidstilsynet-statuskort';
 import SentralGodkjenningStatuskort from './sentralGodkjenning-statuskort';
 import OppsummeringEnhetsregister from './oppsummering-enhetsregister';
+import VatromregisterStatuskort from './vatromregister-statuskort';
 
 function OppsummeringPage() {
     const state = useContext(StateContext);
@@ -15,6 +16,7 @@ function OppsummeringPage() {
                 {state.submitted && <EnhetsregisterStatuskort size="large" />}
                 {state.submitted && <ArbeidstilsynetStatuskort size="large" />}
                 {state.submitted && <SentralGodkjenningStatuskort size="large" />}
+                {state.submitted && <VatromregisterStatuskort size="large" />}
             </Grid.Column>
             <Grid.Column width={5}>
                 <OppsummeringEnhetsregister />

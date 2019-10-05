@@ -1,6 +1,9 @@
+require("dotenv").config();
 var express = require('express');
 var rp = require('request-promise');
 var router = express.Router();
+const db = require("../database/db");
+require("../cron-jobs/scrape-job");
 
 const ENHETSREGISTERET_HOST_AND_PORT = 'https://data.brreg.no/enhetsregisteret/api/enheter';
 const ARBEIDSTILSYNET_HOST_AND_PORT = 'https://www.arbeidstilsynet.no/registre/renholdsregisteret/sok/GetRecordSearchModel';
@@ -19,6 +22,7 @@ router.get("/sok", function (req, res, next) {
   const enhetsregisteret = rp(`${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`);
   const arbeidstilsynet = rp(`${ARBEIDSTILSYNET_HOST_AND_PORT}?query=${organisasjonsnummer}`);
   const sentralgodkjenning = rp(`${SENTRAL_GODKJENNING_HOST_AND_PORT}${organisasjonsnummer}`, { simple: false });
+  const vatrom = db.get("bedrifter").find({ orgnr: organisasjonsnummer }).value();
 
   Promise.all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
     .then(data => {
@@ -33,7 +37,8 @@ router.get("/sok", function (req, res, next) {
       res.json({
         enhetsregisteret: enhetsregisteret,
         arbeidstilsynet: arbeidstilsynet,
-        sentralgodkjenning: sentralgodkjenning
+        sentralgodkjenning: sentralgodkjenning,
+        vatromsregisteret: vatrom ? vatrom : null
       });
 
     })
