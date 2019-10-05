@@ -3,6 +3,7 @@ var express = require('express');
 var rp = require('request-promise');
 var router = express.Router();
 const db = require("../database/db");
+const scraper = require("../scraper/scraper");
 require("../cron-jobs/scrape-job");
 
 const ENHETSREGISTERET_HOST_AND_PORT = 'https://data.brreg.no/enhetsregisteret/api/enheter';
@@ -12,6 +13,10 @@ const SENTRAL_GODKJENNING_HOST_AND_PORT = 'https://sgregister.dibk.no/api/enterp
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
+});
+
+router.get("/update", function (req, res, next) {
+  scraper.scrapeAndPopulateDb();
 });
 
 router.get("/sok", function (req, res, next) {
