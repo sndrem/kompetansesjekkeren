@@ -28,26 +28,28 @@ router.get("/sok", function (req, res, next) {
   const arbeidstilsynet = rp(`${ARBEIDSTILSYNET_HOST_AND_PORT}?query=${organisasjonsnummer}`);
   const sentralgodkjenning = rp(`${SENTRAL_GODKJENNING_HOST_AND_PORT}${organisasjonsnummer}`, { simple: false });
   const vatrom = db.get("bedrifter").find({ orgnr: organisasjonsnummer }).value();
-
-  Promise.all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
+  console.log(vatrom);
+  Promise
+    .all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
     .then(data => {
       const enhetsregisteret = data[0] ? JSON.parse(data[0])["_embedded"]["enheter"][0] : null;
       const arbeidstilsynet = data[1] && data[1] !== "[]" ? JSON.parse(data[1])[0] : null;
-      let sentralgodkjenning = data[2] ? data[2] : null;
+      let sentralgodkjenning = data[2] ? JSON.parse(data[2])["dibk-sgdata"] : null;
 
-      if (sentralgodkjenning && sentralgodkjenning.toLowerCase().includes("Retry later")) {
+      if (sentralgodkjenning === "Retry later") {
         sentralgodkjenning = null;
       }
 
       res.json({
-        enhetsregisteret: enhetsregisteret,
-        arbeidstilsynet: arbeidstilsynet,
-        sentralgodkjenning: sentralgodkjenning,
+        enhetsregisteret: enhetsregisteret ? enhetsregisteret : null,
+        arbeidstilsynet: arbeidstilsynet ? arbeidstilsynet : null,
+        sentralgodkjenning: sentralgodkjenning ? sentralgodkjenning : null,
         vatromsregisteret: vatrom ? vatrom : null
       });
 
     })
     .catch(err => {
+      console.log("Noe gikk gale", err);
       res.json(err);
     })
 });

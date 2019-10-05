@@ -27,7 +27,7 @@ function EnhetsregisterStatuskort(props: Props) {
     return (
         <Kort
             size={props.size}
-            orgnr={state.orgnr} tittel="MVA-register"
+            orgnr={state.orgnr} tittel="MVA-register (Brønnøysundregistrene)"
             erOkStatus={erMvaRegistrert ? true : false}
         >
             <p>{tekst}</p>
