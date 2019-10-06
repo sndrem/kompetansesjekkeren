@@ -16,8 +16,8 @@ function ArbeidstilsynetStatuskort(props: Props) {
     if (!arbeidstilsynet) {
         return (
             <Message size={props.size} color="red">
-                <Message.Header>Arbeidstilsynet</Message.Header>
-                <p>Fant ingen data for {state.orgnr} hos Arbeidstilsynet.</p>
+                <Message.Header>Renholdsregisteret</Message.Header>
+                <p>Fant ingen data for {state.orgnr} i Renholdsregisteret.</p>
             </Message>
         );
     }
@@ -31,7 +31,7 @@ function ArbeidstilsynetStatuskort(props: Props) {
         )
     }
 
-    const tekst = arbeidstilsynet.RecordStatus.Valid ? `${arbeidstilsynet.Organisation.Name} har status: ${arbeidstilsynet.RecordStatus.Status} - ${arbeidstilsynet.RecordStatus.Description}` : `${arbeidstilsynet.Organisation.Name} er ikke godkjent i renholdsregisteret.`;
+    const tekst = arbeidstilsynet.RecordStatus.Valid ? `${arbeidstilsynet.Organisation.Name} har status: ${arbeidstilsynet.RecordStatus.Status} - ${arbeidstilsynet.RecordStatus.Description}` : `${arbeidstilsynet.Organisation.Name} er ikke godkjent i Renholdsregisteret.`;
 
     return (
         <Kort

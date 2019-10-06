@@ -17,6 +17,7 @@ router.get('/', function (req, res, next) {
 
 router.get("/update", function (req, res, next) {
   scraper.scrapeAndPopulateDb();
+  res.json({ status: "Update OK" });
 });
 
 router.get("/sok", function (req, res, next) {

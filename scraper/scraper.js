@@ -19,7 +19,7 @@ async function scrapeAndPopulateDb() {
         }).write();
 
         const now = new Date();
-        slack.bugs(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter i databasen.`);
+        slack.bugs(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret og ${mesterbrevdata.length} fra mesterbrevregisteret i databasen.`);
     } catch (e) {
         slack.bugs(`:fire: Det var problemer med scraping av ${vatromUrl}. Det bør sees på... :bug:`);
     }
@@ -56,6 +56,7 @@ async function hentMestereFraOmrade(omradeid) {
     const options = {
         method: 'POST',
         uri: 'https://mreg.nhosp.no/scripts/cgiip.wsc/web/search.html',
+        encoding: "binary",
         form: {
             area: omradeid,
             noshow: 'alternativt',
@@ -117,7 +118,6 @@ function hentOmradekoderForMesterbrev($, html) {
     return omradekoder;
 }
 
-// scrapeMesterbrevregisteret(mesterbrevUrl);
 
 async function scrapeVatromgodkjenning(url) {
     const htmlString = await rp.get(url);
