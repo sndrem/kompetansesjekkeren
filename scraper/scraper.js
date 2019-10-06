@@ -6,12 +6,16 @@ const slack = require("../alerting/slack").slackNotifiyer;
 async function scrapeAndPopulateDb() {
     try {
         const vatromUrl = "http://www.ffv.no/finn-godkjent-vatromsbedrift";
+        const mesterbrevUrl = "https://mreg.nhosp.no/scripts/cgiip.wsc/web/search.html";
         slack.bugs(`Henter data fra ${vatromUrl} og legger til i databasen :clock12:`)
-        vatromdata = await scrapeVatromgodkjenning(vatromUrl);
+        const vatromdata = await scrapeVatromgodkjenning(vatromUrl);
+        const mesterbrevdata = await scrapeMesterbrevregisteret(mesterbrevUrl);
+
         // Sett data fra scraping
         db.setState({
             sistOppdatert: Date.now(),
-            bedrifter: vatromdata
+            bedrifter: vatromdata,
+            mesterbrev: mesterbrevdata
         }).write();
 
         const now = new Date();
@@ -25,6 +29,95 @@ async function scrapeAndPopulateDb() {
 if (db.get("bedrifter").size().value() === 0) {
     scrapeAndPopulateDb();
 }
+
+async function getHtmlString(url) {
+    return await rp.get(url);
+}
+
+async function scrapeMesterbrevregisteret(url) {
+    const htmlString = await getHtmlString(url);
+    const $ = cheerio.load(htmlString);
+    const areas = $("#area option");
+
+    const omrader = hentOmradekoderForMesterbrev($, areas);
+
+    const promises = omrader.map(async (omr) => {
+        const { kode } = omr;
+        const data = await hentMestereFraOmrade(kode);
+        return data;
+    });
+
+    const data = await Promise.all(promises);
+    return data.flatMap(d => d);
+}
+
+
+async function hentMestereFraOmrade(omradeid) {
+    const options = {
+        method: 'POST',
+        uri: 'https://mreg.nhosp.no/scripts/cgiip.wsc/web/search.html',
+        form: {
+            area: omradeid,
+            noshow: 'alternativt',
+            search_type: 'form',
+            text_s: '',
+            search_type_alt: 'firm',
+            buisness: '0'
+        }
+    };
+
+    return await rp(options)
+        .then(async data => {
+            return await parseMestereFraOmrade(data);
+        })
+        .catch(err => {
+            console.log("Kunne ikke hente data fra område", err);
+            return [];
+        });
+
+}
+
+async function parseMestereFraOmrade(html) {
+    const $ = cheerio.load(html);
+    const mestere = $("table.result tr");
+    const results = [];
+    mestere.map((index, element) => {
+        const rader = $(element).find("td");
+        const data = [];
+        rader.each((index, rad) => {
+            data.push($(rad).text())
+        })
+        if (data.length > 0) {
+            const [sted, bedrift, tlf, ...rest] = data;
+            results.push({
+                sted,
+                bedrift,
+                tlf
+            })
+        }
+    });
+    return results;
+}
+
+function hentOmradekoderForMesterbrev($, html) {
+    const omradekoder = [];
+    html.map((index, element) => {
+        const htmlElement = $(element);
+        const areacode = htmlElement.attr("value");
+
+        // Hent bare ut verdier som slutter på 00
+        if (areacode.endsWith("00")) {
+            const omrade = htmlElement.text();
+            omradekoder.push({
+                kode: parseInt(areacode),
+                omrade
+            })
+        }
+    });
+    return omradekoder;
+}
+
+// scrapeMesterbrevregisteret(mesterbrevUrl);
 
 async function scrapeVatromgodkjenning(url) {
     const htmlString = await rp.get(url);

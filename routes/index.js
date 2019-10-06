@@ -28,13 +28,24 @@ router.get("/sok", function (req, res, next) {
   const arbeidstilsynet = rp(`${ARBEIDSTILSYNET_HOST_AND_PORT}?query=${organisasjonsnummer}`);
   const sentralgodkjenning = rp(`${SENTRAL_GODKJENNING_HOST_AND_PORT}${organisasjonsnummer}`, { simple: false });
   const vatrom = db.get("bedrifter").find({ orgnr: organisasjonsnummer }).value();
-  console.log(vatrom);
+
   Promise
     .all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
     .then(data => {
       const enhetsregisteret = data[0] ? JSON.parse(data[0])["_embedded"]["enheter"][0] : null;
       const arbeidstilsynet = data[1] && data[1] !== "[]" ? JSON.parse(data[1])[0] : null;
       let sentralgodkjenning = data[2] ? JSON.parse(data[2])["dibk-sgdata"] : null;
+      let mesterbrev = null;
+
+      // Hent ut navn fra enhetsregisteret og sjekk mot mesterbrev
+      if (enhetsregisteret) {
+        const { navn } = enhetsregisteret;
+        const mesterbrevData = db.get("mesterbrev").find({ bedrift: navn.toUpperCase() }).value();
+        if (mesterbrevData) {
+          // Vi fant en match!
+          mesterbrev = mesterbrevData;
+        }
+      }
 
       if (sentralgodkjenning === "Retry later") {
         sentralgodkjenning = null;
@@ -44,7 +55,8 @@ router.get("/sok", function (req, res, next) {
         enhetsregisteret: enhetsregisteret ? enhetsregisteret : null,
         arbeidstilsynet: arbeidstilsynet ? arbeidstilsynet : null,
         sentralgodkjenning: sentralgodkjenning ? sentralgodkjenning : null,
-        vatromsregisteret: vatrom ? vatrom : null
+        vatromsregisteret: vatrom ? vatrom : null,
+        mesterbrev: mesterbrev ? mesterbrev : null
       });
 
     })
