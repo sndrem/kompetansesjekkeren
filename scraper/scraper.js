@@ -1,32 +1,23 @@
 const cheerio = require("cheerio");
 const rp = require("request-promise");
 const db = require("../database/db");
-const slack = require("../alerting/slack");
+const slack = require("../alerting/slack").slackNotifiyer;
 
 async function scrapeAndPopulateDb() {
     try {
-
         const vatromUrl = "http://www.ffv.no/finn-godkjent-vatromsbedrift";
-        slack.send({
-            channel: "#bugs",
-            text: `Henter data fra ${vatromUrl} og legger til i databasen :clock12:`
-        });
+        slack.bugs(`Henter data fra ${vatromUrl} og legger til i databasen :clock12:`)
         vatromdata = await scrapeVatromgodkjenning(vatromUrl);
-        // Reset database
+        // Sett data fra scraping
         db.setState({
             sistOppdatert: Date.now(),
             bedrifter: vatromdata
         }).write();
 
-        slack.send({
-            channel: "#bugs",
-            text: `Scraping ferdig. La til ${vatromdata.length} bedrifter i databasen.`
-        });
+        const now = new Date();
+        slack.bugs(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter i databasen.`);
     } catch (e) {
-        slack.send({
-            channel: "#bugs",
-            text: `:fire: Det var problemer med scraping av ${vatromUrl}. Det bør sees på... :bug:`
-        })
+        slack.bugs(`:fire: Det var problemer med scraping av ${vatromUrl}. Det bør sees på... :bug:`);
     }
 }
 
