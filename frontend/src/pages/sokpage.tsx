@@ -10,6 +10,9 @@ import { RouteComponentProps } from "react-router";
 import OppsummeringPage from "../components/oppsummering/oppsummering-page";
 import { nyttigeLenker } from "../konstanter/konstanter";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
+import { ReactGA } from "../analytics/google-analytics";
+
+ReactGA.pageview("/søk");
 
 export const StateContext = createContext<Appstate>(initialState);
 export const DispatchContext: Context<Dispatch<EnhetsregisterActions>> = createContext({} as any);
@@ -20,6 +23,10 @@ interface MatchParams {
 
 function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
     if (orgnr.length === 9) {
+        ReactGA.event({
+            category: "søk",
+            action: "Bruker søkte på orgnr"
+        });
         dispatch({ type: "SETT_ORGNR", data: orgnr });
         dispatch({ type: "DATA/HENTER_DATA" });
         fetch(`${SOK}?organisasjonsnummer=${orgnr}`)
@@ -41,7 +48,6 @@ function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
 
 function Sokpage(props: RouteComponentProps<MatchParams>) {
     const [state, dispatch] = useReducer(reducer, initialState);
-
 
     useEffect(() => {
         const { orgnr } = props.match.params;
