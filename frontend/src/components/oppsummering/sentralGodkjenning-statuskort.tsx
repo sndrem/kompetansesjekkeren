@@ -3,6 +3,7 @@ import { Appstate } from '../../types/domain';
 import { StateContext } from '../../pages/sokpage';
 import { Message, MessageSizeProp } from 'semantic-ui-react';
 import Kort from './kort';
+import { loggKlikk } from '../../analytics/google-analytics';
 
 
 interface Props {
@@ -31,7 +32,7 @@ function SentralGodkjenningStatuskort(props: Props) {
             orgnr={state.orgnr}
         >
             <p>{tekst}</p>
-            <p><a href={sentralgodkjenning.status.approval_certificate}>Lenke til sertifikat</a></p>
+            <p><a onClick={() => loggKlikk({ url: sentralgodkjenning.status.approval_certificate, tekst: "Lenke til sertifikat" })} href={sentralgodkjenning.status.approval_certificate}>Lenke til sertifikat</a></p>
         </Kort>
     )
 }

@@ -3,6 +3,7 @@ import { Item, Segment } from "semantic-ui-react";
 import { StateContext } from "../../pages/sokpage";
 import { Appstate } from "../../types/domain";
 import { oppdaterWebadresse } from "../../utils/utils";
+import { loggKlikk } from "../../analytics/google-analytics";
 
 function OppsummeringEnhetsregister() {
     const state = useContext<Appstate>(StateContext);
@@ -46,7 +47,7 @@ function OppsummeringEnhetsregister() {
                             <dd>{enhet.stiftelsesdato}</dd>
                         </dl>
                     </Item.Description>
-                    <Item.Meta><a target="_blank" rel="noopener noreferrer" href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`}>Se mer om bedriften hos Brønnøysundregistrene</a></Item.Meta>
+                    <Item.Meta><a onClick={() => loggKlikk({ url: `https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`, tekst: "Se mer om bedriften hos Brønnøysundregistrene" })} target="_blank" rel="noopener noreferrer" href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`}>Se mer om bedriften hos Brønnøysundregistrene</a></Item.Meta>
                 </Item.Content>
             </Item>
         </Segment>
