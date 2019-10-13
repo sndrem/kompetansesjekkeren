@@ -9,8 +9,13 @@ function Sokefelt(props: Props) {
     const [orgnr, setOrgnr] = useState("");
     const [feilmelding, setFeilmelding] = useState("");
 
+    function removeSpaces(value: string): string {
+        return value.replace(/\W/g, "");
+    }
+
     function validerInput(orgnr: string) {
-        if (orgnr.length > 0 && orgnr.length < 9) {
+        const spacesRemoved = removeSpaces(orgnr);
+        if (spacesRemoved.length > 0 && spacesRemoved.length < 9) {
             setFeilmelding("Organisasjonsnummer må være 9 siffer");
         } else {
             setFeilmelding("");
@@ -25,7 +30,7 @@ function Sokefelt(props: Props) {
             {feilmelding && <Message negative>{feilmelding}</Message>}
             <Form.Field>
                 <label>Søk på organisasjonsnummer</label>
-                <input placeholder="Organisasjonsnummer - 9 siffer" value={orgnr} onChange={(e) => setOrgnr(e.currentTarget.value)} type="text" id="orgnr" maxLength={9} aria-describedby="orgnr-sok" />
+                <input placeholder="Organisasjonsnummer - 9 siffer" value={orgnr} onChange={(e) => setOrgnr(removeSpaces(e.currentTarget.value))} type="text" id="orgnr" aria-describedby="orgnr-sok" />
             </Form.Field>
             <Button primary className="cta-btn" onClick={() => validerInput(orgnr)}>Søk</Button>
         </Form>
