@@ -24,7 +24,7 @@ function OppsummeringEnhetsregister() {
                     <Item.Description>
                         <dl>
                             <dt>Jobber med:</dt>
-                            <dd>{enhet.naeringskode1.beskrivelse.toLowerCase()}</dd>
+                            <dd>{enhet.naeringskode1 ? enhet.naeringskode1.beskrivelse.toLowerCase() : "Data ikke tilgjengelig"}</dd>
                             <dt>Registrert i MVA-registeret?</dt>
                             <dd>{enhet.registrertIMvaregisteret ? "Ja ✅" : "Nei ❌"}</dd>
                             <dt>Registrert i Foretaksregisteret</dt>
@@ -43,8 +43,10 @@ function OppsummeringEnhetsregister() {
                             <dd>{enhet.antallAnsatte}</dd>
                             <dt>Forretningsadresse</dt>
                             <dd>{enhet.forretningsadresse.adresse[0]}, {enhet.forretningsadresse.postnummer} {enhet.forretningsadresse.poststed}</dd>
+                            <dt>Registrert i Enhetsregisteret</dt>
+                            <dd>{enhet.registreringsdatoEnhetsregisteret}</dd>
                             <dt>Ble stiftet:</dt>
-                            <dd>{enhet.stiftelsesdato}</dd>
+                            <dd>{enhet.stiftelsesdato ? enhet.stiftelsesdato : "Data ikke tilgjengelig"}</dd>
                         </dl>
                     </Item.Description>
                     <Item.Meta><a onClick={() => loggKlikk({ url: `https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`, tekst: "Se mer om bedriften hos Brønnøysundregistrene" })} target="_blank" rel="noopener noreferrer" href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`}>Se mer om bedriften hos Brønnøysundregistrene</a></Item.Meta>

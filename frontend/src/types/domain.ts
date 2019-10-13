@@ -29,34 +29,6 @@ export interface Data {
     mesterbrev: MesterbrevResultat | null;
 }
 
-export interface Sokeresultat {
-    organisasjonsnummer: string;
-    navn: string;
-    organisasjonsform: Organisasjonsform;
-    registreringsdatoEnhetsregisteret: string;
-    registrertIMvaregisteret: boolean;
-    naeringskode1: {
-        beskrivelse: string;
-        kode: string;
-    };
-    antallAnsatte: number;
-    forretningsadresse: Adresse;
-    stiftelsesdato: string;
-    institusjonellSektorkode: {
-        kode: string;
-        beskrivelse: string;
-    };
-    registrertIForetaksregisteret: boolean;
-    registrertIStiftelsesregisteret: boolean;
-    registrertIFrivillighetsregisteret: boolean;
-    sisteInnsendteAarsregnskap: string;
-    konkurs: boolean;
-    underAvvikling: boolean;
-    underTvangsavviklingEllerTvangsopplosning: boolean;
-    maalform: string;
-
-}
-
 
 export interface EnhetsregisterEnhet {
     organisasjonsnummer: string;
@@ -65,13 +37,13 @@ export interface EnhetsregisterEnhet {
     organisasjonsform: Organisasjonsform;
     registreringsdatoEnhetsregisteret: string;
     registrertIMvaregisteret: boolean;
-    naeringskode1: {
+    naeringskode1?: {
         beskrivelse: string;
         kode: string;
     };
     antallAnsatte: number;
     forretningsadresse: Adresse;
-    stiftelsesdato: string;
+    stiftelsesdato?: string;
     institusjonellSektorkode: {
         kode: string;
         beskrivelse: string;
