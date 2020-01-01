@@ -7,7 +7,8 @@ async function scrapeAndPopulateDb() {
     try {
         const vatromUrl = "http://www.ffv.no/finn-godkjent-vatromsbedrift";
         const mesterbrevUrl = "https://mreg.nhosp.no/scripts/cgiip.wsc/web/search.html";
-        slack.utvikling(`Henter data fra ${vatromUrl} og legger til i databasen :clock12:`)
+        // slack.utvikling(`Henter data fra ${vatromUrl} og legger til i databasen :clock12:`)
+        console.log(`Henter data fra ${vatromUrl} og legger til i databasen :clock12:`);
         const vatromdata = await scrapeVatromgodkjenning(vatromUrl);
         const mesterbrevdata = await scrapeMesterbrevregisteret(mesterbrevUrl);
 
@@ -20,6 +21,7 @@ async function scrapeAndPopulateDb() {
 
         const now = new Date();
         // slack.utvikling(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret og ${mesterbrevdata.length} fra mesterbrevregisteret i databasen.`);
+        console.log(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret og ${mesterbrevdata.length} fra mesterbrevregisteret i databasen.`);
     } catch (e) {
         slack.utvikling(`:fire: Det var problemer med scraping av ${vatromUrl}. Det bør sees på... :bug:`);
         slack.utvikling(`Stacktrace: ${JSON.stringify(e)}`);
