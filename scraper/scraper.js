@@ -19,9 +19,10 @@ async function scrapeAndPopulateDb() {
         }).write();
 
         const now = new Date();
-        slack.utvikling(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret og ${mesterbrevdata.length} fra mesterbrevregisteret i databasen.`);
+        // slack.utvikling(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret og ${mesterbrevdata.length} fra mesterbrevregisteret i databasen.`);
     } catch (e) {
         slack.utvikling(`:fire: Det var problemer med scraping av ${vatromUrl}. Det bør sees på... :bug:`);
+        slack.utvikling(`Stacktrace: ${JSON.stringify(e)}`);
     }
 }
 
