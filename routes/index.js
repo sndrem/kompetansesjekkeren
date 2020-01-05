@@ -1,10 +1,11 @@
-require("dotenv").config();
 var express = require("express");
 var rp = require("request-promise");
 var router = express.Router();
 const db = require("../database/db");
 const scraper = require("../scraper/scraper");
 require("../cron-jobs/scrape-job");
+const dbService = require("../services/db-service");
+const slack = require("../alerting/slack").slackNotifiyer;
 
 const ENHETSREGISTERET_HOST_AND_PORT =
   "https://data.brreg.no/enhetsregisteret/api/enheter";
@@ -14,16 +15,16 @@ const SENTRAL_GODKJENNING_HOST_AND_PORT =
   "https://sgregister.dibk.no/api/enterprises/";
 
 /* GET home page. */
-router.get("/", function(req, res, next) {
+router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 
-router.get("/update", function(req, res, next) {
+router.get("/update", function (req, res, next) {
   scraper.scrapeAndPopulateDb();
   res.json({ status: "Update OK" });
 });
 
-router.get("/sok", function(req, res, next) {
+router.get("/sok", function (req, res, next) {
   if (!req.query.organisasjonsnummer) {
     res.status(400).json({
       status: 400,
@@ -31,6 +32,9 @@ router.get("/sok", function(req, res, next) {
     });
   }
   const organisasjonsnummer = req.query.organisasjonsnummer;
+  dbService.lagreSok(organisasjonsnummer, null);
+  slack.utvikling(`Nytt søk på organisasjonsnummer: ${organisasjonsnummer}`);
+
   const enhetsregisteret = rp(
     `${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`
   );
