@@ -39,6 +39,7 @@ function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
                 }
             })
             .catch((err) => {
+                console.log(err);
                 dispatch({ type: "DATA/HENTING_AV_DATA_ERROR", error: `Klarte ikke hente data om orgnr: ${orgnr}. Prøv igjen senere.` });
             });
     } else {

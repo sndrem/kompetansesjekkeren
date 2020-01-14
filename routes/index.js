@@ -31,9 +31,10 @@ router.get("/sok", function (req, res, next) {
       message: "Du mangler query-param 'organisasjonsnummer'"
     });
   }
+
   const organisasjonsnummer = req.query.organisasjonsnummer;
   dbService.lagreSok(organisasjonsnummer, null);
-  slack.utvikling(`Nytt søk på organisasjonsnummer: ${organisasjonsnummer}`);
+  slack.utvikling(`Nytt søk på organisasjonsnummer: ${organisasjonsnummer} - https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${organisasjonsnummer}`);
 
   const enhetsregisteret = rp(
     `${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`
@@ -52,21 +53,35 @@ router.get("/sok", function (req, res, next) {
 
   Promise.all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
     .then(data => {
-      const enhetsregisteret = data[0]
-        ? JSON.parse(data[0])["_embedded"]["enheter"][0]
-        : null;
+      let enhetsregisteret = null;
+
+      try {
+        enhetsregisteret = JSON.parse(data[0])["_embedded"]["enheter"][0]
+      } catch (error) {
+        console.log("Klarte ikke hente data fra enhetsregisteret", error);
+        slack.utvikling(`Klarte ikke hente data fra enhetsregisteret for orgnr: ${organisasjonsnummer}`);
+        enhetsregisteret = null;
+      }
+
       let arbeidstilsynet = null;
+
       try {
         arbeidstilsynet =
           data[1] && data[1] !== "[]" ? JSON.parse(data[1])[0] : null;
       } catch (error) {
+        console.log("Klarte ikke hente data fra arbeidstilsynet", error);
+        slack.utvikling(`Klarte ikke hente data fra arbeidstilsynet for orgnr: ${organisasjonsnummer}`);
         arbeidstilsynet = null;
       }
-      let sentralgodkjenning = data[2]
-        ? JSON.parse(data[2])["dibk-sgdata"]
-        : null;
+      let sentralgodkjenning = null;
+      try {
+        sentralgodkjenning = JSON.parse(data[2])["dibk-sgdata"];
+      } catch (error) {
+        console.log("Klarte ikke hente data fra sentralgodkjenning", error);
+        slack.utvikling(`Klarte ikke hente data fra sentral godkjenning for orgnr: ${organisasjonsnummer}`);
+        sentralgodkjenning = null;
+      }
       let mesterbrev = null;
-
       // Hent ut navn fra enhetsregisteret og sjekk mot mesterbrev
       if (enhetsregisteret) {
         const { navn } = enhetsregisteret;
@@ -81,20 +96,21 @@ router.get("/sok", function (req, res, next) {
       }
 
       if (sentralgodkjenning === "Retry later") {
+        slack.utvikling(`Sentral godkjenning melder om 'Retry later'...`);
         sentralgodkjenning = null;
       }
 
       res.json({
         enhetsregisteret: enhetsregisteret ? enhetsregisteret : null,
-        arbeidstilsynet: arbeidstilsynet ? arbeidstilsynet : null,
-        sentralgodkjenning: sentralgodkjenning ? sentralgodkjenning : null,
+        arbeidstilsynet: arbeidstilsynet,
+        sentralgodkjenning: sentralgodkjenning,
         vatromsregisteret: vatrom ? vatrom : null,
         mesterbrev: mesterbrev ? mesterbrev : null
       });
     })
     .catch(err => {
-      console.log("Noe gikk gale", err);
-      res.json(err);
+      console.log("Noe gikk gale ved henting av data", err);
+      res.status(500).json({ error: err.toString() });
     });
 });
 
