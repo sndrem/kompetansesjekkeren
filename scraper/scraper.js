@@ -2,27 +2,34 @@ const cheerio = require("cheerio");
 const rp = require("request-promise");
 const db = require("../database/db");
 const slack = require("../alerting/slack").slackNotifiyer;
+const parser = require("xml2json");
 
 async function scrapeAndPopulateDb() {
+    const vatromUrl = "http://www.ffv.no/finn-godkjent-vatromsbedrift";
+    const mesterbrevUrl = "https://mreg.nhosp.no/scripts/cgiip.wsc/web/search.html";
+    const arbeidstilsynetUrl = "https://www.arbeidstilsynet.no/opendata/renhold.xml";
     try {
-        const vatromUrl = "http://www.ffv.no/finn-godkjent-vatromsbedrift";
-        const mesterbrevUrl = "https://mreg.nhosp.no/scripts/cgiip.wsc/web/search.html";
         // slack.utvikling(`Henter data fra ${vatromUrl} og legger til i databasen :clock12:`)
         console.log(`Henter data fra ${vatromUrl} og legger til i databasen :clock12:`);
         const vatromdata = await scrapeVatromgodkjenning(vatromUrl);
         const mesterbrevdata = await scrapeMesterbrevregisteret(mesterbrevUrl);
-
+        const renholdsregisterdata = await hentRenholdsregisterdata(arbeidstilsynetUrl);
         // Sett data fra scraping
-        db.setState({
+        const data = {
             sistOppdatert: Date.now(),
             bedrifter: vatromdata,
-            mesterbrev: mesterbrevdata
-        }).write();
+            mesterbrev: mesterbrevdata,
+            renholdsregister: renholdsregisterdata
+        }
+
+        db.setState(data).write();
 
         const now = new Date();
         // slack.utvikling(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret og ${mesterbrevdata.length} fra mesterbrevregisteret i databasen.`);
-        console.log(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret og ${mesterbrevdata.length} fra mesterbrevregisteret i databasen.`);
+        console.log(`Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${vatromdata.length} bedrifter fra våtromsregisteret, ${mesterbrevdata.length} fra mesterbrevregisteret og ${renholdsregisterdata.length} fra renholdsregisteret i databasen.`);
+        return data;
     } catch (e) {
+        console.log(e);
         slack.utvikling(`:fire: Det var problemer med scraping av ${vatromUrl}. Det bør sees på... :bug:`);
         slack.utvikling(`Stacktrace: ${JSON.stringify(e)}`);
     }
@@ -36,6 +43,13 @@ if (db.get("bedrifter").size().value() === 0) {
 async function getHtmlString(url) {
     return await rp.get(url);
 }
+
+async function hentRenholdsregisterdata(url) {
+    const rawXml = await rp.get(url);
+    const parsedJson = parser.toJson(rawXml, { object: true });
+    return parsedJson.ArrayOfRenholdsvirksomhet.Renholdsvirksomhet;
+}
+
 
 async function scrapeMesterbrevregisteret(url) {
     const htmlString = await getHtmlString(url);

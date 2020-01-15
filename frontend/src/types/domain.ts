@@ -1,4 +1,3 @@
-
 export interface Appstate {
     error: string;
     orgnr: string;
@@ -23,7 +22,7 @@ export const initialState: Appstate = {
 
 export interface Data {
     enhetsregisteret: EnhetsregisterEnhet | null;
-    arbeidstilsynet: ArbeidstilsynResult | null;
+    arbeidstilsynet: ArbeidstilsynsOrganisasjon | null;
     sentralgodkjenning: SentralGodkjenningResultat | null;
     vatromsregisteret: VatromregisterResultat | null;
     mesterbrev: MesterbrevResultat | null;
@@ -80,44 +79,23 @@ export interface Adresse {
     kommunenummer: string;
 }
 
-export interface ArbeidstilsynResult {
-    Organisation: ArbeidstilsynsOrganisasjon;
-    RecordStatus: ArbeidstilsynetRecordStatus;
-}
 
 export interface ArbeidstilsynsOrganisasjon {
-    OrganisationNumber: string;
-    OrganisationForm: string;
-    Name: string;
-    Contact: ArbeidstilsynetContact;
-    PostalAdress: ArbeidstilsynetAdress;
-    BusinessAdress: ArbeidstilsynetAdress;
+    Organisasjonsnummer: string;
+    Navn: string;
+    Adresse: ArbeidstilsynetAdress;
+    Underavdelinger: ArbeidstilsynsOrganisasjon;
     Status: string;
-    Link: string;
-}
-
-export interface ArbeidstilsynetContact {
-    PhoneNumber: string;
-    MobileNumber: string;
-    WebAddress: string;
 }
 
 export interface ArbeidstilsynetAdress {
-    Street: string;
-    PostalCode: string;
-    City: string;
-    Municipal: {
-        Name: string;
-        Number: string;
-    };
-    County: {
-        Name: string;
-        Number: string;
-    };
-    Country: {
-        Name: string;
-        Number: string;
-    };
+    Gateadresse: string;
+    Postnummer: string;
+    Poststed: string;
+    Kommunenummer: string;
+    Kommune: string;
+    Fylkesnummer: string;
+    Fylke: string;
 }
 
 export interface ArbeidstilsynetRecordStatus {

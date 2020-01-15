@@ -3,14 +3,13 @@ var rp = require("request-promise");
 var router = express.Router();
 const db = require("../database/db");
 const scraper = require("../scraper/scraper");
-require("../cron-jobs/scrape-job");
 const dbService = require("../services/db-service");
 const slack = require("../alerting/slack").slackNotifiyer;
+require("../cron-jobs/scrape-job");
 
 const ENHETSREGISTERET_HOST_AND_PORT =
   "https://data.brreg.no/enhetsregisteret/api/enheter";
-const ARBEIDSTILSYNET_HOST_AND_PORT =
-  "https://www.arbeidstilsynet.no/registre/renholdsregisteret/sok/GetRecordSearchModel";
+
 const SENTRAL_GODKJENNING_HOST_AND_PORT =
   "https://sgregister.dibk.no/api/enterprises/";
 
@@ -19,9 +18,9 @@ router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 
-router.get("/update", function (req, res, next) {
-  scraper.scrapeAndPopulateDb();
-  res.json({ status: "Update OK" });
+router.get("/update", async function (req, res, next) {
+  const response = await scraper.scrapeAndPopulateDb();
+  res.json({ status: "Update OK", data: response });
 });
 
 router.get("/sok", function (req, res, next) {
@@ -39,19 +38,18 @@ router.get("/sok", function (req, res, next) {
   const enhetsregisteret = rp(
     `${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`
   );
-  const arbeidstilsynet = rp(
-    `${ARBEIDSTILSYNET_HOST_AND_PORT}?query=${organisasjonsnummer}`
-  );
   const sentralgodkjenning = rp(
     `${SENTRAL_GODKJENNING_HOST_AND_PORT}${organisasjonsnummer}`,
     { simple: false }
   );
+
+  const arbeidstilsynet = db.get("renholdsregister").find({ Organisasjonsnummer: organisasjonsnummer }).value();
   const vatrom = db
     .get("bedrifter")
     .find({ orgnr: organisasjonsnummer })
     .value();
 
-  Promise.all([enhetsregisteret, arbeidstilsynet, sentralgodkjenning])
+  Promise.all([enhetsregisteret, sentralgodkjenning])
     .then(data => {
       let enhetsregisteret = null;
 
@@ -63,19 +61,9 @@ router.get("/sok", function (req, res, next) {
         enhetsregisteret = null;
       }
 
-      let arbeidstilsynet = null;
-
-      try {
-        arbeidstilsynet =
-          data[1] && data[1] !== "[]" ? JSON.parse(data[1])[0] : null;
-      } catch (error) {
-        console.log("Klarte ikke hente data fra arbeidstilsynet", error);
-        slack.utvikling(`Klarte ikke hente data fra arbeidstilsynet for orgnr: ${organisasjonsnummer}`);
-        arbeidstilsynet = null;
-      }
       let sentralgodkjenning = null;
       try {
-        sentralgodkjenning = JSON.parse(data[2])["dibk-sgdata"];
+        sentralgodkjenning = JSON.parse(data[1])["dibk-sgdata"];
       } catch (error) {
         console.log("Klarte ikke hente data fra sentralgodkjenning", error);
         slack.utvikling(`Klarte ikke hente data fra sentral godkjenning for orgnr: ${organisasjonsnummer}`);
@@ -102,7 +90,7 @@ router.get("/sok", function (req, res, next) {
 
       res.json({
         enhetsregisteret: enhetsregisteret ? enhetsregisteret : null,
-        arbeidstilsynet: arbeidstilsynet,
+        arbeidstilsynet: arbeidstilsynet ? arbeidstilsynet : null,
         sentralgodkjenning: sentralgodkjenning,
         vatromsregisteret: vatrom ? vatrom : null,
         mesterbrev: mesterbrev ? mesterbrev : null
