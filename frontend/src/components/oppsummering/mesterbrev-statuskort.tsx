@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
-import { Appstate } from '../../types/domain';
-import { StateContext } from '../../pages/sokpage';
+import React, { useContext, useState, useEffect } from 'react';
+import { Appstate, MesterbrevResultat } from '../../types/domain';
+import { StateContext, hentData } from '../../pages/sokpage';
 import { Message, MessageSizeProp } from 'semantic-ui-react';
 import Kort from './kort';
+import { SOK_MESTERBREV } from '../../konstanter';
 
 
 interface Props {
@@ -11,9 +12,18 @@ interface Props {
 
 function MesterbrevStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
-    const { mesterbrev } = state.data;
+    const { orgnr, submitted } = state;
+    const [resultat, setResultat] = useState<MesterbrevResultat | null>(null);
 
-    if (!mesterbrev) {
+    useEffect(() => {
+        hentData<MesterbrevResultat>(SOK_MESTERBREV, orgnr).then(data => {
+            setResultat(data);
+        }).catch(err => {
+            setResultat(null);
+        })
+    }, [orgnr, submitted])
+
+    if (!resultat) {
         return (
             <Message size={props.size} color="red">
                 <Message.Header>Mesterbrevsregisteret</Message.Header>
@@ -22,12 +32,12 @@ function MesterbrevStatuskort(props: Props) {
         );
     }
 
-    const tekst = `${mesterbrev.bedrift} finnes i Mesterbrevsregisteret ✅`;
+    const tekst = `${resultat.bedrift} finnes i Mesterbrevsregisteret ✅`;
     return (
         <Kort
             size={props.size}
             tittel="Mesterbrevsregisteret"
-            erOkStatus={mesterbrev !== null}
+            erOkStatus={resultat !== null}
             orgnr={state.orgnr}
         >
             <p>{tekst}</p>

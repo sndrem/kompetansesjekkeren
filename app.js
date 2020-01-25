@@ -6,6 +6,8 @@ let cookieParser = require("cookie-parser");
 let logger = require("morgan");
 const db = require("./database/mongodb");
 db.connect();
+const dbService = require("./services/db-service")
+const slack = require("./alerting/slack").slackNotifiyer;
 
 let indexRouter = require("./routes/index");
 
@@ -21,7 +23,25 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "frontend/build")));
 
+// Lagre alle søk
+app.use(function (req, res, next) {
+  if (process.env === "development") {
+    const organisasjonsnummer = req.query.organisasjonsnummer;
+    if (organisasjonsnummer) {
+      console.log("Lagrer organisasjonsnummer");
+      slack.utvikling(`Nytt søk på organisasjonsnummer: ${organisasjonsnummer} - https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${organisasjonsnummer}`);
+      dbService.lagreSok(organisasjonsnummer, null);
+    }
+  }
+  next();
+})
+
+app.use(function (req, res, next) {
+  next();
+});
+
 app.use("/", indexRouter);
+
 
 
 // catch 404 and forward to error handler

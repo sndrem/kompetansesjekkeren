@@ -21,10 +21,10 @@ export function reducer(state: Appstate, action: EnhetsregisterActions): Appstat
                 loading: true,
                 error: ""
             };
-        case "DATA/HENTET_DATA_OK": {
+        case "HENTET_ENHET": {
             return {
                 ...state,
-                data: action.data,
+                enhetsregisteret: action.data,
                 submitted: true,
                 loading: false,
                 error: ""

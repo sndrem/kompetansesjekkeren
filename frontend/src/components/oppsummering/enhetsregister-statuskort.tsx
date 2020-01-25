@@ -11,8 +11,7 @@ interface Props {
 function EnhetsregisterStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
 
-    const { enhetsregisteret } = state.data;
-
+    const { enhetsregisteret } = state;
     if (!enhetsregisteret) {
         return (
             <Message size={props.size} color="red">

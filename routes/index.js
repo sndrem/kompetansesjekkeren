@@ -3,12 +3,11 @@ var rp = require("request-promise");
 var router = express.Router();
 const db = require("../database/db");
 const scraper = require("../scraper/scraper");
-const dbService = require("../services/db-service");
+const enhetsService = require("../services/enhetsregister-service");
+
 const slack = require("../alerting/slack").slackNotifiyer;
 require("../cron-jobs/scrape-job");
 
-const ENHETSREGISTERET_HOST_AND_PORT =
-  "https://data.brreg.no/enhetsregisteret/api/enheter";
 
 const SENTRAL_GODKJENNING_HOST_AND_PORT =
   "https://sgregister.dibk.no/api/enterprises/";
@@ -23,83 +22,91 @@ router.get("/update", async function (req, res, next) {
   res.json({ status: "Update OK", data: response });
 });
 
-router.get("/sok", function (req, res, next) {
+
+function sjekkForOrganisasjonsnummer(req, res) {
   if (!req.query.organisasjonsnummer) {
     res.status(400).json({
       status: 400,
       message: "Du mangler query-param 'organisasjonsnummer'"
     });
+  } else {
+    return req.query.organisasjonsnummer;
   }
+}
 
-  const organisasjonsnummer = req.query.organisasjonsnummer;
-  dbService.lagreSok(organisasjonsnummer, null);
-  slack.utvikling(`Nytt søk på organisasjonsnummer: ${organisasjonsnummer} - https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${organisasjonsnummer}`);
 
-  const enhetsregisteret = rp(
-    `${ENHETSREGISTERET_HOST_AND_PORT}?organisasjonsnummer=${organisasjonsnummer}`
-  );
+router.get("/sok/enhetsregisteret", async function (req, res, next) {
+  const orgnr = sjekkForOrganisasjonsnummer(req, res);
+  const enhet = await enhetsService.hentEnhetsdata(orgnr);
+  res.json(enhet);
+});
+
+router.get("/sok/sentralgodkjenning", async function (req, res, next) {
+  const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const sentralgodkjenning = rp(
-    `${SENTRAL_GODKJENNING_HOST_AND_PORT}${organisasjonsnummer}`,
+    `${SENTRAL_GODKJENNING_HOST_AND_PORT}${orgnr}`,
     { simple: false }
   );
 
-  const arbeidstilsynet = db.get("renholdsregister").find({ Organisasjonsnummer: organisasjonsnummer }).value();
+  try {
+    const data = await sentralgodkjenning;
+    if (!data) {
+      res.status(404).json({ status: 404, message: "Fant ikke bedrift hos sentral godkjenning", body: null })
+    }
+    try {
+      sentralgodkjenningData = JSON.parse(data)["dibk-sgdata"];
+      res.json(sentralgodkjenningData);
+    } catch (error) {
+      console.log("Klarte ikke hente data fra sentralgodkjenning", error);
+      slack.utvikling(`Klarte ikke hente data fra sentral godkjenning for orgnr: ${organisasjonsnummer}`);
+      sentralgodkjenningData = null;
+      res.status(500).json({ status: 500, message: "Klarte ikke hente data fra sentral godkjenning.", body: null })
+    }
+  } catch (err) {
+    res.status(500).json({ status: 500, message: "Klarte ikke hente data fra sentral godkjenning.", body: null })
+  }
+});
+
+router.get("/sok/renholdsregisteret", async function (req, res, next) {
+  const orgnr = sjekkForOrganisasjonsnummer(req, res);
+  const enhet = await enhetsService.hentEnhetsdata(orgnr);
+  // Hvis man har søkt på et org.nr som egentlig tilhører en overordnet enhet
+  if (enhet) {
+    const utledetdOrgnr = enhet && enhet.overordnetEnhet ? enhet.overordnetEnhet : orgnr;
+    let arbeidstilsynet = await db.get("renholdsregister").find({ Organisasjonsnummer: utledetdOrgnr }).value();
+    res.json(arbeidstilsynet);
+  } else {
+    res.json(null);
+  }
+});
+
+router.get("/sok/vatrom", function (req, res, next) {
+  const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const vatrom = db
-    .get("bedrifter")
-    .find({ orgnr: organisasjonsnummer })
+    .get("vatromsregister")
+    .find({ orgnr })
     .value();
+  res.json(vatrom);
+});
 
-  Promise.all([enhetsregisteret, sentralgodkjenning])
-    .then(data => {
-      let enhetsregisteret = null;
-
-      try {
-        enhetsregisteret = JSON.parse(data[0])["_embedded"]["enheter"][0]
-      } catch (error) {
-        console.log("Klarte ikke hente data fra enhetsregisteret", error);
-        slack.utvikling(`Klarte ikke hente data fra enhetsregisteret for orgnr: ${organisasjonsnummer}`);
-        enhetsregisteret = null;
-      }
-
-      let sentralgodkjenning = null;
-      try {
-        sentralgodkjenning = JSON.parse(data[1])["dibk-sgdata"];
-      } catch (error) {
-        console.log("Klarte ikke hente data fra sentralgodkjenning", error);
-        slack.utvikling(`Klarte ikke hente data fra sentral godkjenning for orgnr: ${organisasjonsnummer}`);
-        sentralgodkjenning = null;
-      }
-      let mesterbrev = null;
-      // Hent ut navn fra enhetsregisteret og sjekk mot mesterbrev
-      if (enhetsregisteret) {
-        const { navn } = enhetsregisteret;
-        const mesterbrevData = db
-          .get("mesterbrev")
-          .find({ bedrift: navn.toUpperCase() })
-          .value();
-        if (mesterbrevData) {
-          // Vi fant en match!
-          mesterbrev = mesterbrevData;
-        }
-      }
-
-      if (sentralgodkjenning === "Retry later") {
-        slack.utvikling(`Sentral godkjenning melder om 'Retry later'...`);
-        sentralgodkjenning = null;
-      }
-
-      res.json({
-        enhetsregisteret: enhetsregisteret ? enhetsregisteret : null,
-        arbeidstilsynet: arbeidstilsynet ? arbeidstilsynet : null,
-        sentralgodkjenning: sentralgodkjenning,
-        vatromsregisteret: vatrom ? vatrom : null,
-        mesterbrev: mesterbrev ? mesterbrev : null
-      });
-    })
-    .catch(err => {
-      console.log("Noe gikk gale ved henting av data", err);
-      res.status(500).json({ error: err.toString() });
-    });
+router.get("/sok/mesterbrev", async function (req, res, next) {
+  const orgnr = sjekkForOrganisasjonsnummer(req, res);
+  const enhet = await enhetsService.hentEnhetsdata(orgnr);
+  if (enhet) {
+    const { navn } = enhet;
+    const mesterbrevData = db
+      .get("mesterbrev")
+      .find({ bedrift: navn.toUpperCase() })
+      .value();
+    if (mesterbrevData) {
+      // Vi fant en match!
+      res.json(mesterbrevData);
+    } else {
+      res.json(null);
+    }
+  } else {
+    res.json(null);
+  }
 });
 
 module.exports = router;

@@ -17,7 +17,7 @@ async function scrapeAndPopulateDb() {
         // Sett data fra scraping
         const data = {
             sistOppdatert: Date.now(),
-            bedrifter: vatromdata,
+            vatromsregister: vatromdata,
             mesterbrev: mesterbrevdata,
             renholdsregister: renholdsregisterdata
         }
@@ -36,7 +36,7 @@ async function scrapeAndPopulateDb() {
 }
 
 // Må repopulere databasen når vi deployer appen
-if (db.get("bedrifter").size().value() === 0) {
+if (db.get("vatromsregister").size().value() === 0) {
     scrapeAndPopulateDb();
 }
 

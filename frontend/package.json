@@ -17,9 +17,9 @@
     "react-ga": "^2.7.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "3.1.1",
+    "react-scripts": "3.3.0",
     "semantic-ui-react": "^0.88.0",
-    "typescript": "3.6.2"
+    "typescript": "3.7.3"
   },
   "scripts": {
     "start": "react-scripts start",

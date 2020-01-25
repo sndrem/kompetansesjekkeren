@@ -3,7 +3,7 @@ export interface Appstate {
     orgnr: string;
     loading: boolean;
     submitted: boolean;
-    data: Data;
+    enhetsregisteret: EnhetsregisterEnhet | null;
 }
 
 export const initialState: Appstate = {
@@ -11,18 +11,12 @@ export const initialState: Appstate = {
     orgnr: "",
     loading: false,
     submitted: false,
-    data: {
-        enhetsregisteret: null,
-        arbeidstilsynet: null,
-        sentralgodkjenning: null,
-        vatromsregisteret: null,
-        mesterbrev: null
-    }
+    enhetsregisteret: null
 };
 
 export interface Data {
     enhetsregisteret: EnhetsregisterEnhet | null;
-    arbeidstilsynet: ArbeidstilsynsOrganisasjon | null;
+    arbeidstilsynet: RenholdsregisterOrganisasjon | null;
     sentralgodkjenning: SentralGodkjenningResultat | null;
     vatromsregisteret: VatromregisterResultat | null;
     mesterbrev: MesterbrevResultat | null;
@@ -41,7 +35,7 @@ export interface EnhetsregisterEnhet {
         kode: string;
     };
     antallAnsatte: number;
-    forretningsadresse: Adresse;
+    forretningsadresse?: Adresse;
     stiftelsesdato?: string;
     institusjonellSektorkode: {
         kode: string;
@@ -80,11 +74,13 @@ export interface Adresse {
 }
 
 
-export interface ArbeidstilsynsOrganisasjon {
+export interface RenholdsregisterOrganisasjon {
     Organisasjonsnummer: string;
     Navn: string;
     Adresse: ArbeidstilsynetAdress;
-    Underavdelinger: ArbeidstilsynsOrganisasjon;
+    Underavdelinger: {
+        Avdeling: Array<RenholdsregisterOrganisasjon>
+    };
     Status: string;
 }
 

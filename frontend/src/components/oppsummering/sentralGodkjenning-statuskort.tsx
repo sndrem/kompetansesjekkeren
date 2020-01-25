@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
-import { Appstate } from '../../types/domain';
-import { StateContext } from '../../pages/sokpage';
+import React, { useContext, useEffect, useState } from 'react';
+import { Appstate, SentralGodkjenningResultat, VatromregisterResultat } from '../../types/domain';
+import { StateContext, hentData } from '../../pages/sokpage';
 import { Message, MessageSizeProp } from 'semantic-ui-react';
 import Kort from './kort';
 import { loggKlikk } from '../../analytics/google-analytics';
+import { SOK_SENTRALGODKJENNING } from '../../konstanter';
 
 
 interface Props {
@@ -12,9 +13,18 @@ interface Props {
 
 function SentralGodkjenningStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
-    const { sentralgodkjenning } = state.data;
+    const { submitted, orgnr } = state;
+    const [resultat, setResultat] = useState<SentralGodkjenningResultat | null>(null);
 
-    if (!sentralgodkjenning) {
+    useEffect(() => {
+        hentData<SentralGodkjenningResultat>(SOK_SENTRALGODKJENNING, orgnr).then(data => {
+            setResultat(data);
+        }).catch(err => {
+            setResultat(null);
+        })
+    }, [submitted]);
+
+    if (!resultat) {
         return (
             <Message size={props.size} color="red">
                 <Message.Header>Sentral godkjenning</Message.Header>
@@ -23,16 +33,16 @@ function SentralGodkjenningStatuskort(props: Props) {
         );
     }
 
-    const tekst = sentralgodkjenning.status.approved ? `${sentralgodkjenning.enterprise.name} finnes i Sentral godkjenning ✅` : `${sentralgodkjenning.enterprise.name} er ikke sentralt godkjent ❌.`;
+    const tekst = resultat.status.approved ? `${resultat.enterprise.name} finnes i Sentral godkjenning ✅` : `${resultat.enterprise.name} er ikke sentralt godkjent ❌.`;
     return (
         <Kort
             size={props.size}
             tittel="Sentral godkjenning"
-            erOkStatus={sentralgodkjenning.status.approved}
+            erOkStatus={resultat.status.approved}
             orgnr={state.orgnr}
         >
             <p>{tekst}</p>
-            <p><a onClick={() => loggKlikk({ url: sentralgodkjenning.status.approval_certificate, tekst: "Lenke til sertifikat" })} href={sentralgodkjenning.status.approval_certificate}>Lenke til sertifikat</a></p>
+            <p><a onClick={() => loggKlikk({ url: resultat.status.approval_certificate, tekst: "Lenke til sertifikat" })} href={resultat.status.approval_certificate}>Lenke til sertifikat</a></p>
         </Kort>
     )
 }

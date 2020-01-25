@@ -1,7 +1,7 @@
 import React, { useReducer, Context, createContext, Dispatch, useEffect } from "react";
 import { Divider, Grid, Header, Message, Loader, Icon } from "semantic-ui-react";
-import { SOK } from "../konstanter";
-import { Appstate, initialState } from "../types/domain";
+import { SOK_ENHET, SOK_MESTERBREV } from "../konstanter";
+import { Appstate, initialState, EnhetsregisterEnhet, MesterbrevResultat } from "../types/domain";
 import { reducer } from "../types/reducer";
 import { EnhetsregisterActions } from "../types/actions";
 import Sokefelt from "../components/sokefelt/sokefelt";
@@ -21,7 +21,17 @@ interface MatchParams {
     orgnr: string;
 }
 
-function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
+export function hentData<T>(url: string, orgnr: string): Promise<T> {
+    return fetch(`${url}?organisasjonsnummer=${orgnr}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json() as Promise<T>;
+        })
+}
+
+async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
     if (orgnr.length === 9) {
         ReactGA.event({
             category: "søk",
@@ -29,19 +39,11 @@ function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
         });
         dispatch({ type: "SETT_ORGNR", data: orgnr });
         dispatch({ type: "DATA/HENTER_DATA" });
-        fetch(`${SOK}?organisasjonsnummer=${orgnr}`)
-            .then((data) => {
-                return data.json();
-            })
-            .then((data) => {
-                if (data) {
-                    dispatch({ type: "DATA/HENTET_DATA_OK", data })
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                dispatch({ type: "DATA/HENTING_AV_DATA_ERROR", error: `Klarte ikke hente data om orgnr: ${orgnr}. Prøv igjen senere.` });
-            });
+        hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr).then(data => {
+            dispatch({ type: "HENTET_ENHET", data: data })
+        }).catch(err => {
+            dispatch({ type: "DATA/HENTING_AV_DATA_ERROR", error: "Klarte ikke hente data fra enhetsregisteret" })
+        })
     } else {
         dispatch({ type: "SOK/RESET" });
     }
@@ -73,7 +75,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
 
                 <Grid>
                     <Grid.Column width="16">
-                        {state.data.enhetsregisteret && <Header as="h3">Du har søkt på {state.data.enhetsregisteret.navn} med orgnr: {state.data.enhetsregisteret.organisasjonsnummer}</Header>}
+                        {state.enhetsregisteret && <Header as="h3">Du har søkt på {state.enhetsregisteret.navn} med orgnr: {state.enhetsregisteret.organisasjonsnummer}</Header>}
                     </Grid.Column>
                     <OppsummeringPage />
                     <Grid.Column width="3">

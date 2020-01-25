@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { StateContext } from '../../pages/sokpage';
 import { Grid } from 'semantic-ui-react';
 import EnhetsregisterStatuskort from './enhetsregister-statuskort';
-import ArbeidstilsynetStatuskort from './arbeidstilsynet-statuskort';
+import RenholdsregisteretStatuskort from './arbeidstilsynet-statuskort';
 import SentralGodkjenningStatuskort from './sentralGodkjenning-statuskort';
 import OppsummeringEnhetsregister from './oppsummering-enhetsregister';
 import VatromregisterStatuskort from './vatromregister-statuskort';
@@ -15,7 +15,7 @@ function OppsummeringPage() {
         <>
             <Grid.Column width={8}>
                 {state.submitted && <EnhetsregisterStatuskort size="large" />}
-                {state.submitted && <ArbeidstilsynetStatuskort size="large" />}
+                {state.submitted && <RenholdsregisteretStatuskort size="large" />}
                 {state.submitted && <SentralGodkjenningStatuskort size="large" />}
                 {state.submitted && <VatromregisterStatuskort size="large" />}
                 {state.submitted && <MesterbrevStatuskort size="large" />}

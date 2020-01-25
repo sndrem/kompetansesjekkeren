@@ -6,8 +6,9 @@ const db = low(adapter);
 
 db.defaults({
     sistOppdatert: Date.now(),
-    bedrifter: [],
-    mesterbrev: []
+    vatromsregister: [],
+    mesterbrev: [],
+    renholdsregister: []
 })
     .write();
 

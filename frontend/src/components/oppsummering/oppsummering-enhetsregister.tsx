@@ -8,11 +8,11 @@ import { loggKlikk } from "../../analytics/google-analytics";
 function OppsummeringEnhetsregister() {
     const state = useContext<Appstate>(StateContext);
 
-    if (!state.data.enhetsregisteret) {
+    if (!state.enhetsregisteret) {
         return null;
     }
 
-    const enhet = state.data.enhetsregisteret;
+    const enhet = state.enhetsregisteret;
 
     return (
         <Segment>
@@ -42,7 +42,7 @@ function OppsummeringEnhetsregister() {
                             <dt>Antall ansatte:</dt>
                             <dd>{enhet.antallAnsatte}</dd>
                             <dt>Forretningsadresse</dt>
-                            <dd>{enhet.forretningsadresse.adresse[0]}, {enhet.forretningsadresse.postnummer} {enhet.forretningsadresse.poststed}</dd>
+                            <dd>{enhet.forretningsadresse?.adresse[0]}, {enhet.forretningsadresse?.postnummer} {enhet.forretningsadresse?.poststed}</dd>
                             <dt>Registrert i Enhetsregisteret</dt>
                             <dd>{enhet.registreringsdatoEnhetsregisteret}</dd>
                             <dt>Ble stiftet:</dt>
