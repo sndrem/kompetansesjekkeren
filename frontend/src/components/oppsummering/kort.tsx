@@ -13,14 +13,14 @@ function Kort(props: Props) {
 
     const color = props.erOkStatus ? "green" : "red";
 
-    if (!props.erOkStatus) {
-        return (
-            <Message color={color}>
-                <Message.Header>{props.tittel}</Message.Header>
-                {props.children}
-            </Message>
-        );
-    }
+    // if (!props.erOkStatus) {
+    //     return (
+    //         <Message color={color}>
+    //             <Message.Header>{props.tittel}</Message.Header>
+    //             {props.children}
+    //         </Message>
+    //     );
+    // }
 
     return (
         <Message size={props.size} color={color}>

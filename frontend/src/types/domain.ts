@@ -49,6 +49,7 @@ export interface EnhetsregisterEnhet {
     underAvvikling: boolean;
     underTvangsavviklingEllerTvangsopplosning: boolean;
     maalform: string;
+    overordnetEnhet?: string;
 }
 
 export interface Organisasjonsform {
@@ -78,8 +79,8 @@ export interface RenholdsregisterOrganisasjon {
     Organisasjonsnummer: string;
     Navn: string;
     Adresse: ArbeidstilsynetAdress;
-    Underavdelinger: {
-        Avdeling: Array<RenholdsregisterOrganisasjon>
+    Underavdelinger?: {
+        Avdeling: Array<RenholdsregisterOrganisasjon> | RenholdsregisterOrganisasjon
     };
     Status: string;
 }

@@ -1,9 +1,22 @@
 import React, { useContext } from "react";
-import { Item, Segment } from "semantic-ui-react";
+import { Item, Segment, Message } from "semantic-ui-react";
 import { StateContext } from "../../pages/sokpage";
 import { Appstate } from "../../types/domain";
 import { oppdaterWebadresse } from "../../utils/utils";
 import { loggKlikk } from "../../analytics/google-analytics";
+
+interface Props {
+    orgnr: string;
+}
+
+function OverordnetEnhet({ orgnr }: Props) {
+    return (
+        <Message warning>
+            <Message.Header>Denne bedriften har en overordnet enhet</Message.Header>
+            <p><a href={`#/orgnr/${orgnr}`}>Klikk her for å se informasjon om overordnet enhet</a></p>
+        </Message>
+    )
+}
 
 function OppsummeringEnhetsregister() {
     const state = useContext<Appstate>(StateContext);
@@ -18,6 +31,7 @@ function OppsummeringEnhetsregister() {
         <Segment>
             <Item>
                 <Item.Content>
+                    {enhet.overordnetEnhet ? <OverordnetEnhet orgnr={enhet.overordnetEnhet} /> : null}
                     <Item.Header>{enhet.navn} - Orgnr: {enhet.organisasjonsnummer}</Item.Header>
                     <Item.Meta>{enhet.organisasjonsform.beskrivelse}</Item.Meta>
                     {enhet.hjemmeside && <Item.Meta><a target="_blank" rel="noopener noreferrer" href={oppdaterWebadresse(enhet.hjemmeside)}>{oppdaterWebadresse(enhet.hjemmeside)}</a></Item.Meta>}

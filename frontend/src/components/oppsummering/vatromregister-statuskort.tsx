@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Appstate, VatromregisterResultat } from '../../types/domain';
-import { StateContext, hentData } from '../../pages/sokpage';
+import { StateContext } from '../../pages/sokpage';
 import { Message, MessageSizeProp } from 'semantic-ui-react';
 import Kort from './kort';
 import { SOK_VATROM } from '../../konstanter';
+import { useFetch } from '../../hooks/useFetch';
+import { genererSokeurl } from '../../utils/utils';
 
 interface Props {
     size: MessageSizeProp;
@@ -11,16 +13,10 @@ interface Props {
 
 function VatromregisterStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
-    const { submitted, orgnr } = state;
-    const [resultat, setResultat] = useState<VatromregisterResultat | null>(null);
+    const { orgnr } = state;
+    console.log("Orgnr", orgnr);
+    const { response: resultat, error, isLoading } = useFetch<VatromregisterResultat>(genererSokeurl(SOK_VATROM, orgnr));
 
-    useEffect(() => {
-        hentData<VatromregisterResultat>(SOK_VATROM, orgnr).then(data => {
-            setResultat(data);
-        }).catch(err => {
-            setResultat(null);
-        })
-    }, [submitted])
 
     if (!resultat) {
         return (

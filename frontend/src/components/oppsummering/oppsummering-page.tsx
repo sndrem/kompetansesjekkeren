@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { StateContext } from '../../pages/sokpage';
 import { Grid } from 'semantic-ui-react';
 import EnhetsregisterStatuskort from './enhetsregister-statuskort';
-import RenholdsregisteretStatuskort from './arbeidstilsynet-statuskort';
+import RenholdsregisteretStatuskort from './renholdsregisteret-statuskort';
 import SentralGodkjenningStatuskort from './sentralGodkjenning-statuskort';
 import OppsummeringEnhetsregister from './oppsummering-enhetsregister';
 import VatromregisterStatuskort from './vatromregister-statuskort';

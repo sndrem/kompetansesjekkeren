@@ -1,9 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Appstate, MesterbrevResultat } from '../../types/domain';
-import { StateContext, hentData } from '../../pages/sokpage';
+import { StateContext } from '../../pages/sokpage';
 import { Message, MessageSizeProp } from 'semantic-ui-react';
 import Kort from './kort';
 import { SOK_MESTERBREV } from '../../konstanter';
+import { useFetch } from '../../hooks/useFetch';
+import { genererSokeurl } from '../../utils/utils';
 
 
 interface Props {
@@ -12,16 +14,8 @@ interface Props {
 
 function MesterbrevStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
-    const { orgnr, submitted } = state;
-    const [resultat, setResultat] = useState<MesterbrevResultat | null>(null);
-
-    useEffect(() => {
-        hentData<MesterbrevResultat>(SOK_MESTERBREV, orgnr).then(data => {
-            setResultat(data);
-        }).catch(err => {
-            setResultat(null);
-        })
-    }, [orgnr, submitted])
+    const { orgnr } = state;
+    const { response: resultat, error, isLoading } = useFetch<MesterbrevResultat>(genererSokeurl(SOK_MESTERBREV, orgnr));
 
     if (!resultat) {
         return (

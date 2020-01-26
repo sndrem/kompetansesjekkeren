@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Appstate, SentralGodkjenningResultat, VatromregisterResultat } from '../../types/domain';
-import { StateContext, hentData } from '../../pages/sokpage';
+import React, { useContext } from 'react';
+import { Appstate, SentralGodkjenningResultat } from '../../types/domain';
+import { StateContext } from '../../pages/sokpage';
 import { Message, MessageSizeProp } from 'semantic-ui-react';
 import Kort from './kort';
 import { loggKlikk } from '../../analytics/google-analytics';
 import { SOK_SENTRALGODKJENNING } from '../../konstanter';
+import { useFetch } from '../../hooks/useFetch';
+import { genererSokeurl } from '../../utils/utils';
 
 
 interface Props {
@@ -13,16 +15,8 @@ interface Props {
 
 function SentralGodkjenningStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
-    const { submitted, orgnr } = state;
-    const [resultat, setResultat] = useState<SentralGodkjenningResultat | null>(null);
-
-    useEffect(() => {
-        hentData<SentralGodkjenningResultat>(SOK_SENTRALGODKJENNING, orgnr).then(data => {
-            setResultat(data);
-        }).catch(err => {
-            setResultat(null);
-        })
-    }, [submitted]);
+    const { orgnr } = state;
+    const { response: resultat, error, isLoading } = useFetch<SentralGodkjenningResultat>(genererSokeurl(SOK_SENTRALGODKJENNING, orgnr));
 
     if (!resultat) {
         return (

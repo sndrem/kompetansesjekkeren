@@ -4,3 +4,7 @@ export function oppdaterWebadresse(adresse: string): string {
     }
     return adresse;
 }
+
+export function genererSokeurl(url: string, orgnr: string) {
+    return `${url}?organisasjonsnummer=${orgnr}`;
+}

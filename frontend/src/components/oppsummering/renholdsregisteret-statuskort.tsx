@@ -1,9 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { StateContext, hentData } from '../../pages/sokpage';
-import { Appstate, RenholdsregisterOrganisasjon, VatromregisterResultat } from '../../types/domain';
+import React, { useContext } from 'react';
+import { StateContext } from '../../pages/sokpage';
+import { Appstate, RenholdsregisterOrganisasjon } from '../../types/domain';
 import { Message, MessageSizeProp } from 'semantic-ui-react';
 import Kort from './kort';
-import { SOK_VATROM, SOK_RENHOLDSREGISTERET } from '../../konstanter';
+import { SOK_RENHOLDSREGISTERET } from '../../konstanter';
+import { useFetch } from '../../hooks/useFetch';
+import { genererSokeurl } from '../../utils/utils';
 
 interface Props {
     size: MessageSizeProp;
@@ -17,16 +19,8 @@ function gyldigBedrift(status: string): boolean {
 
 function RenholdsregisteretStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
-    const { submitted, orgnr } = state;
-    const [resultat, setResultat] = useState<RenholdsregisterOrganisasjon | null>(null);
-
-    useEffect(() => {
-        hentData<RenholdsregisterOrganisasjon>(SOK_RENHOLDSREGISTERET, orgnr).then(data => {
-            setResultat(data);
-        }).catch(err => {
-            setResultat(null);
-        })
-    }, [submitted, orgnr])
+    const { orgnr } = state;
+    const { response: resultat, error, isLoading } = useFetch<RenholdsregisterOrganisasjon>(genererSokeurl(SOK_RENHOLDSREGISTERET, orgnr));
 
     if (!resultat) {
         return (
@@ -38,10 +32,20 @@ function RenholdsregisteretStatuskort(props: Props) {
     }
 
     const tekst = gyldigBedrift(resultat.Status) ? `${resultat.Navn} har status: ${resultat.Status}` : `${resultat.Navn} er ikke godkjent i Renholdsregisteret.`;
-    console.log(resultat);
-    const underavdelinger = resultat.Underavdelinger.Avdeling?.map(avd => {
-        return <li>{avd.Navn}</li>
-    });
+    let underavdelinger = null;
+    if (resultat.Underavdelinger) {
+
+        const avdeling = resultat.Underavdelinger?.Avdeling;
+
+        if (Array.isArray(avdeling)) {
+            underavdelinger = avdeling.map(avd => {
+                return <li key={avd.Organisasjonsnummer}>{avd.Navn} - Orgnr: {avd.Organisasjonsnummer}</li>
+            });
+        } else {
+            underavdelinger = <li key={avdeling.Organisasjonsnummer}>{avdeling.Navn} - Orgnr: {avdeling.Organisasjonsnummer}</li>
+        }
+
+    }
 
     return (
         <Kort

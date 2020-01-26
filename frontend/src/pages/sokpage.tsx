@@ -70,7 +70,6 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
                     <Sokefelt onSubmit={sokPaOrgnr} />
                 </div>
                 <Divider />
-                {state.loading && <Loader active={state.loading} />}
                 {state.error && <Message color="red"><Message.Header>Oisann <span role="img" aria-label="Oisann-ikon">🙈</span></Message.Header>{state.error}</Message>}
 
                 <Grid>
