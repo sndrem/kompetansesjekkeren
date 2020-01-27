@@ -1,5 +1,5 @@
 import React, { useReducer, Context, createContext, Dispatch, useEffect } from "react";
-import { Divider, Grid, Header, Message, Icon, Loader } from "semantic-ui-react";
+import { Divider, Grid, Header, Message, Loader } from "semantic-ui-react";
 import { SOK_ENHET } from "../konstanter";
 import { Appstate, initialState, EnhetsregisterEnhet } from "../types/domain";
 import { reducer } from "../types/reducer";
@@ -33,6 +33,7 @@ export function hentData<T>(url: string, orgnr: string): Promise<T> {
 }
 
 async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
+    dispatch({ type: "SOK/RESET" });
     if (orgnr.length === 9) {
         ReactGA.event({
             category: "søk",
