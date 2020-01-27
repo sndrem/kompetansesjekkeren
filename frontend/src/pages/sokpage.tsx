@@ -1,7 +1,7 @@
 import React, { useReducer, Context, createContext, Dispatch, useEffect } from "react";
-import { Divider, Grid, Header, Message, Loader, Icon } from "semantic-ui-react";
-import { SOK_ENHET, SOK_MESTERBREV } from "../konstanter";
-import { Appstate, initialState, EnhetsregisterEnhet, MesterbrevResultat } from "../types/domain";
+import { Divider, Grid, Header, Message, Icon, Loader } from "semantic-ui-react";
+import { SOK_ENHET } from "../konstanter";
+import { Appstate, initialState, EnhetsregisterEnhet } from "../types/domain";
 import { reducer } from "../types/reducer";
 import { EnhetsregisterActions } from "../types/actions";
 import Sokefelt from "../components/sokefelt/sokefelt";
@@ -11,6 +11,7 @@ import OppsummeringPage from "../components/oppsummering/oppsummering-page";
 import { nyttigeLenker } from "../konstanter/konstanter";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import { ReactGA } from "../analytics/google-analytics";
+import MeldFeil from "../components/feedback/meld-feil";
 
 ReactGA.pageview("/søk");
 
@@ -69,22 +70,23 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
                 <div className="sokeside">
                     <Sokefelt onSubmit={sokPaOrgnr} />
                 </div>
+                <NyttigeLenker lenker={nyttigeLenker} />
                 <Divider />
-                {state.error && <Message color="red"><Message.Header>Oisann <span role="img" aria-label="Oisann-ikon">🙈</span></Message.Header>{state.error}</Message>}
+                <div className="container">
+                    <Loader active={state.loading}>Laster data...</Loader>
+                    {state.error && <Message color="red"><Message.Header>Oisann <span role="img" aria-label="Oisann-ikon">🙈</span></Message.Header>{state.error}</Message>}
 
-                <Grid>
-                    <Grid.Column width="16">
-                        {state.enhetsregisteret && <Header as="h3">Du har søkt på {state.enhetsregisteret.navn} med orgnr: {state.enhetsregisteret.organisasjonsnummer}</Header>}
-                    </Grid.Column>
-                    <OppsummeringPage />
-                    <Grid.Column width="3">
-                        <Header as="h4">
-                            <Icon name="linkify" />
-                            <Header.Content>Nyttige lenker</Header.Content>
-                        </Header>
-                        <NyttigeLenker lenker={nyttigeLenker} />
-                    </Grid.Column>
-                </Grid>
+                    <Grid>
+                        <Grid.Column width="16">
+                            {state.enhetsregisteret && <Header as="h3">Du har søkt på {state.enhetsregisteret.navn} med orgnr: {state.enhetsregisteret.organisasjonsnummer}</Header>}
+                        </Grid.Column>
+                        <div className="container">
+                            <OppsummeringPage />
+
+                        </div>
+                    </Grid>
+                </div>
+                <MeldFeil />
             </StateContext.Provider>
         </DispatchContext.Provider>
     );

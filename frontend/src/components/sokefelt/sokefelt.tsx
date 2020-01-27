@@ -28,7 +28,7 @@ function Sokefelt(props: Props) {
             <Header as="h1">Kompetansesjekkeren</Header>
             <p>Sjekk organisasjon opp mot <a target="_blank" rel="noopener noreferrer" href="https://www.brreg.no/">Brønnøysundregisteret (Enhetsregisteret)</a>, <a target="_blank" rel="noopener noreferrer" href="https://sgregister.dibk.no/">Sentral godkjenning</a> <a target="_blank" rel="noopener noreferrer" href="http://www.ffv.no/">Fagrådet for våtrom</a>, <a target="_blank" rel="noopener noreferrer" href="https://www.mesterbrev.no/sok-mesterregisteret/">Mesterbrevsregisteret</a> og Arbeidstilsynet sitt <a target="_blank" rel="noopener noreferrer" href="https://www.arbeidstilsynet.no/registre/renholdsregisteret/sok/">renholdsregister</a>.</p>
             {feilmelding && <Message negative>{feilmelding}</Message>}
-            <Form.Field>
+            <Form.Field className="">
                 <label>Søk på organisasjonsnummer</label>
                 <input placeholder="Organisasjonsnummer - 9 siffer" value={orgnr} onChange={(e) => setOrgnr(removeSpaces(e.currentTarget.value))} type="text" id="orgnr" aria-describedby="orgnr-sok" />
             </Form.Field>

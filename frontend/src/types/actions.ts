@@ -3,6 +3,7 @@ type RESET_SOK = "SOK/RESET";
 type SETT_ORGNR = "SETT_ORGNR";
 type HENT_DATA = "DATA/HENTER_DATA";
 type SUBMITTED = "DATA/SUBMITTED_FORM";
+type LASTER = "DATA/LASTER";
 type HENTET_ENHET = "HENTET_ENHET";
 type HENT_DATA_ERROR = "DATA/HENTING_AV_DATA_ERROR";
 
@@ -23,6 +24,10 @@ export interface submitFormAction {
     type: SUBMITTED;
 }
 
+export interface LasterAction {
+    type: LASTER
+}
+
 export interface hentetEnhetAction {
     type: HENTET_ENHET,
     data: EnhetsregisterEnhet
@@ -38,5 +43,6 @@ export type EnhetsregisterActions =
     | settOrgnrAction
     | resetSokAction
     | submitFormAction
+    | LasterAction
     | hentetEnhetAction
     | hentDataError;

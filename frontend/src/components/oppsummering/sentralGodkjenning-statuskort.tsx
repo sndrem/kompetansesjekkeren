@@ -16,7 +16,7 @@ interface Props {
 function SentralGodkjenningStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
     const { orgnr } = state;
-    const { response: resultat, error, isLoading } = useFetch<SentralGodkjenningResultat>(genererSokeurl(SOK_SENTRALGODKJENNING, orgnr));
+    const { response: resultat } = useFetch<SentralGodkjenningResultat>(genererSokeurl(SOK_SENTRALGODKJENNING, orgnr));
 
     if (!resultat) {
         return (

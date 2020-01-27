@@ -52,18 +52,22 @@ router.get("/sok/sentralgodkjenning", async function (req, res, next) {
     const data = await sentralgodkjenning;
     if (!data) {
       res.status(404).json({ status: 404, message: "Fant ikke bedrift hos sentral godkjenning", body: null })
+      return;
     }
     try {
       sentralgodkjenningData = JSON.parse(data)["dibk-sgdata"];
       res.json(sentralgodkjenningData);
+      return;
     } catch (error) {
       console.log("Klarte ikke hente data fra sentralgodkjenning", error);
-      slack.utvikling(`Klarte ikke hente data fra sentral godkjenning for orgnr: ${organisasjonsnummer}`);
+      slack.utvikling(`Klarte ikke hente data fra sentral godkjenning for orgnr: ${orgnr}`);
       sentralgodkjenningData = null;
       res.status(500).json({ status: 500, message: "Klarte ikke hente data fra sentral godkjenning.", body: null })
+      return;
     }
   } catch (err) {
     res.status(500).json({ status: 500, message: "Klarte ikke hente data fra sentral godkjenning.", body: null })
+    return;
   }
 });
 
@@ -86,7 +90,11 @@ router.get("/sok/vatrom", function (req, res, next) {
     .get("vatromsregister")
     .find({ orgnr })
     .value();
-  res.json(vatrom);
+  if (!vatrom) {
+    res.status(404).json(null);
+  } else {
+    res.json(vatrom);
+  }
 });
 
 router.get("/sok/mesterbrev", async function (req, res, next) {

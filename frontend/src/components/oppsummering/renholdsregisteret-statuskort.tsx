@@ -20,7 +20,7 @@ function gyldigBedrift(status: string): boolean {
 function RenholdsregisteretStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
     const { orgnr } = state;
-    const { response: resultat, error, isLoading } = useFetch<RenholdsregisterOrganisasjon>(genererSokeurl(SOK_RENHOLDSREGISTERET, orgnr));
+    const { response: resultat } = useFetch<RenholdsregisterOrganisasjon>(genererSokeurl(SOK_RENHOLDSREGISTERET, orgnr));
 
     if (!resultat) {
         return (

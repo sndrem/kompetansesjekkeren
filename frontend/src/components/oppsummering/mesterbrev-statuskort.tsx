@@ -15,7 +15,7 @@ interface Props {
 function MesterbrevStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
     const { orgnr } = state;
-    const { response: resultat, error, isLoading } = useFetch<MesterbrevResultat>(genererSokeurl(SOK_MESTERBREV, orgnr));
+    const { response: resultat } = useFetch<MesterbrevResultat>(genererSokeurl(SOK_MESTERBREV, orgnr));
 
     if (!resultat) {
         return (

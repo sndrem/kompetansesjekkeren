@@ -21,6 +21,11 @@ export function reducer(state: Appstate, action: EnhetsregisterActions): Appstat
                 loading: true,
                 error: ""
             };
+        case "DATA/LASTER":
+            return {
+                ...state,
+                loading: true
+            }
         case "HENTET_ENHET": {
             return {
                 ...state,

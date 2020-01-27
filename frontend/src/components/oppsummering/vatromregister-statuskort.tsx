@@ -14,8 +14,7 @@ interface Props {
 function VatromregisterStatuskort(props: Props) {
     const state = useContext<Appstate>(StateContext);
     const { orgnr } = state;
-    console.log("Orgnr", orgnr);
-    const { response: resultat, error, isLoading } = useFetch<VatromregisterResultat>(genererSokeurl(SOK_VATROM, orgnr));
+    const { response: resultat } = useFetch<VatromregisterResultat>(genererSokeurl(SOK_VATROM, orgnr));
 
 
     if (!resultat) {
