@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, "frontend/build")));
 
 // Lagre alle søk
 app.use(function (req, res, next) {
-  if (process.env === "development") {
+  if (process.env.MILJO === "development") {
     const organisasjonsnummer = req.query.organisasjonsnummer;
     if (organisasjonsnummer) {
       console.log("Lagrer organisasjonsnummer");
