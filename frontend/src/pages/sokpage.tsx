@@ -12,6 +12,7 @@ import { nyttigeLenker } from "../konstanter/konstanter";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import { ReactGA } from "../analytics/google-analytics";
 import MeldFeil from "../components/feedback/meld-feil";
+import { notifySlack } from "../services/slackService";
 
 ReactGA.pageview("/søk");
 
@@ -57,6 +58,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
     useEffect(() => {
         const { orgnr } = props.match.params;
         if (orgnr) {
+            notifySlack(orgnr);
             sok(orgnr, dispatch);
         }
     }, [props.match.params]);

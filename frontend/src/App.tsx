@@ -15,7 +15,7 @@ const App: React.FC = () => {
           <Redirect from="*" to="/" />
         </Switch>
       </HashRouter>
-      {/* <Feedback /> */}
+      <Feedback />
     </Container>
   );
 };

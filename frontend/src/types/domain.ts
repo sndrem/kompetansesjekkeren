@@ -142,3 +142,10 @@ export interface MesterbrevResultat {
     bedrift: string;
     tlf: string;
 }
+
+export type TypeTilbakemelding = "Bug" | "Ønske" | "Endring" | "Ros";
+
+export interface Tilbakemelding {
+    type: TypeTilbakemelding;
+    tilbakemelding: string;
+}
