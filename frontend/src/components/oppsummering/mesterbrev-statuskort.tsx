@@ -18,7 +18,7 @@ function MesterbrevStatuskort(props: Props) {
     genererSokeurl(SOK_MESTERBREV, orgnr)
   );
 
-  const problemer = true;
+  const problemer = false;
   if (problemer) {
     return (
       <Kort

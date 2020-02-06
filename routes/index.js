@@ -4,24 +4,23 @@ var router = express.Router();
 const db = require("../database/db");
 const scraper = require("../scraper/scraper");
 const enhetsService = require("../services/enhetsregister-service");
+const mesterbrevUrl = require("../scraper/scraper").mesterbrevOmradeUrl;
 
 const slack = require("../alerting/slack").slackNotifiyer;
 require("../cron-jobs/scrape-job");
-
 
 const SENTRAL_GODKJENNING_HOST_AND_PORT =
   "https://sgregister.dibk.no/api/enterprises/";
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
+router.get("/", function(req, res, next) {
   res.render("index", { title: "Express" });
 });
 
-router.get("/update", async function (req, res, next) {
+router.get("/update", async function(req, res, next) {
   const response = await scraper.scrapeAndPopulateDb();
   res.json({ status: "Update OK", data: response });
 });
-
 
 function sjekkForOrganisasjonsnummer(req, res) {
   if (!req.query.organisasjonsnummer) {
@@ -34,14 +33,13 @@ function sjekkForOrganisasjonsnummer(req, res) {
   }
 }
 
-
-router.get("/sok/enhetsregisteret", async function (req, res, next) {
+router.get("/sok/enhetsregisteret", async function(req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   res.json(enhet);
 });
 
-router.get("/sok/sentralgodkjenning", async function (req, res, next) {
+router.get("/sok/sentralgodkjenning", async function(req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const sentralgodkjenning = rp(
     `${SENTRAL_GODKJENNING_HOST_AND_PORT}${orgnr}`,
@@ -51,7 +49,11 @@ router.get("/sok/sentralgodkjenning", async function (req, res, next) {
   try {
     const data = await sentralgodkjenning;
     if (!data) {
-      res.status(404).json({ status: 404, message: "Fant ikke bedrift hos sentral godkjenning", body: null })
+      res.status(404).json({
+        status: 404,
+        message: "Fant ikke bedrift hos sentral godkjenning",
+        body: null
+      });
       return;
     }
     try {
@@ -60,31 +62,45 @@ router.get("/sok/sentralgodkjenning", async function (req, res, next) {
       return;
     } catch (error) {
       console.log("Klarte ikke hente data fra sentralgodkjenning", error);
-      slack.utvikling(`Klarte ikke hente data fra sentral godkjenning for orgnr: ${orgnr}`);
+      slack.utvikling(
+        `Klarte ikke hente data fra sentral godkjenning for orgnr: ${orgnr}`
+      );
       sentralgodkjenningData = null;
-      res.status(500).json({ status: 500, message: "Klarte ikke hente data fra sentral godkjenning.", body: null })
+      res.status(500).json({
+        status: 500,
+        message: "Klarte ikke hente data fra sentral godkjenning.",
+        body: null
+      });
       return;
     }
   } catch (err) {
-    res.status(500).json({ status: 500, message: "Klarte ikke hente data fra sentral godkjenning.", body: null })
+    res.status(500).json({
+      status: 500,
+      message: "Klarte ikke hente data fra sentral godkjenning.",
+      body: null
+    });
     return;
   }
 });
 
-router.get("/sok/renholdsregisteret", async function (req, res, next) {
+router.get("/sok/renholdsregisteret", async function(req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   // Hvis man har søkt på et org.nr som egentlig tilhører en overordnet enhet
   if (enhet) {
-    const utledetdOrgnr = enhet && enhet.overordnetEnhet ? enhet.overordnetEnhet : orgnr;
-    let arbeidstilsynet = await db.get("renholdsregister").find({ Organisasjonsnummer: utledetdOrgnr }).value();
+    const utledetdOrgnr =
+      enhet && enhet.overordnetEnhet ? enhet.overordnetEnhet : orgnr;
+    let arbeidstilsynet = await db
+      .get("renholdsregister")
+      .find({ Organisasjonsnummer: utledetdOrgnr })
+      .value();
     res.json(arbeidstilsynet);
   } else {
     res.json(null);
   }
 });
 
-router.get("/sok/vatrom", function (req, res, next) {
+router.get("/sok/vatrom", function(req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const vatrom = db
     .get("vatromsregister")
@@ -97,7 +113,7 @@ router.get("/sok/vatrom", function (req, res, next) {
   }
 });
 
-router.get("/sok/mesterbrev", async function (req, res, next) {
+router.get("/sok/mesterbrev", async function(req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
@@ -115,6 +131,11 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
   } else {
     res.json(null);
   }
+});
+
+router.get("/update/mesterbrev", async function(req, res, next) {
+  scraper.scrapeMesterbrevregisteret(mesterbrevUrl);
+  res.json({});
 });
 
 module.exports = router;
