@@ -44,7 +44,7 @@ function MesterbrevStatuskort(props: Props) {
     );
   }
 
-  const tekst = `${resultat.bedrift} finnes i Mesterbrevsregisteret ✅`;
+  const tekst = `${resultat.navn} (${resultat.fag}) finnes i Mesterbrevsregisteret ✅`;
   return (
     <Kort
       size={props.size}

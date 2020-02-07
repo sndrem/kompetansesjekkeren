@@ -120,7 +120,7 @@ router.get("/sok/mesterbrev", async function(req, res, next) {
     const { navn } = enhet;
     const mesterbrevData = db
       .get("mesterbrev")
-      .find({ bedrift: navn.toUpperCase() })
+      .find({ navn: navn.toUpperCase() })
       .value();
     if (mesterbrevData) {
       // Vi fant en match!

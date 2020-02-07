@@ -125,11 +125,14 @@ async function parseMestereFraOmrade(html) {
       data.push($(rad).text());
     });
     if (data.length > 0) {
-      const [sted, bedrift, tlf, ...rest] = data;
+      const [sted, postnr, navn, antallMestereIBedriften, fag, ...rest] = data;
       results.push({
         sted,
-        bedrift,
-        tlf
+        postnr,
+        navn: navn ? navn.toUpperCase() : navn,
+        antallMestereIBedriften,
+        fag,
+        ...rest
       });
     }
   });
@@ -163,10 +166,12 @@ async function scrapeVatromgodkjenning(url) {
     const tabledata = $(element).find("td");
     const data = [];
     tabledata.each((i, elem) => {
-      if ($(elem).text().length > 0) {
+      const text = $(elem).text();
+      if (text.length > 0 && text !== "Vis info") {
         data.push($(elem).text());
       }
     });
+
     const [
       bedriftsnavn,
       fylke,
