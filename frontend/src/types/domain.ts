@@ -122,18 +122,13 @@ export interface SentralGodkjenningResultat {
 }
 
 export interface VatromregisterResultat {
-  bedriftsnavn: string;
-  fylke: string;
-  poststed: string;
-  typeVirksomhet: string;
-  orgnr: string;
-  adresse: string;
-  tlf: string;
-  nettside: string;
-  navn: string;
-  epost: string;
-  mobnr: string;
   godkjent: boolean;
+  navn: string;
+  bransje: string;
+  orgnr: string;
+  mobnr: string;
+  nettside: string;
+  epost: string;
 }
 
 export interface MesterbrevResultat {

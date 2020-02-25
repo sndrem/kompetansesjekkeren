@@ -85,7 +85,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
         <div className="sokeside">
           <Sokefelt onSubmit={sokPaOrgnr} />
         </div>
-        <Message color="red">
+        {/* <Message color="red">
           <Message.Header>Statusmeldinger</Message.Header>
           <p>
             Det er for øyeblikket ikke mulig å sjekke bedrifter i Fagrådet for
@@ -94,7 +94,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
               http://www.ffv.no/finn-godkjent-vatromsbedrift
             </a>
           </p>
-        </Message>
+        </Message> */}
         <NyttigeLenker lenker={nyttigeLenker} />
         <Divider />
         <div className="container">

@@ -172,36 +172,39 @@ async function scrapeVatromgodkjenning(url) {
       }
     });
 
-    const [
-      bedriftsnavn,
-      fylke,
-      poststed,
-      _,
-      typeVirksomhet,
-      orgnr,
-      adresse,
-      tlf,
-      nettside,
-      navn,
-      epost,
-      mobnr
-    ] = data;
+    const erMobnr = new RegExp(/^\d{2} \d{2} \d{2} \d{2}$/);
+    const erOrgnr = new RegExp(/^\d{9}$/);
+    const navn = data[0];
+    const bransje = data[3];
+    const orgData = data.reduce(
+      function(prev, next) {
+        if (erMobnr.test(next.trim())) {
+          return {
+            ...prev,
+            mobnr: next
+          };
+        } else if (next.includes("@")) {
+          return {
+            ...prev,
+            epost: next
+          };
+        } else if (next.startsWith("www")) {
+          return {
+            ...prev,
+            nettside: next
+          };
+        } else if (erOrgnr.test(next.trim())) {
+          return {
+            ...prev,
+            orgnr: next
+          };
+        }
+        return prev;
+      },
+      { godkjent: true, navn, bransje }
+    );
 
-    const virksomhetsdata = {
-      bedriftsnavn,
-      fylke,
-      poststed,
-      typeVirksomhet,
-      orgnr,
-      adresse,
-      tlf,
-      nettside,
-      navn,
-      epost,
-      mobnr,
-      godkjent: true
-    };
-    result.push(virksomhetsdata);
+    result.push(orgData);
   });
 
   return result;
