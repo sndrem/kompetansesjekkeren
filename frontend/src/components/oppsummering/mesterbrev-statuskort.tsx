@@ -6,6 +6,8 @@ import Kort from "./kort";
 import { SOK_MESTERBREV } from "../../konstanter";
 import { useFetch } from "../../hooks/useFetch";
 import { genererSokeurl } from "../../utils/utils";
+import { useHentToggle } from "../../featureToggles/client";
+import Feilmelding from "../feilmeldinger/feilmelding";
 
 interface Props {
   size: MessageSizeProp;
@@ -18,20 +20,15 @@ function MesterbrevStatuskort(props: Props) {
     genererSokeurl(SOK_MESTERBREV, orgnr)
   );
 
-  const problemer = false;
-  if (problemer) {
+  const erFeil = useHentToggle("feil_for_mesterbrev", false);
+
+  if (erFeil) {
     return (
-      <Kort
+      <Feilmelding
         size={props.size}
-        tittel="Mesterbrevsregisteret"
-        erOkStatus={resultat !== null}
-        orgnr={state.orgnr}
-      >
-        <p>Det er problemer med uthenting av data fra Mesterbrevsregisteret.</p>
-        <a href="https://www.mesterbrev.no/sok-mesterregisteret/">
-          Sjekk manuelt hos Mesterbrevregisteret
-        </a>
-      </Kort>
+        headerTekst="Mesterbrevsregisteret"
+        bodyTekst="Det er for øyeblikket ikke mulig å sjekke bedrifter hos Mesterbrevsregisteret"
+      ></Feilmelding>
     );
   }
 

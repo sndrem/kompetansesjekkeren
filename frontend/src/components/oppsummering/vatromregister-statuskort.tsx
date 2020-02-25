@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
 import { Appstate, VatromregisterResultat } from "../../types/domain";
 import { StateContext } from "../../pages/sokpage";
-import { Message, MessageSizeProp, Icon } from "semantic-ui-react";
+import { Message, MessageSizeProp } from "semantic-ui-react";
 import Kort from "./kort";
 import { SOK_VATROM } from "../../konstanter";
 import { useFetch } from "../../hooks/useFetch";
 import { genererSokeurl } from "../../utils/utils";
+import { useHentToggle } from "../../featureToggles/client";
+import Feilmelding from "../feilmeldinger/feilmelding";
 
 interface Props {
   size: MessageSizeProp;
@@ -18,22 +20,18 @@ function VatromregisterStatuskort(props: Props) {
     genererSokeurl(SOK_VATROM, orgnr)
   );
 
-  // if (true) {
-  //   return (
-  //     <Message size={props.size} color="grey">
-  //       <Message.Header>
-  //         Fagrådet for våtrom <Icon name="warning sign" />
-  //       </Message.Header>
-  //       <p>
-  //         Det er for øyeblikket ikke mulig å sjekke bedrifter i Fagrådet for
-  //         våtrom. Prøv deres egne sider på{" "}
-  //         <a href="http://www.ffv.no/finn-godkjent-vatromsbedrift">
-  //           http://www.ffv.no/finn-godkjent-vatromsbedrift
-  //         </a>
-  //       </p>
-  //     </Message>
-  //   );
-  // }
+  const erFeil = useHentToggle("feil_for_vatrom", false);
+
+  if (erFeil) {
+    return (
+      <Feilmelding
+        size={props.size}
+        headerTekst="Fagrådet for våtrom"
+        bodyTekst="Det er for øyeblikket ikke mulig å sjekke bedrifter i Fagrådet for våtrom."
+      ></Feilmelding>
+    );
+  }
+
   if (!resultat) {
     return (
       <Message size={props.size} color="red">

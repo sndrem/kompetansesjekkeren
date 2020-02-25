@@ -145,3 +145,10 @@ export interface Tilbakemelding {
   type: TypeTilbakemelding;
   tilbakemelding: string;
 }
+
+export type Featuretoggle =
+  | "feil_for_vatrom"
+  | "feil_for_enhetsregister"
+  | "feil_for_mesterbrev"
+  | "feil_for_renholdsregisteret"
+  | "feil_for_sentralgodkjenning";

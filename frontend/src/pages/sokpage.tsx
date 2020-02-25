@@ -17,7 +17,6 @@ import OppsummeringPage from "../components/oppsummering/oppsummering-page";
 import { nyttigeLenker } from "../konstanter/konstanter";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import { ReactGA } from "../analytics/google-analytics";
-import MeldFeil from "../components/feedback/meld-feil";
 import { notifySlack } from "../services/slackService";
 
 ReactGA.pageview("/søk");
@@ -85,16 +84,6 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
         <div className="sokeside">
           <Sokefelt onSubmit={sokPaOrgnr} />
         </div>
-        {/* <Message color="red">
-          <Message.Header>Statusmeldinger</Message.Header>
-          <p>
-            Det er for øyeblikket ikke mulig å sjekke bedrifter i Fagrådet for
-            våtrom. Prøv deres egne sider på{" "}
-            <a href="http://www.ffv.no/finn-godkjent-vatromsbedrift">
-              http://www.ffv.no/finn-godkjent-vatromsbedrift
-            </a>
-          </p>
-        </Message> */}
         <NyttigeLenker lenker={nyttigeLenker} />
         <Divider />
         <div className="container">
@@ -125,7 +114,6 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
             </div>
           </Grid>
         </div>
-        {/* <MeldFeil /> */}
       </StateContext.Provider>
     </DispatchContext.Provider>
   );
