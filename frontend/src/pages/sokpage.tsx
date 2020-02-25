@@ -1,4 +1,10 @@
-import React, { useReducer, Context, createContext, Dispatch, useEffect } from "react";
+import React, {
+  useReducer,
+  Context,
+  createContext,
+  Dispatch,
+  useEffect
+} from "react";
 import { Divider, Grid, Header, Message, Loader } from "semantic-ui-react";
 import { SOK_ENHET } from "../konstanter";
 import { Appstate, initialState, EnhetsregisterEnhet } from "../types/domain";
@@ -17,82 +23,112 @@ import { notifySlack } from "../services/slackService";
 ReactGA.pageview("/søk");
 
 export const StateContext = createContext<Appstate>(initialState);
-export const DispatchContext: Context<Dispatch<EnhetsregisterActions>> = createContext({} as any);
+export const DispatchContext: Context<Dispatch<
+  EnhetsregisterActions
+>> = createContext({} as any);
 
 interface MatchParams {
-    orgnr: string;
+  orgnr: string;
 }
 
 export function hentData<T>(url: string, orgnr: string): Promise<T> {
-    return fetch(`${url}?organisasjonsnummer=${orgnr}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-            return response.json() as Promise<T>;
-        })
+  return fetch(`${url}?organisasjonsnummer=${orgnr}`).then(response => {
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    return response.json() as Promise<T>;
+  });
 }
 
 async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
-    dispatch({ type: "SOK/RESET" });
-    if (orgnr.length === 9) {
-        ReactGA.event({
-            category: "søk",
-            action: "Bruker søkte på orgnr"
+  dispatch({ type: "SOK/RESET" });
+  if (orgnr.length === 9) {
+    ReactGA.event({
+      category: "søk",
+      action: "Bruker søkte på orgnr"
+    });
+    dispatch({ type: "SETT_ORGNR", data: orgnr });
+    dispatch({ type: "DATA/HENTER_DATA" });
+    hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr)
+      .then(data => {
+        dispatch({ type: "HENTET_ENHET", data: data });
+      })
+      .catch(err => {
+        dispatch({
+          type: "DATA/HENTING_AV_DATA_ERROR",
+          error: "Klarte ikke hente data fra enhetsregisteret"
         });
-        dispatch({ type: "SETT_ORGNR", data: orgnr });
-        dispatch({ type: "DATA/HENTER_DATA" });
-        hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr).then(data => {
-            dispatch({ type: "HENTET_ENHET", data: data })
-        }).catch(err => {
-            dispatch({ type: "DATA/HENTING_AV_DATA_ERROR", error: "Klarte ikke hente data fra enhetsregisteret" })
-        })
-    } else {
-        dispatch({ type: "SOK/RESET" });
-    }
+      });
+  } else {
+    dispatch({ type: "SOK/RESET" });
+  }
 }
 
 function Sokpage(props: RouteComponentProps<MatchParams>) {
-    const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-    useEffect(() => {
-        const { orgnr } = props.match.params;
-        if (orgnr) {
-            notifySlack(orgnr);
-            sok(orgnr, dispatch);
-        }
-    }, [props.match.params]);
-
-    function sokPaOrgnr(orgnr: string) {
-        props.history.push(`/orgnr/${orgnr}`);
+  useEffect(() => {
+    const { orgnr } = props.match.params;
+    if (orgnr) {
+      notifySlack(orgnr);
+      sok(orgnr, dispatch);
     }
+  }, [props.match.params]);
 
-    return (
-        <DispatchContext.Provider value={dispatch}>
-            <StateContext.Provider value={state}>
-                <div className="sokeside">
-                    <Sokefelt onSubmit={sokPaOrgnr} />
-                </div>
-                <NyttigeLenker lenker={nyttigeLenker} />
-                <Divider />
-                <div className="container">
-                    <Loader active={state.loading}>Laster data...</Loader>
-                    {state.error && <Message color="red"><Message.Header>Oisann <span role="img" aria-label="Oisann-ikon">🙈</span></Message.Header>{state.error}</Message>}
+  function sokPaOrgnr(orgnr: string) {
+    props.history.push(`/orgnr/${orgnr}`);
+  }
 
-                    <Grid>
-                        <Grid.Column width="16">
-                            {state.enhetsregisteret && <Header as="h3">Du har søkt på {state.enhetsregisteret.navn} med orgnr: {state.enhetsregisteret.organisasjonsnummer}</Header>}
-                        </Grid.Column>
-                        <div className="container">
-                            <OppsummeringPage />
+  return (
+    <DispatchContext.Provider value={dispatch}>
+      <StateContext.Provider value={state}>
+        <div className="sokeside">
+          <Sokefelt onSubmit={sokPaOrgnr} />
+        </div>
+        <Message color="red">
+          <Message.Header>Statusmeldinger</Message.Header>
+          <p>
+            Det er for øyeblikket ikke mulig å sjekke bedrifter i Fagrådet for
+            våtrom. Prøv deres egne sider på{" "}
+            <a href="http://www.ffv.no/finn-godkjent-vatromsbedrift">
+              http://www.ffv.no/finn-godkjent-vatromsbedrift
+            </a>
+          </p>
+        </Message>
+        <NyttigeLenker lenker={nyttigeLenker} />
+        <Divider />
+        <div className="container">
+          <Loader active={state.loading}>Laster data...</Loader>
+          {state.error && (
+            <Message color="red">
+              <Message.Header>
+                Oisann{" "}
+                <span role="img" aria-label="Oisann-ikon">
+                  🙈
+                </span>
+              </Message.Header>
+              {state.error}
+            </Message>
+          )}
 
-                        </div>
-                    </Grid>
-                </div>
-                <MeldFeil />
-            </StateContext.Provider>
-        </DispatchContext.Provider>
-    );
+          <Grid>
+            <Grid.Column width="16">
+              {state.enhetsregisteret && (
+                <Header as="h3">
+                  Du har søkt på {state.enhetsregisteret.navn} med orgnr:{" "}
+                  {state.enhetsregisteret.organisasjonsnummer}
+                </Header>
+              )}
+            </Grid.Column>
+            <div className="container">
+              <OppsummeringPage />
+            </div>
+          </Grid>
+        </div>
+        {/* <MeldFeil /> */}
+      </StateContext.Provider>
+    </DispatchContext.Provider>
+  );
 }
 
 export default Sokpage;
