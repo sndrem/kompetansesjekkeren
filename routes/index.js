@@ -13,11 +13,11 @@ const SENTRAL_GODKJENNING_HOST_AND_PORT =
   "https://sgregister.dibk.no/api/enterprises/";
 
 /* GET home page. */
-router.get("/", function(req, res, next) {
+router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 
-router.get("/update", async function(req, res, next) {
+router.get("/update", async function (req, res, next) {
   const response = await scraper.scrapeAndPopulateDb();
   res.json({ status: "Update OK", data: response });
 });
@@ -26,20 +26,29 @@ function sjekkForOrganisasjonsnummer(req, res) {
   if (!req.query.organisasjonsnummer) {
     res.status(400).json({
       status: 400,
-      message: "Du mangler query-param 'organisasjonsnummer'"
+      message: "Du mangler query-param 'organisasjonsnummer'",
     });
   } else {
     return req.query.organisasjonsnummer;
   }
 }
 
-router.get("/sok/enhetsregisteret", async function(req, res, next) {
+router.get("/sok/enhetsregisteret", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   res.json(enhet);
 });
 
-router.get("/sok/sentralgodkjenning", async function(req, res, next) {
+router.get("/sok/enhetsregisteret/detaljer", async function (req, res, next) {
+  const orgnr = sjekkForOrganisasjonsnummer(req, res);
+  const enhet = await enhetsService.hentDetaljer(orgnr);
+  console.log("ENHET ######", enhet);
+  const data = await scraper.scrapeEnhetsregisterDetaljer(enhet);
+  console.log("Data", data);
+  res.send(data);
+});
+
+router.get("/sok/sentralgodkjenning", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const sentralgodkjenning = rp(
     `${SENTRAL_GODKJENNING_HOST_AND_PORT}${orgnr}`,
@@ -52,7 +61,7 @@ router.get("/sok/sentralgodkjenning", async function(req, res, next) {
       res.status(404).json({
         status: 404,
         message: "Fant ikke bedrift hos sentral godkjenning",
-        body: null
+        body: null,
       });
       return;
     }
@@ -69,7 +78,7 @@ router.get("/sok/sentralgodkjenning", async function(req, res, next) {
       res.status(500).json({
         status: 500,
         message: "Klarte ikke hente data fra sentral godkjenning.",
-        body: null
+        body: null,
       });
       return;
     }
@@ -77,13 +86,13 @@ router.get("/sok/sentralgodkjenning", async function(req, res, next) {
     res.status(500).json({
       status: 500,
       message: "Klarte ikke hente data fra sentral godkjenning.",
-      body: null
+      body: null,
     });
     return;
   }
 });
 
-router.get("/sok/renholdsregisteret", async function(req, res, next) {
+router.get("/sok/renholdsregisteret", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   // Hvis man har søkt på et org.nr som egentlig tilhører en overordnet enhet
@@ -100,12 +109,9 @@ router.get("/sok/renholdsregisteret", async function(req, res, next) {
   }
 });
 
-router.get("/sok/vatrom", function(req, res, next) {
+router.get("/sok/vatrom", function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
-  const vatrom = db
-    .get("vatromsregister")
-    .find({ orgnr })
-    .value();
+  const vatrom = db.get("vatromsregister").find({ orgnr }).value();
   if (!vatrom) {
     res.status(404).json(null);
   } else {
@@ -113,7 +119,7 @@ router.get("/sok/vatrom", function(req, res, next) {
   }
 });
 
-router.get("/sok/mesterbrev", async function(req, res, next) {
+router.get("/sok/mesterbrev", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
@@ -133,7 +139,7 @@ router.get("/sok/mesterbrev", async function(req, res, next) {
   }
 });
 
-router.get("/update/mesterbrev", async function(req, res, next) {
+router.get("/update/mesterbrev", async function (req, res, next) {
   scraper.scrapeMesterbrevregisteret(mesterbrevUrl);
   res.json({});
 });

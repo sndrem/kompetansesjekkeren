@@ -3,7 +3,7 @@ import React, {
   Context,
   createContext,
   Dispatch,
-  useEffect
+  useEffect,
 } from "react";
 import { Divider, Grid, Header, Message, Loader } from "semantic-ui-react";
 import { SOK_ENHET } from "../konstanter";
@@ -18,6 +18,7 @@ import { nyttigeLenker } from "../konstanter/konstanter";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import { ReactGA } from "../analytics/google-analytics";
 import { notifySlack } from "../services/slackService";
+import Sokehjelp from "../components/sokefelt/sokehjelp";
 
 ReactGA.pageview("/søk");
 
@@ -31,7 +32,7 @@ interface MatchParams {
 }
 
 export function hentData<T>(url: string, orgnr: string): Promise<T> {
-  return fetch(`${url}?organisasjonsnummer=${orgnr}`).then(response => {
+  return fetch(`${url}?organisasjonsnummer=${orgnr}`).then((response) => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
@@ -44,18 +45,18 @@ async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
   if (orgnr.length === 9) {
     ReactGA.event({
       category: "søk",
-      action: "Bruker søkte på orgnr"
+      action: "Bruker søkte på orgnr",
     });
     dispatch({ type: "SETT_ORGNR", data: orgnr });
     dispatch({ type: "DATA/HENTER_DATA" });
     hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr)
-      .then(data => {
+      .then((data) => {
         dispatch({ type: "HENTET_ENHET", data: data });
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch({
           type: "DATA/HENTING_AV_DATA_ERROR",
-          error: "Klarte ikke hente data fra enhetsregisteret"
+          error: "Klarte ikke hente data fra enhetsregisteret",
         });
       });
   } else {
@@ -81,7 +82,9 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
   return (
     <DispatchContext.Provider value={dispatch}>
       <StateContext.Provider value={state}>
-        <div className="sokeside">
+        <div className="sokeside sokeform">
+          <Sokehjelp />
+
           <Sokefelt onSubmit={sokPaOrgnr} />
         </div>
         <NyttigeLenker lenker={nyttigeLenker} />

@@ -1,35 +1,30 @@
-import React, { useContext } from "react";
-import { Item, Segment, Message } from "semantic-ui-react";
-import { StateContext } from "../../pages/sokpage";
-import { Appstate } from "../../types/domain";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import Sokefelt from "../sokefelt/sokefelt";
+import { SOK_ENHET } from "../../konstanter";
+import { hentData } from "../../pages/sokpage";
+import { EnhetsregisterEnhet } from "../../types/domain";
+import { Table, Label, Menu, Icon, Segment, Item } from "semantic-ui-react";
 import { oppdaterWebadresse } from "../../utils/utils";
 import { loggKlikk } from "../../analytics/google-analytics";
+import { OverordnetEnhet } from "../oppsummering/oppsummering-enhetsregister";
 
 interface Props {
-  orgnr: string;
+  tittel: string;
 }
 
-export function OverordnetEnhet({ orgnr }: Props) {
-  return (
-    <Message warning>
-      <Message.Header>Denne bedriften har en overordnet enhet</Message.Header>
-      <p>
-        <a href={`#/orgnr/${orgnr}`}>
-          Klikk her for å se informasjon om overordnet enhet
-        </a>
-      </p>
-    </Message>
-  );
+const Wrapper = styled.div`
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid black;
+`;
+
+interface OppsummerProps {
+  enhet?: EnhetsregisterEnhet;
 }
 
-function OppsummeringEnhetsregister() {
-  const state = useContext<Appstate>(StateContext);
-
-  if (!state.enhetsregisteret) {
-    return null;
-  }
-
-  const enhet = state.enhetsregisteret;
+function Oppsummersok({ enhet }: OppsummerProps) {
+  if (!enhet) return null;
 
   return (
     <Segment>
@@ -107,13 +102,13 @@ function OppsummeringEnhetsregister() {
             <a
               onClick={() =>
                 loggKlikk({
-                  url: `https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`,
+                  url: `https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${enhet.organisasjonsnummer}`,
                   tekst: "Se mer om bedriften hos Brønnøysundregistrene",
                 })
               }
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`}
+              href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${enhet.organisasjonsnummer}`}
             >
               Se mer om bedriften hos Brønnøysundregistrene
             </a>
@@ -124,4 +119,29 @@ function OppsummeringEnhetsregister() {
   );
 }
 
-export default OppsummeringEnhetsregister;
+function Enhetsregistersok({ tittel }: Props) {
+  const [orgnr, setOrgnr] = useState("");
+  const [enhet, setEnhet] = useState<undefined | EnhetsregisterEnhet>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (orgnr) {
+      hentOrganisasjonsdata(orgnr);
+    }
+
+    async function hentOrganisasjonsdata(orgnr: string) {
+      const response = await hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr);
+      setEnhet(response);
+    }
+  }, [orgnr]);
+  return (
+    <Wrapper>
+      <h3>{tittel}</h3>
+      <Sokefelt onSubmit={setOrgnr} />
+      <Oppsummersok enhet={enhet} />
+    </Wrapper>
+  );
+}
+
+export default Enhetsregistersok;

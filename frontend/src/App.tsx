@@ -1,22 +1,28 @@
 import React from "react";
+import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import "./App.scss";
-import Sokpage from "./pages/sokpage";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 import Feedback from "./components/feedback/feedback";
+import Sokpage from "./pages/sokpage";
+import Hovedmeny from "./components/menu/hovedmeny";
+import Head2Head from "./pages/head2head";
 
 const App: React.FC = () => {
   return (
-    <Container>
-      <HashRouter>
-        <Switch>
-          <Route path="/" exact component={Sokpage} />
-          <Route path="/orgnr/:orgnr" exact component={Sokpage} />
-          <Redirect from="*" to="/" />
-        </Switch>
-      </HashRouter>
-      <Feedback />
-    </Container>
+    <>
+      <Container>
+        <Hovedmeny />
+        <HashRouter>
+          <Switch>
+            <Route path="/" exact component={Sokpage} />
+            <Route path="/orgnr/:orgnr" exact component={Sokpage} />
+            <Route path="/sammenligning" exact component={Head2Head} />
+            <Redirect from="*" to="/" />
+          </Switch>
+        </HashRouter>
+        <Feedback />
+      </Container>
+    </>
   );
 };
 

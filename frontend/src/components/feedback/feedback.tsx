@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Modal, Button, Icon, Form, Select } from "semantic-ui-react";
-import "./feedback.scss";
 import { TypeTilbakemelding } from "../../types/domain";
 import { sendTilbakemelding } from "../../services/slackService";
 
@@ -10,7 +9,7 @@ interface Props {
 
 function FeedbackTrigger(props: Props) {
   return (
-    <Button onClick={props.onClick}>
+    <Button className="feedback-btn" onClick={props.onClick}>
       <Icon name="heart" />
       Tilbakemelding
     </Button>
@@ -27,7 +26,7 @@ function Feedback() {
     { key: "ros", value: "Ros", text: "Ros" },
     { key: "bug", value: "Bug", text: "Bug" },
     { key: "onske", value: "Ønske", text: "Ønske" },
-    { key: "endring", value: "Endring", text: "Endring" }
+    { key: "endring", value: "Endring", text: "Endring" },
   ];
 
   function submitTilbakemelding(e: React.MouseEvent) {
@@ -35,13 +34,13 @@ function Feedback() {
     if (type && tilbakemelding) {
       setLaster(true);
       sendTilbakemelding({ type, tilbakemelding })
-        .then(response => {
+        .then((response) => {
           if (!response.ok) {
             throw new Error("Klarte ikke gi tilbakemelding");
           }
           return response.json();
         })
-        .then(data => {
+        .then((data) => {
           setSubmitOk(true);
           setType("Ros");
           setTilbakemelding("");
@@ -97,7 +96,7 @@ function Feedback() {
                 <label>Tilbakemelding</label>
                 <textarea
                   value={tilbakemelding}
-                  onChange={e => setTilbakemelding(e.currentTarget.value)}
+                  onChange={(e) => setTilbakemelding(e.currentTarget.value)}
                   rows={5}
                   cols={10}
                   placeholder="Din tilbakemelding her..."
@@ -106,7 +105,7 @@ function Feedback() {
               <Form.Field>
                 <Button
                   type="button"
-                  onClick={e => submitTilbakemelding(e)}
+                  onClick={(e) => submitTilbakemelding(e)}
                   primary
                 >
                   Send tilbakemelding
