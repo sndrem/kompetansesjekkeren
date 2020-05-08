@@ -1,7 +1,6 @@
 import React from "react";
-import Sokefelt from "../components/sokefelt/sokefelt";
-import Enhetsregistersok from "../components/enhetsregistersok/enhetsregistersok";
 import styled from "styled-components";
+import Enhetsregistersok from "../components/enhetsregistersok/enhetsregistersok";
 
 const Sokegrid = styled.div`
   display: grid;

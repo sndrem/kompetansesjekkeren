@@ -41,11 +41,11 @@ router.get("/sok/enhetsregisteret", async function (req, res, next) {
 
 router.get("/sok/enhetsregisteret/detaljer", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
+  const dataFraEnhetsregister = await enhetsService.hentEnhetsdata(orgnr);
   const enhet = await enhetsService.hentDetaljer(orgnr);
-  console.log("ENHET ######", enhet);
-  const data = await scraper.scrapeEnhetsregisterDetaljer(enhet);
-  console.log("Data", data);
-  res.send(data);
+  const detaljer = await scraper.scrapeEnhetsregisterDetaljer(enhet);
+  const mergedData = { ...dataFraEnhetsregister, detaljer };
+  res.json(mergedData);
 });
 
 router.get("/sok/sentralgodkjenning", async function (req, res, next) {

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";
-import Sokefelt from "../sokefelt/sokefelt";
-import { SOK_ENHET } from "../../konstanter";
-import { hentData } from "../../pages/sokpage";
-import { EnhetsregisterEnhet } from "../../types/domain";
-import { Table, Label, Menu, Icon, Segment, Item } from "semantic-ui-react";
-import { oppdaterWebadresse } from "../../utils/utils";
 import { loggKlikk } from "../../analytics/google-analytics";
+import { hentData } from "../../pages/sokpage";
+import { EnhetsregisterDetaljer } from "../../types/domain";
+import { oppdaterWebadresse } from "../../utils/utils";
 import { OverordnetEnhet } from "../oppsummering/oppsummering-enhetsregister";
+import Sokefelt from "../sokefelt/sokefelt";
+import { SOK_DETALJERT_ENHET } from "../../konstanter";
 
 interface Props {
   tittel: string;
@@ -16,15 +16,16 @@ interface Props {
 const Wrapper = styled.div`
   padding: 2rem;
   margin-bottom: 2rem;
-  border: 1px solid black;
 `;
 
 interface OppsummerProps {
-  enhet?: EnhetsregisterEnhet;
+  enhet?: EnhetsregisterDetaljer;
 }
 
 function Oppsummersok({ enhet }: OppsummerProps) {
   if (!enhet) return null;
+
+  console.log("Enhet", enhet);
 
   return (
     <Segment>
@@ -50,10 +51,44 @@ function Oppsummersok({ enhet }: OppsummerProps) {
           )}
           <Item.Description>
             <dl>
+              <dt>Daglig leder</dt>
+              <dd>
+                {enhet.detaljer.Styrets_leder
+                  ? enhet.detaljer.Styrets_leder
+                  : "Data ikke tilgjengelig"}
+              </dd>
+              <dt>Varamedlem</dt>
+              <dd>
+                {enhet.detaljer.Varamedlem
+                  ? enhet.detaljer.Varamedlem
+                  : "Data ikke tilgjengelig"}
+              </dd>
+              <dt>Kontaktperson</dt>
+              <dd>
+                {enhet.detaljer.Kontaktperson
+                  ? enhet.detaljer.Kontaktperson
+                  : "Data ikke tilgjengelig"}
+              </dd>
+              <dt>Beskrivelse</dt>
+              <dd>
+                {enhet.organisasjonsform.beskrivelse
+                  ? `${enhet.organisasjonsform.beskrivelse.toLowerCase()} (${
+                      enhet.organisasjonsform.kode
+                    })`
+                  : "Data ikke tilgjengelig"}
+              </dd>
+              <dt>Signatur</dt>
+              <dd>
+                {enhet.detaljer.Signatur
+                  ? `${enhet.detaljer.Signatur}`
+                  : "Data ikke tilgjengelig"}
+              </dd>
               <dt>Jobber med:</dt>
               <dd>
                 {enhet.naeringskode1
-                  ? enhet.naeringskode1.beskrivelse.toLowerCase()
+                  ? `${enhet.naeringskode1.beskrivelse.toLowerCase()} (${
+                      enhet.naeringskode1.kode
+                    })`
                   : "Data ikke tilgjengelig"}
               </dd>
               <dt>Registrert i MVA-registeret?</dt>
@@ -121,7 +156,7 @@ function Oppsummersok({ enhet }: OppsummerProps) {
 
 function Enhetsregistersok({ tittel }: Props) {
   const [orgnr, setOrgnr] = useState("");
-  const [enhet, setEnhet] = useState<undefined | EnhetsregisterEnhet>(
+  const [enhet, setEnhet] = useState<undefined | EnhetsregisterDetaljer>(
     undefined
   );
 
@@ -131,7 +166,10 @@ function Enhetsregistersok({ tittel }: Props) {
     }
 
     async function hentOrganisasjonsdata(orgnr: string) {
-      const response = await hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr);
+      const response = await hentData<EnhetsregisterDetaljer>(
+        SOK_DETALJERT_ENHET,
+        orgnr
+      );
       setEnhet(response);
     }
   }, [orgnr]);

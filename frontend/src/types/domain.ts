@@ -11,7 +11,7 @@ export const initialState: Appstate = {
   orgnr: "",
   loading: false,
   submitted: false,
-  enhetsregisteret: null
+  enhetsregisteret: null,
 };
 
 export interface Data {
@@ -49,6 +49,15 @@ export interface EnhetsregisterEnhet {
   underTvangsavviklingEllerTvangsopplosning: boolean;
   maalform: string;
   overordnetEnhet?: string;
+}
+export interface EnhetsregisterDetaljer extends EnhetsregisterEnhet {
+  detaljer: {
+    Kontaktperson?: string;
+    Styre?: string;
+    Styrets_leder?: string;
+    Varamedlem?: string;
+    Signatur?: string;
+  };
 }
 
 export interface Organisasjonsform {

@@ -207,29 +207,31 @@ async function scrapeVatromgodkjenning(url) {
 
 async function scrapeEnhetsregisterDetaljer(htmlString) {
   const $ = cheerio.load(htmlString);
-  const result = [];
+  const result = {};
   const beskrivelse = $(".row");
   beskrivelse.map((index, element) => {
     const definisjon = $(element).find(".col-sm-4");
     const verdi = $(element).find(".col-sm-8");
-    const data = [];
     if (definisjon.length === verdi.length && definisjon.length > 0) {
       for (let i = 0; i < definisjon.length; i++) {
         const elem = definisjon[i];
         const verdiElem = verdi[i];
         const definisjonstekst = clean($(elem).text());
         const verditekst = clean($(verdiElem).text());
-        data.push({ [definisjonstekst]: verditekst });
+        result[
+          definisjonstekst.replace(" ", "_").replace(":", "")
+        ] = verditekst;
       }
     }
-    result.push(data);
   });
 
   return result;
 }
 
 function clean(text) {
-  return text.replace(/\n|\t|^\s+|\s+$|(^:&nbsp;)/g, "");
+  const x = text.replace(/\n|\t|^\s+|\s+$/g, "");
+  const y = x.replace("&nbsp;", " ");
+  return y;
 }
 
 module.exports = {
