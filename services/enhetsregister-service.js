@@ -41,9 +41,19 @@ const enhetsregisterService = {
 
   hentDetaljer: async function (orgnr) {
     const url = `https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${orgnr}`;
-    const response = rp(url);
-    const data = await response;
-    return data;
+    try {
+      const response = rp(url);
+      const data = await response;
+      if (data.includes("Du har oppgitt et ugyldig organisasjonsnummer")) {
+        throw new Error(
+          `Klarte ikke hente detaljerte opplysninger for orgnr: ${orgnr}`
+        );
+      }
+      return data;
+    } catch (error) {
+      console.log(`Klarte ikke hente detaljer for orgnr: ${orgnr}`);
+      return null;
+    }
   },
 };
 

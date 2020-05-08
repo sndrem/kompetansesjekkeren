@@ -43,6 +43,9 @@ router.get("/sok/enhetsregisteret/detaljer", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const dataFraEnhetsregister = await enhetsService.hentEnhetsdata(orgnr);
   const enhet = await enhetsService.hentDetaljer(orgnr);
+  if (!enhet) {
+    res.status(404).send(`Fant ikke enhet med orgnr: ${orgnr}`);
+  }
   const detaljer = await scraper.scrapeEnhetsregisterDetaljer(enhet);
   const mergedData = { ...dataFraEnhetsregister, detaljer };
   res.json(mergedData);

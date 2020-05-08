@@ -7,6 +7,7 @@ import {
   Input,
   Loader,
   Segment,
+  Message,
 } from "semantic-ui-react";
 import styled from "styled-components";
 import Oppsummeringstabell from "../components/oppsummering/oppsummeringstabell";
@@ -36,6 +37,7 @@ function Head2Head() {
     undefined
   );
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   function swapSok() {
     const a = bedriftAOrgnr;
@@ -46,6 +48,7 @@ function Head2Head() {
 
   useEffect(() => {
     if (bedriftAOrgnr.length === 9 && bedriftBOrgnr.length === 9) {
+      setError("");
       hentOrganisasjonsdata(bedriftAOrgnr, bedriftBOrgnr);
     }
 
@@ -59,13 +62,22 @@ function Head2Head() {
         orgnrB
       );
       setLoading(true);
-      const [responseA, responseB] = await Promise.all([
-        fetchBedriftA,
-        fetchBedriftB,
-      ]);
+      try {
+        const [responseA, responseB] = await Promise.all([
+          fetchBedriftA,
+          fetchBedriftB,
+        ]);
+
+        setBedriftA(responseA);
+        setBedriftB(responseB);
+      } catch (error) {
+        setError(
+          `Klarte ikke hente data for organisasjonsnummer A: ${orgnrA} eller B: ${orgnrB} - Dobbeltsjekk at du har skrevet korrekte organisasjonsnummer.`
+        );
+        setBedriftA(undefined);
+        setBedriftB(undefined);
+      }
       setLoading(false);
-      setBedriftA(responseA);
-      setBedriftB(responseB);
     }
   }, [bedriftAOrgnr, bedriftBOrgnr]);
 
@@ -74,6 +86,7 @@ function Head2Head() {
       <Center>
         <h1>Sammenlign to bedrifter i Enhetsregisteret</h1>
       </Center>
+      {error && <Message error>{error}</Message>}
       <Wrapper>
         <div>
           <Header as="h3">Organisasjonsnummer for bedrift A</Header>
@@ -106,14 +119,12 @@ function Head2Head() {
           />
         </div>
       </Wrapper>
-      {bedriftA && bedriftB && (
-        <Segment>
-          <Dimmer inverted active={loading}>
-            <Loader>Laster data...</Loader>
-          </Dimmer>
-          <Oppsummeringstabell bedriftA={bedriftA} bedriftB={bedriftB} />
-        </Segment>
-      )}
+      <Segment>
+        <Dimmer inverted active={loading}>
+          <Loader>Laster data...</Loader>
+        </Dimmer>
+        <Oppsummeringstabell bedriftA={bedriftA} bedriftB={bedriftB} />
+      </Segment>
     </>
   );
 }
