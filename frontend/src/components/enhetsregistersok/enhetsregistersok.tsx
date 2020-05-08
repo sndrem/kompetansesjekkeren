@@ -25,8 +25,6 @@ interface OppsummerProps {
 function Oppsummersok({ enhet }: OppsummerProps) {
   if (!enhet) return null;
 
-  console.log("Enhet", enhet);
-
   return (
     <Segment>
       <Item>

@@ -231,6 +231,9 @@ async function scrapeEnhetsregisterDetaljer(htmlString) {
 function clean(text) {
   const x = text.replace(/\n|\t|^\s+|\s+$/g, "");
   const y = x.replace("&nbsp;", " ");
+  if (y.includes("Daglig leder")) {
+    return "Daglig_leder";
+  }
   return y;
 }
 

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import { Form, Message } from "semantic-ui-react";
+import { Form, Message, Header } from "semantic-ui-react";
 import styled from "styled-components";
 
 interface Props {
@@ -18,13 +18,13 @@ const Knapp = styled(motion.button)`
   }
 `;
 
+export function removeSpaces(value: string): string {
+  return value.replace(/\W/g, "");
+}
+
 function Sokefelt(props: Props) {
   const [orgnr, setOrgnr] = useState("");
   const [feilmelding, setFeilmelding] = useState("");
-
-  function removeSpaces(value: string): string {
-    return value.replace(/\W/g, "");
-  }
 
   function validerInput(orgnr: string) {
     const spacesRemoved = removeSpaces(orgnr);
@@ -37,7 +37,46 @@ function Sokefelt(props: Props) {
   }
 
   return (
-    <Form action="#" onSubmit={(e) => e.preventDefault()}>
+    <Form className="sokeform" action="#" onSubmit={(e) => e.preventDefault()}>
+      <Header as="h1">Kompetansesjekkeren</Header>
+      <p>
+        Sjekk organisasjon opp mot{" "}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.brreg.no/"
+        >
+          Brønnøysundregisteret (Enhetsregisteret)
+        </a>
+        ,{" "}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://sgregister.dibk.no/"
+        >
+          Sentral godkjenning
+        </a>{" "}
+        <a target="_blank" rel="noopener noreferrer" href="http://www.ffv.no/">
+          Fagrådet for våtrom
+        </a>
+        ,{" "}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.mesterbrev.no/sok-mesterregisteret/"
+        >
+          Mesterbrevsregisteret
+        </a>{" "}
+        og Arbeidstilsynet sitt{" "}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.arbeidstilsynet.no/registre/renholdsregisteret/sok/"
+        >
+          renholdsregister
+        </a>
+        .
+      </p>
       {feilmelding && <Message negative>{feilmelding}</Message>}
       <Form.Field className="">
         <label>Søk på organisasjonsnummer</label>

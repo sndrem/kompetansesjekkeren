@@ -11,8 +11,8 @@ const App: React.FC = () => {
   return (
     <>
       <Container>
-        <Hovedmeny />
         <HashRouter>
+          <Hovedmeny />
           <Switch>
             <Route path="/" exact component={Sokpage} />
             <Route path="/orgnr/:orgnr" exact component={Sokpage} />

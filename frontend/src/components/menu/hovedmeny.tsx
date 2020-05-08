@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { Menu } from "semantic-ui-react";
+import { useLocation } from "react-router-dom";
 
 function Hovedmeny() {
-  const [activeItem, setActiveItem] = useState("hjem");
+  const location = useLocation();
+  const [activeItem, setActiveItem] = useState(location.pathname);
+
   return (
     <Menu inverted>
       <Menu.Item
         href="#/"
         name="hjem"
-        active={activeItem === "hjem"}
+        active={activeItem === "/"}
         onClick={() => {
-          setActiveItem("hjem");
+          setActiveItem("/");
         }}
       >
         Hjem
@@ -19,9 +22,9 @@ function Hovedmeny() {
       <Menu.Item
         href="#/sammenligning"
         name="sammenligning"
-        active={activeItem === "sammenligning"}
+        active={activeItem === "/sammenligning"}
         onClick={() => {
-          setActiveItem("sammenligning");
+          setActiveItem("/sammenligning");
         }}
       >
         Sammenligne to bedrifter

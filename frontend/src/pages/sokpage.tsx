@@ -1,24 +1,23 @@
 import React, {
-  useReducer,
   Context,
   createContext,
   Dispatch,
   useEffect,
+  useReducer,
 } from "react";
-import { Divider, Grid, Header, Message, Loader } from "semantic-ui-react";
-import { SOK_ENHET } from "../konstanter";
-import { Appstate, initialState, EnhetsregisterEnhet } from "../types/domain";
-import { reducer } from "../types/reducer";
-import { EnhetsregisterActions } from "../types/actions";
-import Sokefelt from "../components/sokefelt/sokefelt";
-import "./sokpage.scss";
 import { RouteComponentProps } from "react-router";
-import OppsummeringPage from "../components/oppsummering/oppsummering-page";
-import { nyttigeLenker } from "../konstanter/konstanter";
-import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
+import { Divider, Grid, Header, Loader, Message } from "semantic-ui-react";
 import { ReactGA } from "../analytics/google-analytics";
+import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
+import OppsummeringPage from "../components/oppsummering/oppsummering-page";
+import Sokefelt from "../components/sokefelt/sokefelt";
+import { SOK_ENHET } from "../konstanter";
+import { nyttigeLenker } from "../konstanter/konstanter";
 import { notifySlack } from "../services/slackService";
-import Sokehjelp from "../components/sokefelt/sokehjelp";
+import { EnhetsregisterActions } from "../types/actions";
+import { Appstate, EnhetsregisterEnhet, initialState } from "../types/domain";
+import { reducer } from "../types/reducer";
+import "./sokpage.scss";
 
 ReactGA.pageview("/søk");
 
@@ -82,9 +81,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
   return (
     <DispatchContext.Provider value={dispatch}>
       <StateContext.Provider value={state}>
-        <div className="sokeside sokeform">
-          <Sokehjelp />
-
+        <div className="sokeside">
           <Sokefelt onSubmit={sokPaOrgnr} />
         </div>
         <NyttigeLenker lenker={nyttigeLenker} />
