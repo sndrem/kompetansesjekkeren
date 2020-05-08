@@ -161,4 +161,5 @@ export type Featuretoggle =
   | "feil_for_enhetsregister"
   | "feil_for_mesterbrev"
   | "feil_for_renholdsregisteret"
-  | "feil_for_sentralgodkjenning";
+  | "feil_for_sentralgodkjenning"
+  | "vis_sammenligningsside";

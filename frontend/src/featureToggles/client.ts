@@ -15,7 +15,7 @@ export function useHentToggle(
   const [verdi, setVerdi] = useState(defaultVerdi);
 
   useEffect(() => {
-    hentToggle(navn).then(value => setVerdi(value));
+    hentToggle(navn).then((value) => setVerdi(value));
   }, [verdi, navn]);
 
   async function hentToggle(navn: string) {
