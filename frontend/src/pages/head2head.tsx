@@ -27,8 +27,8 @@ const Center = styled.div`
 `;
 
 function Head2Head() {
-  const [bedriftAOrgnr, setBedriftAOrgnr] = useState("916127685");
-  const [bedriftBOrgnr, setBedriftBOrgnr] = useState("980178986");
+  const [bedriftAOrgnr, setBedriftAOrgnr] = useState("");
+  const [bedriftBOrgnr, setBedriftBOrgnr] = useState("");
   const [bedriftA, setBedriftA] = useState<undefined | EnhetsregisterDetaljer>(
     undefined
   );
