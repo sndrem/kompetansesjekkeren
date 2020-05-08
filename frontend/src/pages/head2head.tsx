@@ -106,12 +106,14 @@ function Head2Head() {
           />
         </div>
       </Wrapper>
-      <Segment>
-        <Dimmer inverted active={loading}>
-          <Loader>Laster data...</Loader>
-        </Dimmer>
-        <Oppsummeringstabell bedriftA={bedriftA} bedriftB={bedriftB} />
-      </Segment>
+      {bedriftA && bedriftB && (
+        <Segment>
+          <Dimmer inverted active={loading}>
+            <Loader>Laster data...</Loader>
+          </Dimmer>
+          <Oppsummeringstabell bedriftA={bedriftA} bedriftB={bedriftB} />
+        </Segment>
+      )}
     </>
   );
 }
