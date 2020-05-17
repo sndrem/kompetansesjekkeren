@@ -71,7 +71,7 @@ function Oppsummersok({ enhet }: OppsummerProps) {
               <dd>
                 {enhet.organisasjonsform.beskrivelse
                   ? `${enhet.organisasjonsform.beskrivelse.toLowerCase()} (${
-                      enhet.organisasjonsform.kode
+                      enhet.organisasjonsform?.kode
                     })`
                   : "Data ikke tilgjengelig"}
               </dd>
@@ -85,7 +85,7 @@ function Oppsummersok({ enhet }: OppsummerProps) {
               <dd>
                 {enhet.naeringskode1
                   ? `${enhet.naeringskode1.beskrivelse.toLowerCase()} (${
-                      enhet.naeringskode1.kode
+                      enhet.naeringskode1?.kode
                     })`
                   : "Data ikke tilgjengelig"}
               </dd>

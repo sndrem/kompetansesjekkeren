@@ -101,13 +101,13 @@ function Oppsummeringstabell({ bedriftA, bedriftB }: OppsummeringsProps) {
             true
           )}
         >
-          <Table.Cell>{`${verdiEllerTomt(bedriftA?.organisasjonsform.kode)} (${
+          <Table.Cell>{`${verdiEllerTomt(bedriftA?.organisasjonsform?.kode)} (${
             bedriftA?.organisasjonsform?.beskrivelse
           })`}</Table.Cell>
           <Table.Cell>
             <b>Type bedrift</b>
           </Table.Cell>
-          <Table.Cell>{`${verdiEllerTomt(bedriftB?.organisasjonsform.kode)} (${
+          <Table.Cell>{`${verdiEllerTomt(bedriftB?.organisasjonsform?.kode)} (${
             bedriftB?.organisasjonsform?.beskrivelse
           })`}</Table.Cell>
         </Table.Row>

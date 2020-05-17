@@ -31,13 +31,13 @@ export interface EnhetsregisterEnhet {
   registrertIMvaregisteret: boolean;
   naeringskode1?: {
     beskrivelse: string;
-    kode: string;
+    kode?: string;
   };
   antallAnsatte: number;
   forretningsadresse?: Adresse;
   stiftelsesdato?: string;
   institusjonellSektorkode: {
-    kode: string;
+    kode?: string;
     beskrivelse: string;
   };
   registrertIForetaksregisteret: boolean;
@@ -62,7 +62,7 @@ export interface EnhetsregisterDetaljer extends EnhetsregisterEnhet {
 }
 
 export interface Organisasjonsform {
-  kode: string;
+  kode?: string;
   beskrivelse: string;
 }
 
