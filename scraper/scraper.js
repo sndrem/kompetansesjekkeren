@@ -206,9 +206,14 @@ async function scrapeVatromgodkjenning(url) {
 }
 
 async function scrapeEnhetsregisterDetaljer(htmlString) {
+  console.log("htmlstring", htmlString);
   const $ = cheerio.load(htmlString);
   const result = {};
   const beskrivelse = $(".row");
+  if (htmlString.includes("ble slettet")) {
+    const sletteTekst = $("#pagecontent p").text();
+    result.slettet = sletteTekst;
+  }
   beskrivelse.map((index, element) => {
     const definisjon = $(element).find(".col-sm-4");
     const verdi = $(element).find(".col-sm-8");

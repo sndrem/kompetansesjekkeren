@@ -2,7 +2,7 @@ import React from "react";
 import { EnhetsregisterDetaljer } from "../../types/domain";
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
-import { Table } from "semantic-ui-react";
+import { Table, Message } from "semantic-ui-react";
 
 interface OppsummeringsProps {
   bedriftA?: EnhetsregisterDetaljer;
@@ -49,13 +49,22 @@ function Oppsummeringstabell({ bedriftA, bedriftB }: OppsummeringsProps) {
     <Table celled>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>
-            {verdiEllerTomt(bedriftA?.navn)} ({bedriftA?.organisasjonsnummer})
-          </Table.HeaderCell>
+          {bedriftA?.detaljer?.slettet ? (
+            <Table.HeaderCell>{bedriftA?.detaljer?.slettet}</Table.HeaderCell>
+          ) : (
+            <Table.HeaderCell>
+              {verdiEllerTomt(bedriftA?.navn)} ({bedriftA?.organisasjonsnummer})
+            </Table.HeaderCell>
+          )}
+
           <Table.HeaderCell></Table.HeaderCell>
-          <Table.HeaderCell>
-            {verdiEllerTomt(bedriftB?.navn)} ({bedriftB?.organisasjonsnummer})
-          </Table.HeaderCell>
+          {bedriftB?.detaljer?.slettet ? (
+            <Table.HeaderCell>{bedriftB?.detaljer?.slettet}</Table.HeaderCell>
+          ) : (
+            <Table.HeaderCell>
+              {verdiEllerTomt(bedriftB?.navn)} ({bedriftB?.organisasjonsnummer})
+            </Table.HeaderCell>
+          )}
         </Table.Row>
       </Table.Header>
 

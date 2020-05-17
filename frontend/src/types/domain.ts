@@ -52,6 +52,7 @@ export interface EnhetsregisterEnhet {
 }
 export interface EnhetsregisterDetaljer extends EnhetsregisterEnhet {
   detaljer: {
+    slettet?: string;
     Daglig_leder?: string;
     Kontaktperson?: string;
     Styre?: string;
