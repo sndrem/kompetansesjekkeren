@@ -206,7 +206,6 @@ async function scrapeVatromgodkjenning(url) {
 }
 
 async function scrapeEnhetsregisterDetaljer(htmlString) {
-  console.log("htmlstring", htmlString);
   const $ = cheerio.load(htmlString);
   const result = {};
   const beskrivelse = $(".row");

@@ -7,7 +7,6 @@ function Hovedmeny() {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(location.pathname);
   const visSammenligningToggle = useHentToggle("vis_sammenligningsside", true);
-  console.log(visSammenligningToggle);
 
   return (
     <Menu inverted>
