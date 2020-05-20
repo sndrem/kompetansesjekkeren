@@ -2,7 +2,7 @@ import React from "react";
 import { EnhetsregisterDetaljer } from "../../types/domain";
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
-import { Table, Message } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 
 interface OppsummeringsProps {
   bedriftA?: EnhetsregisterDetaljer;
@@ -101,6 +101,23 @@ function Oppsummeringstabell({ bedriftA, bedriftB }: OppsummeringsProps) {
           </Table.Cell>
           <Table.Cell>
             {verdiEllerTomt(bedriftB?.detaljer?.Styrets_leder)}
+          </Table.Cell>
+        </Table.Row>
+        <Table.Row
+          {...verdierErLike(
+            bedriftA?.detaljer?.Innehaver,
+            bedriftB?.detaljer?.Innehaver,
+            true
+          )}
+        >
+          <Table.Cell>
+            {verdiEllerTomt(bedriftA?.detaljer?.Innehaver)}
+          </Table.Cell>
+          <Table.Cell>
+            <b>Innehaver</b>
+          </Table.Cell>
+          <Table.Cell>
+            {verdiEllerTomt(bedriftB?.detaljer?.Innehaver)}
           </Table.Cell>
         </Table.Row>
         <Table.Row
