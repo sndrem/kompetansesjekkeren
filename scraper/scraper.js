@@ -5,12 +5,10 @@ const slack = require("../alerting/slack").slackNotifiyer;
 const parser = require("xml2json");
 
 const vatromUrl = "http://www.ffv.no/finn-godkjent-vatromsbedrift";
-const mesterbrevOmradeUrl =
-  "https://mreg.nhosp.no/scripts/cgiip.wsc/web/search.html";
-const mesterbrevUrl =
-  "https://mreg.nhosp.no/scripts/cgiip.wsc/web/sengine.html";
 const arbeidstilsynetUrl =
   "https://www.arbeidstilsynet.no/opendata/renhold.xml";
+const mesterBrevKompetanseUrl =
+  "http://www.kompetansesjekk.no/soekeresultat/?companyname=";
 
 async function scrapeAndPopulateDb() {
   try {
@@ -19,9 +17,6 @@ async function scrapeAndPopulateDb() {
       `Henter data fra ${vatromUrl} og legger til i databasen :clock12:`
     );
     const vatromdata = await scrapeVatromgodkjenning(vatromUrl);
-    const mesterbrevdata = await scrapeMesterbrevregisteret(
-      mesterbrevOmradeUrl
-    );
     const renholdsregisterdata = await hentRenholdsregisterdata(
       arbeidstilsynetUrl
     );
@@ -29,7 +24,6 @@ async function scrapeAndPopulateDb() {
     const data = {
       sistOppdatert: Date.now(),
       vatromsregister: vatromdata,
-      mesterbrev: mesterbrevdata,
       renholdsregister: renholdsregisterdata,
     };
 
@@ -40,9 +34,7 @@ async function scrapeAndPopulateDb() {
     console.log(
       `Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${
         vatromdata.length
-      } bedrifter fra våtromsregisteret, ${
-        mesterbrevdata.length
-      } fra mesterbrevregisteret og ${
+      } bedrifter fra våtromsregisteret og ${
         renholdsregisterdata.length
       } fra renholdsregisteret i databasen.`
     );
@@ -71,85 +63,9 @@ async function hentRenholdsregisterdata(url) {
   return parsedJson.ArrayOfRenholdsvirksomhet.Renholdsvirksomhet;
 }
 
-async function scrapeMesterbrevregisteret(url) {
+async function scrapeKompetansesjekk(url) {
   const htmlString = await getHtmlString(url);
-  const $ = cheerio.load(htmlString);
-  const areas = $("#area option");
-
-  const omrader = hentOmradekoderForMesterbrev($, areas);
-
-  const promises = omrader.map(async (omr) => {
-    const { omrade } = omr;
-    const data = await hentMestereFraOmrade(omrade);
-    return data;
-  });
-
-  const data = await Promise.all(promises);
-  return data.flatMap((d) => d);
-}
-
-async function hentMestereFraOmrade(omrade) {
-  const options = {
-    method: "POST",
-    uri: mesterbrevUrl,
-    encoding: "binary",
-    form: {
-      area: "",
-      text_s: omrade,
-    },
-  };
-
-  return await rp(options)
-    .then(async (data) => {
-      return await parseMestereFraOmrade(data);
-    })
-    .catch((err) => {
-      console.log("Kunne ikke hente data fra område", err);
-      return [];
-    });
-}
-
-async function parseMestereFraOmrade(html) {
-  const $ = cheerio.load(html);
-  const mestere = $("table.result tr");
-  const results = [];
-  mestere.map((index, element) => {
-    const rader = $(element).find("td");
-    const data = [];
-    rader.each((index, rad) => {
-      data.push($(rad).text());
-    });
-    if (data.length > 0) {
-      const [sted, postnr, navn, antallMestereIBedriften, fag, ...rest] = data;
-      results.push({
-        sted,
-        postnr,
-        navn: navn ? navn.toUpperCase() : navn,
-        antallMestereIBedriften,
-        fag,
-        ...rest,
-      });
-    }
-  });
-  return results;
-}
-
-function hentOmradekoderForMesterbrev($, html) {
-  const omradekoder = [];
-  html.map((index, element) => {
-    const htmlElement = $(element);
-    const areacode = htmlElement.attr("value");
-
-    // Hent bare ut verdier som slutter på 00
-    if (areacode.endsWith("00")) {
-      const omrade = htmlElement.text();
-      omradekoder.push({
-        kode: parseInt(areacode),
-        omrade,
-      });
-    }
-  });
-  return omradekoder;
+  return htmlString;
 }
 
 async function scrapeVatromgodkjenning(url) {
@@ -244,7 +160,7 @@ function clean(text) {
 module.exports = {
   scrapeVatromgodkjenning,
   scrapeAndPopulateDb,
-  mesterbrevOmradeUrl,
-  scrapeMesterbrevregisteret,
+  mesterBrevKompetanseUrl,
+  scrapeKompetansesjekk,
   scrapeEnhetsregisterDetaljer,
 };

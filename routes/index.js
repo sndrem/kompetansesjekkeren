@@ -4,7 +4,7 @@ var router = express.Router();
 const db = require("../database/db");
 const scraper = require("../scraper/scraper");
 const enhetsService = require("../services/enhetsregister-service");
-const mesterbrevUrl = require("../scraper/scraper").mesterbrevOmradeUrl;
+const { mesterBrevKompetanseUrl } = require("../scraper/scraper");
 
 const slack = require("../alerting/slack").slackNotifiyer;
 require("../cron-jobs/scrape-job");
@@ -127,15 +127,13 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
     const { navn } = enhet;
-    const mesterbrevData = db
-      .get("mesterbrev")
-      .find((mester) => {
-        return navn.toUpperCase().includes(mester.navn.toUpperCase());
-      })
-      .value();
-    if (mesterbrevData) {
+    const response = await scraper.scrapeKompetansesjekk(
+      `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
+    );
+    const fantMester = response.toLowerCase().includes(navn.toLowerCase());
+    if (fantMester) {
       // Vi fant en match!
-      res.json(mesterbrevData);
+      res.json({ navn });
     } else {
       console.warn(
         `Fant ingen match mellom enhetsnavn fra Brreg og Mesterbrevregisteret for orgnr: ${orgnr}`
