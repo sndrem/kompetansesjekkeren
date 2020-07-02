@@ -129,12 +129,17 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
     const { navn } = enhet;
     const mesterbrevData = db
       .get("mesterbrev")
-      .find({ navn: navn.toUpperCase() })
+      .find((mester) => {
+        return navn.toUpperCase().includes(mester.navn.toUpperCase());
+      })
       .value();
     if (mesterbrevData) {
       // Vi fant en match!
       res.json(mesterbrevData);
     } else {
+      console.warn(
+        `Fant ingen match mellom enhetsnavn fra Brreg og Mesterbrevregisteret for orgnr: ${orgnr}`
+      );
       res.json(null);
     }
   } else {
