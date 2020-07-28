@@ -127,13 +127,19 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
     const { navn } = enhet;
-    const response = await scraper.scrapeKompetansesjekk(
+    const {
+      heading = "",
+      certification = "",
+    } = await scraper.scrapeKompetansesjekk(
       `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
     );
-    const fantMester = response.toLowerCase().includes(navn.toLowerCase());
-    if (fantMester) {
+    const fantMester = heading.toLowerCase().includes(navn.toLowerCase());
+    const harMesterbrev = certification
+      .toLowerCase()
+      .includes("mester: godkjent");
+    if (fantMester && harMesterbrev) {
       // Vi fant en match!
-      res.json({ navn });
+      res.json({ navn, harMesterbrev });
     } else {
       console.warn(
         `Fant ingen match mellom enhetsnavn fra Brreg og Mesterbrevregisteret for orgnr: ${orgnr}`

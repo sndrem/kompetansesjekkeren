@@ -66,8 +66,12 @@ async function hentRenholdsregisterdata(url) {
 async function scrapeKompetansesjekk(url) {
   const htmlString = await getHtmlString(url);
   const $ = cheerio.load(htmlString);
-  const heading = $("h3").text();
-  return heading;
+  const heading = $(".block-container .block-text h3").first().text();
+  const certification = $(".block-container .block-text").first().text();
+  return {
+    heading,
+    certification,
+  };
 }
 
 async function scrapeVatromgodkjenning(url) {
