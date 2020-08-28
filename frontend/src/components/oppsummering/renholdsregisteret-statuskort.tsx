@@ -82,8 +82,14 @@ function RenholdsregisteretStatuskort(props: Props) {
     >
       <p>{tekst}</p>
       <>
-        <p>Underavdelinger til hovedenhet</p>
-        {underavdelinger ? <ul>{underavdelinger}</ul> : ""}
+        {underavdelinger ? (
+          <>
+            <p>Underavdelinger til hovedenhet</p>
+            <ul>{underavdelinger}</ul>
+          </>
+        ) : (
+          ""
+        )}
       </>
     </Kort>
   );
