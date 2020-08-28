@@ -55,7 +55,7 @@ function RenholdsregisteretStatuskort(props: Props) {
     const avdeling = resultat.Underavdelinger?.Avdeling;
 
     if (Array.isArray(avdeling)) {
-      underavdelinger = avdeling.map(avd => {
+      underavdelinger = avdeling.map((avd) => {
         return (
           <li key={avd.Organisasjonsnummer}>
             {avd.Navn} - Orgnr: {avd.Organisasjonsnummer}
@@ -63,11 +63,13 @@ function RenholdsregisteretStatuskort(props: Props) {
         );
       });
     } else {
-      underavdelinger = (
-        <li key={avdeling.Organisasjonsnummer}>
-          {avdeling.Navn} - Orgnr: {avdeling.Organisasjonsnummer}
-        </li>
-      );
+      if (avdeling) {
+        underavdelinger = (
+          <li key={avdeling.Organisasjonsnummer}>
+            {avdeling.Navn} - Orgnr: {avdeling.Organisasjonsnummer}
+          </li>
+        );
+      }
     }
   }
 

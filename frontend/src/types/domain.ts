@@ -85,7 +85,7 @@ export interface Adresse {
 }
 
 export interface RenholdsregisterOrganisasjon {
-  Organisasjonsnummer: string;
+  Organisasjonsnummer?: string;
   Navn: string;
   Adresse: ArbeidstilsynetAdress;
   Underavdelinger?: {
