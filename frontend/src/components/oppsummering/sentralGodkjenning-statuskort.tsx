@@ -1,14 +1,14 @@
 import React, { useContext } from "react";
-import { Appstate, SentralGodkjenningResultat } from "../../types/domain";
-import { StateContext } from "../../pages/sokpage";
 import { Message, MessageSizeProp } from "semantic-ui-react";
-import Kort from "./kort";
+import useSWR from "swr";
 import { loggKlikk } from "../../analytics/google-analytics";
-import { SOK_SENTRALGODKJENNING } from "../../konstanter";
-import { useFetch } from "../../hooks/useFetch";
-import { genererSokeurl } from "../../utils/utils";
 import { useHentToggle } from "../../featureToggles/client";
+import { SOK_SENTRALGODKJENNING } from "../../konstanter";
+import { StateContext } from "../../pages/sokpage";
+import { Appstate, SentralGodkjenningResultat } from "../../types/domain";
+import { genererSokeurl } from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
+import Kort from "./kort";
 
 interface Props {
   size: MessageSizeProp;
@@ -17,7 +17,7 @@ interface Props {
 function SentralGodkjenningStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
   const { orgnr } = state;
-  const { response: resultat } = useFetch<SentralGodkjenningResultat>(
+  const { data: resultat } = useSWR<SentralGodkjenningResultat>(
     genererSokeurl(SOK_SENTRALGODKJENNING, orgnr)
   );
 
@@ -41,7 +41,7 @@ function SentralGodkjenningStatuskort(props: Props) {
       </Message>
     );
   }
-
+console.log(resultat);
   const tekst = resultat.status.approved
     ? `${resultat.enterprise.name} finnes i Sentral godkjenning ✅`
     : `${resultat.enterprise.name} er ikke sentralt godkjent ❌.`;

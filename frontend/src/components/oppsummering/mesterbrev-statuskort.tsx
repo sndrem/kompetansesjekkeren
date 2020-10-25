@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
-import { Appstate, MesterbrevResultat } from "../../types/domain";
-import { StateContext } from "../../pages/sokpage";
 import { Message, MessageSizeProp } from "semantic-ui-react";
-import Kort from "./kort";
-import { SOK_MESTERBREV } from "../../konstanter";
-import { useFetch } from "../../hooks/useFetch";
-import { genererSokeurl } from "../../utils/utils";
+import useSWR from "swr";
 import { useHentToggle } from "../../featureToggles/client";
+import { SOK_MESTERBREV } from "../../konstanter";
+import { StateContext } from "../../pages/sokpage";
+import { Appstate, MesterbrevResultat } from "../../types/domain";
+import { genererSokeurl } from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
+import Kort from "./kort";
 
 interface Props {
   size: MessageSizeProp;
@@ -16,7 +16,7 @@ interface Props {
 function MesterbrevStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
   const { orgnr } = state;
-  const { response: resultat } = useFetch<MesterbrevResultat>(
+  const { data } = useSWR<MesterbrevResultat>(
     genererSokeurl(SOK_MESTERBREV, orgnr)
   );
 
@@ -32,7 +32,7 @@ function MesterbrevStatuskort(props: Props) {
     );
   }
 
-  if (!resultat) {
+  if (!data) {
     return (
       <Message size={props.size} color="red">
         <Message.Header>Mesterbrevsregisteret</Message.Header>
@@ -41,12 +41,12 @@ function MesterbrevStatuskort(props: Props) {
     );
   }
 
-  const tekst = `${resultat.navn} finnes i Mesterbrevsregisteret ✅`;
+  const tekst = `${data.navn} finnes i Mesterbrevsregisteret ✅`;
   return (
     <Kort
       size={props.size}
       tittel="Mesterbrevsregisteret"
-      erOkStatus={resultat !== null}
+      erOkStatus={data !== null}
       orgnr={state.orgnr}
     >
       <p>{tekst}</p>

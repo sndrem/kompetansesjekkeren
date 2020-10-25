@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
+import { Message, MessageSizeProp } from "semantic-ui-react";
+import useSWR from "swr";
+import { useHentToggle } from "../../featureToggles/client";
+import { SOK_RENHOLDSREGISTERET } from "../../konstanter";
 import { StateContext } from "../../pages/sokpage";
 import { Appstate, RenholdsregisterOrganisasjon } from "../../types/domain";
-import { Message, MessageSizeProp } from "semantic-ui-react";
-import Kort from "./kort";
-import { SOK_RENHOLDSREGISTERET } from "../../konstanter";
-import { useFetch } from "../../hooks/useFetch";
 import { genererSokeurl } from "../../utils/utils";
-import { useHentToggle } from "../../featureToggles/client";
 import Feilmelding from "../feilmeldinger/feilmelding";
+import Kort from "./kort";
 
 interface Props {
   size: MessageSizeProp;
@@ -22,7 +22,7 @@ function gyldigBedrift(status: string): boolean {
 function RenholdsregisteretStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
   const { orgnr } = state;
-  const { response: resultat } = useFetch<RenholdsregisterOrganisasjon>(
+  const { data: resultat } = useSWR<RenholdsregisterOrganisasjon>(
     genererSokeurl(SOK_RENHOLDSREGISTERET, orgnr)
   );
 

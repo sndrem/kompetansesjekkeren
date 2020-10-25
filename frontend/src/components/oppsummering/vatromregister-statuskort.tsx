@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
-import { Appstate, VatromregisterResultat } from "../../types/domain";
-import { StateContext } from "../../pages/sokpage";
 import { Message, MessageSizeProp } from "semantic-ui-react";
-import Kort from "./kort";
-import { SOK_VATROM } from "../../konstanter";
-import { useFetch } from "../../hooks/useFetch";
-import { genererSokeurl } from "../../utils/utils";
+import useSWR from "swr";
 import { useHentToggle } from "../../featureToggles/client";
+import { SOK_VATROM } from "../../konstanter";
+import { StateContext } from "../../pages/sokpage";
+import { Appstate, VatromregisterResultat } from "../../types/domain";
+import { genererSokeurl } from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
+import Kort from "./kort";
 
 interface Props {
   size: MessageSizeProp;
@@ -16,7 +16,8 @@ interface Props {
 function VatromregisterStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
   const { orgnr } = state;
-  const { response: resultat } = useFetch<VatromregisterResultat>(
+
+  const { data } = useSWR<VatromregisterResultat>(
     genererSokeurl(SOK_VATROM, orgnr)
   );
 
@@ -28,11 +29,11 @@ function VatromregisterStatuskort(props: Props) {
         size={props.size}
         headerTekst="Fagrådet for våtrom"
         bodyTekst="Det er for øyeblikket ikke mulig å sjekke bedrifter i Fagrådet for våtrom."
-      ></Feilmelding>
+      />
     );
   }
 
-  if (!resultat) {
+  if (!data) {
     return (
       <Message size={props.size} color="red">
         <Message.Header>Fagrådet for våtrom</Message.Header>
@@ -41,20 +42,20 @@ function VatromregisterStatuskort(props: Props) {
     );
   }
 
-  const tekst = resultat.godkjent
-    ? `${resultat.navn} finnes i Fagrådet for våtrom ✅`
-    : `${resultat} finnes ikke i Fagrådet for våtrom ❌.`;
+  const tekst = data.godkjent
+    ? `${data.navn} finnes i Fagrådet for våtrom ✅`
+    : `${data} finnes ikke i Fagrådet for våtrom ❌.`;
   return (
     <Kort
       size={props.size}
       tittel="Fagrådet for våtrom"
-      erOkStatus={resultat.godkjent}
+      erOkStatus={data.godkjent}
       orgnr={state.orgnr}
     >
       <p>{tekst}</p>
-      {resultat.nettside && (
-        <a target="_blank" rel="noopener noreferrer" href={resultat.nettside}>
-          {resultat.nettside}
+      {data.nettside && (
+        <a target="_blank" rel="noopener noreferrer" href={data.nettside}>
+          {data.nettside}
         </a>
       )}
     </Kort>
