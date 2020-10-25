@@ -1,4 +1,4 @@
-import { Data, EnhetsregisterEnhet, RenholdsregisterOrganisasjon, SentralGodkjenningResultat, VatromregisterResultat, MesterbrevResultat } from "./domain";
+import { EnhetsregisterEnhet } from "./domain";
 type RESET_SOK = "SOK/RESET";
 type SETT_ORGNR = "SETT_ORGNR";
 type HENT_DATA = "DATA/HENTER_DATA";
