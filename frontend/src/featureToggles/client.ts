@@ -5,7 +5,7 @@ const logger = configcat.createConsoleLogger(3);
 
 const configCatClient = configcat.createClientWithAutoPoll(
   "ja_XCKJhVFKYqGOUwi9SEA/y9XwRtpk1UWDIwXFKrD9EA",
-  { logger: logger }
+  { logger: process.env.NODE_ENV !== "production" ? logger : undefined }
 );
 
 export function useHentToggle(
