@@ -127,6 +127,10 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
     const { navn } = enhet;
+    console.log(
+      "Scraper",
+      `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
+    );
     const {
       heading = "",
       certification = "",

@@ -66,8 +66,26 @@ async function hentRenholdsregisterdata(url) {
 async function scrapeKompetansesjekk(url) {
   const htmlString = await getHtmlString(url);
   const $ = cheerio.load(htmlString);
-  const heading = $(".block-container .block-text h3").first().text();
-  const certification = $(".block-container .block-text").first().text();
+  const names = $(".block-container .block-text h3")
+    .map((_, node) => {
+      const name = $(node).text();
+      return name && name.trim();
+    })
+    .get()
+    .filter((name) => name && name.length > 0);
+  const [heading] = names;
+
+  const certifications = $(".sertification-text-div")
+    .map((_, node) => {
+      const name = $(node).text();
+      return name && name.trim();
+    })
+    .get()
+    .filter((name) => name && name.length > 0);
+
+  const certification = certifications.includes("Mester: Godkjent")
+    ? "Mester: Godkjent"
+    : "";
   return {
     heading,
     certification,
