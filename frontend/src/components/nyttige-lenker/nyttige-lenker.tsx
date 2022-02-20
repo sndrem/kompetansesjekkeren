@@ -18,10 +18,17 @@ function NyttigeLenker(props: Props) {
             <List horizontal>
                 {props.lenker.map(lenke => {
                     return (
-                        <List.Item key={lenke.url}>
-                            <a target={lenke.target ? lenke.target : "_blank"} onClick={() => loggKlikk(lenke)} href={lenke.url}>{lenke.tekst}</a>
-                        </List.Item>
-                    )
+                      <List.Item key={lenke.url}>
+                        <a
+                          target={lenke.target ? lenke.target : "_blank"}
+                          rel="noopener noreferrer"
+                          onClick={() => loggKlikk(lenke)}
+                          href={lenke.url}
+                        >
+                          {lenke.tekst}
+                        </a>
+                      </List.Item>
+                    );
                 })}
             </List>
         </>
