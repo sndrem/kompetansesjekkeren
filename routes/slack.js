@@ -1,18 +1,23 @@
 var express = require("express");
 var router = express.Router();
 const slack = require("../alerting/slack").slackNotifiyer;
-const dbService = require("../services/db-service");
 
 router.post("/", function (req, res, next) {
-    const organisasjonsnummer = req.body.organisasjonsnummer;
-    if (organisasjonsnummer) {
-        console.log("Lagrer organisasjonsnummer");
-        slack.utvikling(`Nytt søk på organisasjonsnummer: ${organisasjonsnummer} - https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${organisasjonsnummer}`);
-        dbService.lagreSok(organisasjonsnummer, null);
-        res.status(200).json({ status: "ok" });
-    } else {
-        res.status(400).json({ status: "ikke ok", error: "Du må sende med organisasjonsnummer" });
-    }
+  const organisasjonsnummer = req.body.organisasjonsnummer;
+  if (organisasjonsnummer) {
+    console.log("Lagrer organisasjonsnummer");
+    slack.utvikling(
+      `Nytt søk på organisasjonsnummer: ${organisasjonsnummer} - https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${organisasjonsnummer}`
+    );
+    res.status(200).json({ status: "ok" });
+  } else {
+    res
+      .status(400)
+      .json({
+        status: "ikke ok",
+        error: "Du må sende med organisasjonsnummer",
+      });
+  }
 });
 
 router.post("/feedback", function (req, res, next) {

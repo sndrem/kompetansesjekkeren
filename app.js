@@ -4,8 +4,6 @@ let express = require("express");
 let path = require("path");
 let cookieParser = require("cookie-parser");
 let logger = require("morgan");
-const db = require("./database/mongodb");
-db.connect();
 
 let indexRouter = require("./routes/index");
 let slackRouter = require("./routes/slack");
@@ -24,8 +22,6 @@ app.use(express.static(path.join(__dirname, "frontend/build")));
 
 app.use("/", indexRouter);
 app.use("/slack", slackRouter);
-
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
