@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";
-import { loggKlikk } from "../../analytics/google-analytics";
 import { hentData } from "../../pages/sokpage";
 import { EnhetsregisterDetaljer } from "../../types/domain";
 import { oppdaterWebadresse } from "../../utils/utils";
@@ -133,12 +132,6 @@ function Oppsummersok({ enhet }: OppsummerProps) {
           </Item.Description>
           <Item.Meta>
             <a
-              onClick={() =>
-                loggKlikk({
-                  url: `https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${enhet.organisasjonsnummer}`,
-                  tekst: "Se mer om bedriften hos Brønnøysundregistrene",
-                })
-              }
               target="_blank"
               rel="noopener noreferrer"
               href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${enhet.organisasjonsnummer}`}

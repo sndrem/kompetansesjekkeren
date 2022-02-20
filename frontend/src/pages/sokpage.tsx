@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { RouteComponentProps } from "react-router";
 import { Divider, Grid, Header, Loader, Message } from "semantic-ui-react";
-import { ReactGA } from "../analytics/google-analytics";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import OppsummeringPage from "../components/oppsummering/oppsummering-page";
 import Sokefelt from "../components/sokefelt/sokefelt";
@@ -19,12 +18,9 @@ import { Appstate, EnhetsregisterEnhet, initialState } from "../types/domain";
 import { reducer } from "../types/reducer";
 import "./sokpage.scss";
 
-ReactGA.pageview("/søk");
-
 export const StateContext = createContext<Appstate>(initialState);
-export const DispatchContext: Context<Dispatch<
-  EnhetsregisterActions
->> = createContext({} as any);
+export const DispatchContext: Context<Dispatch<EnhetsregisterActions>> =
+  createContext({} as any);
 
 interface MatchParams {
   orgnr: string;
@@ -42,10 +38,6 @@ export function hentData<T>(url: string, orgnr: string): Promise<T> {
 async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
   dispatch({ type: "SOK/RESET" });
   if (orgnr.length === 9) {
-    ReactGA.event({
-      category: "søk",
-      action: "Bruker søkte på orgnr",
-    });
     dispatch({ type: "SETT_ORGNR", data: orgnr });
     dispatch({ type: "DATA/HENTER_DATA" });
     hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr)

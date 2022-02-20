@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Message, MessageSizeProp } from "semantic-ui-react";
 import useSWR from "swr";
-import { loggKlikk } from "../../analytics/google-analytics";
 import { useHentToggle } from "../../featureToggles/client";
 import { SOK_SENTRALGODKJENNING } from "../../konstanter";
 import { StateContext } from "../../pages/sokpage";
@@ -41,7 +40,7 @@ function SentralGodkjenningStatuskort(props: Props) {
       </Message>
     );
   }
-console.log(resultat);
+  console.log(resultat);
   const tekst = resultat.status.approved
     ? `${resultat.enterprise.name} finnes i Sentral godkjenning ✅`
     : `${resultat.enterprise.name} er ikke sentralt godkjent ❌.`;
@@ -54,17 +53,7 @@ console.log(resultat);
     >
       <p>{tekst}</p>
       <p>
-        <a
-          onClick={() =>
-            loggKlikk({
-              url: resultat.status.approval_certificate,
-              tekst: "Lenke til sertifikat"
-            })
-          }
-          href={resultat.status.approval_certificate}
-        >
-          Lenke til sertifikat
-        </a>
+        <a href={resultat.status.approval_certificate}>Lenke til sertifikat</a>
       </p>
     </Kort>
   );
