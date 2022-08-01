@@ -1,13 +1,13 @@
 import React from "react";
-import { Message, Icon, MessageSizeProp } from "semantic-ui-react";
+import {Message, Icon, MessageSizeProp} from "semantic-ui-react";
 
 interface Props {
   size: MessageSizeProp;
   headerTekst: string;
-  bodyTekst: string;
+  bodyTekst: React.ReactNode;
 }
 
-function Feilmelding({ size, headerTekst, bodyTekst }: Props) {
+function Feilmelding({size, headerTekst, bodyTekst}: Props) {
   return (
     <Message size={size} color="grey">
       <Message.Header>
