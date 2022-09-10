@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
-import { Message, MessageSizeProp } from "semantic-ui-react";
+import React, {useContext} from "react";
+import {Message, MessageSizeProp} from "semantic-ui-react";
 import useSWR from "swr";
-import { useHentToggle } from "../../featureToggles/client";
-import { SOK_RENHOLDSREGISTERET } from "../../konstanter";
-import { StateContext } from "../../pages/sokpage";
-import { Appstate, RenholdsregisterOrganisasjon } from "../../types/domain";
-import { genererSokeurl } from "../../utils/utils";
+import {useHentToggle} from "../../featureToggles/client";
+import {SOK_RENHOLDSREGISTERET} from "../../konstanter";
+import {StateContext} from "../../pages/sokpage";
+import {Appstate, RenholdsregisterOrganisasjon} from "../../types/domain";
+import {genererSokeurl} from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
 import Kort from "./kort";
 
@@ -21,8 +21,8 @@ function gyldigBedrift(status: string): boolean {
 
 function RenholdsregisteretStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
-  const { orgnr } = state;
-  const { data: resultat } = useSWR<RenholdsregisterOrganisasjon>(
+  const {orgnr} = state;
+  const {data: resultat} = useSWR<RenholdsregisterOrganisasjon>(
     genererSokeurl(SOK_RENHOLDSREGISTERET, orgnr)
   );
 
@@ -47,12 +47,12 @@ function RenholdsregisteretStatuskort(props: Props) {
     );
   }
 
-  const tekst = gyldigBedrift(resultat.Status)
-    ? `${resultat.Navn} har status: ${resultat.Status}`
-    : `${resultat.Navn} er ikke godkjent i Renholdsregisteret.`;
+  const tekst = gyldigBedrift(resultat.Hovedenhet.Godkjenningsstatus)
+    ? `${resultat.Hovedenhet.Navn} har status: ${resultat.Hovedenhet.Godkjenningsstatus}`
+    : `${resultat.Hovedenhet.Navn} er ikke godkjent i Renholdsregisteret.`;
   let underavdelinger = null;
-  if (resultat.Underavdelinger) {
-    const avdeling = resultat.Underavdelinger?.Avdeling;
+  if (resultat.Underenheter) {
+    const avdeling = resultat.Underenheter?.Avdeling;
 
     if (Array.isArray(avdeling)) {
       underavdelinger = avdeling.map((avd) => {
@@ -77,7 +77,7 @@ function RenholdsregisteretStatuskort(props: Props) {
     <Kort
       size={props.size}
       tittel="Renholdsregisteret"
-      erOkStatus={gyldigBedrift(resultat.Status)}
+      erOkStatus={gyldigBedrift(resultat.Hovedenhet.Godkjenningsstatus)}
       orgnr={state.orgnr}
     >
       <p>{tekst}</p>

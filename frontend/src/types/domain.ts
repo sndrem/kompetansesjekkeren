@@ -85,15 +85,75 @@ export interface Adresse {
 }
 
 export interface RenholdsregisterOrganisasjon {
-  Organisasjonsnummer?: string;
+  Hovedenhet: Hovedenhet;
+  Underenheter: Underenheter;
+}
+
+interface Underenheter {
+  Avdeling: Avdeling;
+}
+
+interface Avdeling {
+  Avgrensning: string;
+  Organisasjonsnummer: string;
   Navn: string;
-  Adresse: ArbeidstilsynetAdress;
-  Underavdelinger?: {
-    Avdeling:
-      | Array<RenholdsregisterOrganisasjon>
-      | RenholdsregisterOrganisasjon;
-  };
-  Status: string;
+  Næringskoder: Nringskoder;
+  Kontaktinformasjon: Kontaktinformasjon;
+  Stedsinformasjon: Stedsinformasjon;
+}
+
+interface Hovedenhet {
+  Organisasjonsnummer: string;
+  Organisasjonsform: string;
+  Navn: string;
+  Næringskoder: Nringskoder;
+  Godkjenningsstatus: string;
+  Kontaktinformasjon: Kontaktinformasjon;
+  Stedsinformasjon: Stedsinformasjon;
+}
+
+interface Stedsinformasjon {
+  Postadresse: Postadresse;
+  Forretningsadresse: Forretningsadresse;
+}
+
+interface Forretningsadresse {
+  Adresselinje1: string;
+  Adresselinje2: Telefon;
+  Postnummer: string;
+  Poststed: string;
+  Kommunenummer: string;
+  Kommunenavn: string;
+  Fylkesnummer: string;
+  Fylkesnavn: string;
+  Landkode: string;
+  Land: string;
+}
+
+interface Postadresse {
+  Adresselinje1: Telefon;
+  Adresselinje2: Telefon;
+  Postnummer: Telefon;
+  Poststed: Telefon;
+  Landkode: Telefon;
+  Land: Telefon;
+}
+
+interface Kontaktinformasjon {
+  Telefon: Telefon;
+  Mobil: Telefon;
+  Webadresse: Telefon;
+}
+
+interface Telefon {}
+
+interface Nringskoder {
+  Kode: Kode;
+}
+
+interface Kode {
+  verdi: string;
+  $t: string;
 }
 
 export interface ArbeidstilsynetAdress {

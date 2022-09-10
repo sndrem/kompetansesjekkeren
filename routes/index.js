@@ -4,7 +4,7 @@ var router = express.Router();
 const db = require("../database/db");
 const scraper = require("../scraper/scraper");
 const enhetsService = require("../services/enhetsregister-service");
-const { mesterBrevKompetanseUrl } = require("../scraper/scraper");
+const {mesterBrevKompetanseUrl} = require("../scraper/scraper");
 
 const slack = require("../alerting/slack").slackNotifiyer;
 require("../cron-jobs/scrape-job");
@@ -14,12 +14,12 @@ const SENTRAL_GODKJENNING_HOST_AND_PORT =
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  res.render("index", { title: "Express" });
+  res.render("index", {title: "Express"});
 });
 
 router.get("/update", async function (req, res, next) {
   const response = await scraper.scrapeAndPopulateDb();
-  res.json({ status: "Update OK", data: response });
+  res.json({status: "Update OK", data: response});
 });
 
 function sjekkForOrganisasjonsnummer(req, res) {
@@ -47,7 +47,7 @@ router.get("/sok/enhetsregisteret/detaljer", async function (req, res, next) {
     res.status(404).send(`Fant ikke enhet med orgnr: ${orgnr}`);
   }
   const detaljer = await scraper.scrapeEnhetsregisterDetaljer(enhet);
-  const mergedData = { ...dataFraEnhetsregister, detaljer };
+  const mergedData = {...dataFraEnhetsregister, detaljer};
   res.json(mergedData);
 });
 
@@ -55,7 +55,7 @@ router.get("/sok/sentralgodkjenning", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const sentralgodkjenning = rp(
     `${SENTRAL_GODKJENNING_HOST_AND_PORT}${orgnr}`,
-    { simple: false }
+    {simple: false}
   );
 
   try {
@@ -102,11 +102,29 @@ router.get("/sok/renholdsregisteret", async function (req, res, next) {
   if (enhet) {
     const utledetdOrgnr =
       enhet && enhet.overordnetEnhet ? enhet.overordnetEnhet : orgnr;
-    let arbeidstilsynet = await db
+    let arbeidstilsynetHovedenhet = await db
       .get("renholdsregister")
-      .find({ Organisasjonsnummer: utledetdOrgnr })
+      .find({
+        Hovedenhet: {
+          Organisasjonsnummer: utledetdOrgnr,
+        },
+      })
       .value();
-    res.json(arbeidstilsynet);
+
+    if (!arbeidstilsynetHovedenhet) {
+      // Sjekk undernheter
+      arbeidstilsynetHovedenhet = await db
+        .get("renholdsregister")
+        .find({
+          Underenhet: {
+            Avdeling: {
+              Organisasjonsnummer: utledetdOrgnr,
+            },
+          },
+        })
+        .value();
+    }
+    res.json(arbeidstilsynetHovedenhet);
   } else {
     res.json(null);
   }
@@ -114,7 +132,7 @@ router.get("/sok/renholdsregisteret", async function (req, res, next) {
 
 router.get("/sok/vatrom", function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
-  const vatrom = db.get("vatromsregister").find({ orgnr }).value();
+  const vatrom = db.get("vatromsregister").find({orgnr}).value();
   if (!vatrom) {
     res.status(404).json(null);
   } else {
@@ -126,24 +144,22 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
   const orgnr = sjekkForOrganisasjonsnummer(req, res);
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
-    const { navn } = enhet;
+    const {navn} = enhet;
     console.log(
       "Scraper",
       `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
     );
-    const {
-      heading = "",
-      certification = "",
-    } = await scraper.scrapeKompetansesjekk(
-      `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
-    );
+    const {heading = "", certification = ""} =
+      await scraper.scrapeKompetansesjekk(
+        `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
+      );
     const fantMester = heading.toLowerCase().includes(navn.toLowerCase());
     const harMesterbrev = certification
       .toLowerCase()
       .includes("mester: godkjent");
     if (fantMester && harMesterbrev) {
       // Vi fant en match!
-      res.json({ navn, harMesterbrev });
+      res.json({navn, harMesterbrev});
     } else {
       console.warn(
         `Fant ingen match mellom enhetsnavn fra Brreg og Mesterbrevregisteret for orgnr: ${orgnr}`
