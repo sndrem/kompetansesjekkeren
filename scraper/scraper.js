@@ -3,10 +3,11 @@ const rp = require("request-promise");
 const db = require("../database/db");
 const slack = require("../alerting/slack").slackNotifiyer;
 const parser = require("xml2json");
+const fs = require("fs");
 
-const vatromUrl = "http://www.ffv.no/finn-godkjent-vatromsbedrift";
+const vatromUrl = "https://www.ffv.no/finn-godkjent-vatromsbedrift";
 const arbeidstilsynetUrl =
-  "https://www.arbeidstilsynet.no/opendata/renhold.xml";
+  "https://www.arbeidstilsynet.no/opendata/renhold_register.xml";
 const mesterBrevKompetanseUrl =
   "http://www.kompetansesjekk.no/soekeresultat/?companyname=";
 
@@ -17,6 +18,10 @@ async function scrapeAndPopulateDb() {
       `Henter data fra ${vatromUrl} og legger til i databasen :clock12:`
     );
     const vatromdata = await scrapeVatromgodkjenning(vatromUrl);
+    console.log(`Henting av data fra ${vatromUrl} ok!`);
+    console.log(
+      `Henter data fra ${arbeidstilsynetUrl} og legger til i databasen :clock12:`
+    );
     const renholdsregisterdata = await hentRenholdsregisterdata(
       arbeidstilsynetUrl
     );
@@ -59,8 +64,8 @@ async function getHtmlString(url) {
 
 async function hentRenholdsregisterdata(url) {
   const rawXml = await rp.get(url);
-  const parsedJson = parser.toJson(rawXml, { object: true });
-  return parsedJson.ArrayOfRenholdsvirksomhet.Renholdsvirksomhet;
+  const parsedJson = parser.toJson(rawXml, {object: true});
+  return parsedJson.Register.Virksomhet;
 }
 
 async function scrapeKompetansesjekk(url) {
@@ -136,7 +141,7 @@ async function scrapeVatromgodkjenning(url) {
         }
         return prev;
       },
-      { godkjent: true, navn, bransje }
+      {godkjent: true, navn, bransje}
     );
 
     result.push(orgData);
@@ -162,9 +167,8 @@ async function scrapeEnhetsregisterDetaljer(htmlString) {
         const verdiElem = verdi[i];
         const definisjonstekst = clean($(elem).text());
         const verditekst = clean($(verdiElem).text());
-        result[
-          definisjonstekst.replace(" ", "_").replace(":", "")
-        ] = verditekst;
+        result[definisjonstekst.replace(" ", "_").replace(":", "")] =
+          verditekst;
       }
     }
   });
