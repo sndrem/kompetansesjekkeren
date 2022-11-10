@@ -5,17 +5,17 @@ import React, {
   useEffect,
   useReducer,
 } from "react";
-import { RouteComponentProps } from "react-router";
-import { Divider, Grid, Header, Loader, Message } from "semantic-ui-react";
+import {RouteComponentProps} from "react-router";
+import {Divider, Grid, Header, Loader, Message} from "semantic-ui-react";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import OppsummeringPage from "../components/oppsummering/oppsummering-page";
 import Sokefelt from "../components/sokefelt/sokefelt";
-import { SOK_ENHET } from "../konstanter";
-import { nyttigeLenker } from "../konstanter/konstanter";
-import { notifySlack } from "../services/slackService";
-import { EnhetsregisterActions } from "../types/actions";
-import { Appstate, EnhetsregisterEnhet, initialState } from "../types/domain";
-import { reducer } from "../types/reducer";
+import {SOK_ENHET} from "../konstanter";
+import {nyttigeLenker} from "../konstanter/konstanter";
+import {notifySlack} from "../services/slackService";
+import {EnhetsregisterActions} from "../types/actions";
+import {Appstate, EnhetsregisterEnhet, initialState} from "../types/domain";
+import {reducer} from "../types/reducer";
 import "./sokpage.scss";
 
 export const StateContext = createContext<Appstate>(initialState);
@@ -36,13 +36,13 @@ export function hentData<T>(url: string, orgnr: string): Promise<T> {
 }
 
 async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
-  dispatch({ type: "SOK/RESET" });
+  dispatch({type: "SOK/RESET"});
   if (orgnr.length === 9) {
-    dispatch({ type: "SETT_ORGNR", data: orgnr });
-    dispatch({ type: "DATA/HENTER_DATA" });
+    dispatch({type: "SETT_ORGNR", data: orgnr});
+    dispatch({type: "DATA/HENTER_DATA"});
     hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr)
       .then((data) => {
-        dispatch({ type: "HENTET_ENHET", data: data });
+        dispatch({type: "HENTET_ENHET", data: data});
       })
       .catch((err) => {
         dispatch({
@@ -51,7 +51,7 @@ async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
         });
       });
   } else {
-    dispatch({ type: "SOK/RESET" });
+    dispatch({type: "SOK/RESET"});
   }
 }
 
@@ -59,7 +59,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const { orgnr } = props.match.params;
+    const {orgnr} = props.match.params;
     if (orgnr) {
       notifySlack(orgnr);
       sok(orgnr, dispatch);

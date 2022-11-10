@@ -14,7 +14,7 @@ function OppsummeringPage() {
 
   return (
     <>
-      <Grid.Column width={8}>
+      <Grid.Column width={8} style={{marginBottom: "2rem"}}>
         {state.submitted && <EnhetsregisterStatuskort size="large" />}
         {state.submitted && <RenholdsregisteretStatuskort size="large" />}
         {state.submitted && <SentralGodkjenningStatuskort size="large" />}
