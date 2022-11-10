@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Modal, Button, Icon, Form, Select } from "semantic-ui-react";
-import { TypeTilbakemelding } from "../../types/domain";
-import { sendTilbakemelding } from "../../services/slackService";
+import React, {useState} from "react";
+import {Modal, Button, Icon, Form, Select} from "semantic-ui-react";
+import {TypeTilbakemelding} from "../../types/domain";
+import {sendTilbakemelding} from "../../services/slackService";
 
 interface Props {
   onClick: () => void;
@@ -23,17 +23,17 @@ function Feedback() {
   const [submitOk, setSubmitOk] = useState(false);
   const [laster, setLaster] = useState(false);
   const options = [
-    { key: "ros", value: "Ros", text: "Ros" },
-    { key: "bug", value: "Bug", text: "Bug" },
-    { key: "onske", value: "Ønske", text: "Ønske" },
-    { key: "endring", value: "Endring", text: "Endring" },
+    {key: "ros", value: "Ros", text: "Ros"},
+    {key: "bug", value: "Bug", text: "Bug"},
+    {key: "onske", value: "Ønske", text: "Ønske"},
+    {key: "endring", value: "Endring", text: "Endring"},
   ];
 
   function submitTilbakemelding(e: React.MouseEvent) {
     e.preventDefault();
     if (type && tilbakemelding) {
       setLaster(true);
-      sendTilbakemelding({ type, tilbakemelding })
+      sendTilbakemelding({type, tilbakemelding})
         .then((response) => {
           if (!response.ok) {
             throw new Error("Klarte ikke gi tilbakemelding");

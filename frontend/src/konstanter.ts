@@ -4,3 +4,4 @@ export const SOK_SENTRALGODKJENNING = "/sok/sentralgodkjenning";
 export const SOK_RENHOLDSREGISTERET = "/sok/renholdsregisteret";
 export const SOK_VATROM = "/sok/vatrom";
 export const SOK_MESTERBREV = "/sok/mesterbrev";
+export const SOK_FINANSTILSYN = "/sok/finanstilsyn";

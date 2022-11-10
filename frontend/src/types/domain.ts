@@ -211,6 +211,86 @@ export interface MesterbrevResultat {
   fag: string;
 }
 
+export interface FinanstilsynResultat {
+  page: number;
+  total: number;
+  hitsReturned: number;
+  legalEntities: LegalEntity[];
+}
+
+interface LegalEntity {
+  legalEntityId: number;
+  parentId?: any;
+  legalEntityType: string;
+  finanstilsynetId: string;
+  organisationNumber: string;
+  leiCode?: any;
+  auditorNumber?: any;
+  name: string;
+  licences: Licence[];
+  addresses: Address[];
+  links?: any;
+  relationsToOther?: any;
+  participants?: any;
+  participatesIn?: any;
+  remarks?: any;
+}
+
+interface Address {
+  type: string;
+  addressLines: string;
+  postalCode: string;
+  postalLocation: string;
+  region: string;
+  country: Country;
+}
+
+interface Licence {
+  licensedEntity: LicensedEntity;
+  serviceProviderId: number;
+  licenceType: LicenceType;
+  licenceClassification?: any;
+  supervisoryAuthority: SupervisoryAuthority;
+  hasSecurity?: any;
+  registeredDate: string;
+  serviceProviderType: string;
+  remarks?: any;
+  services: any[];
+  borderCrossingActivity: any[];
+  cooperationGroups?: any;
+  roles?: any;
+  agentsOrBranches?: any;
+  accreditedAuditors?: any;
+  auditorFor?: any;
+}
+
+interface SupervisoryAuthority {
+  country: Country;
+  legalEntityId: number;
+  legalEntityName: string;
+}
+
+interface Country {
+  iso3: string;
+  name: Name;
+}
+
+interface LicenceType {
+  code: string;
+  name: Name;
+  description: Name;
+}
+
+interface Name {
+  norwegian: string;
+  english: string;
+}
+
+interface LicensedEntity {
+  legalEntityId: number;
+  legalEntityName: string;
+}
+
 export type TypeTilbakemelding = "Bug" | "Ønske" | "Endring" | "Ros";
 
 export interface Tilbakemelding {
