@@ -304,4 +304,5 @@ export type Featuretoggle =
   | "feil_for_mesterbrev"
   | "feil_for_renholdsregisteret"
   | "feil_for_sentralgodkjenning"
-  | "vis_sammenligningsside";
+  | "vis_sammenligningsside"
+  | "feil_for_finanstilsynet";

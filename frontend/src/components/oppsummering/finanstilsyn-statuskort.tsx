@@ -20,28 +20,18 @@ function FinanstilsynStatuskort(props: Props) {
     genererSokeurl(SOK_FINANSTILSYN, orgnr)
   );
 
-  const erFeil = useHentToggle("feil_for_mesterbrev", false);
+  const erFeil = useHentToggle("feil_for_finanstilsynet", false);
 
   if (erFeil) {
     return (
       <Feilmelding
         size={props.size}
-        headerTekst="Mesterbrevsregisteret"
+        headerTekst="Finanstilsynet"
         bodyTekst={
           <>
             <p>
               Det er for øyeblikket ikke mulig å sjekke bedrifter hos
-              Mesterbrevsregisteret
-            </p>
-            <p>
-              Du kan manuelt sjekke for Mesterbrev hos{" "}
-              <a
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://www.mesterbrev.no/mesterregister/sok-mesterregisteret/"
-              >
-                https://www.mesterbrev.no
-              </a>
+              Finanstilsynet
             </p>
           </>
         }
