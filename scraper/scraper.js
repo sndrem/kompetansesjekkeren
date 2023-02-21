@@ -9,7 +9,7 @@ const vatromUrl = "https://www.ffv.no/finn-godkjent-vatromsbedrift";
 const arbeidstilsynetUrl =
   "https://www.arbeidstilsynet.no/opendata/renhold_register.xml";
 const mesterBrevKompetanseUrl =
-  "http://www.kompetansesjekk.no/soekeresultat/?companyname=";
+  "https://mreg.mesterbrev.no/scripts/mb.wsc/web/sengine.html";
 
 async function scrapeAndPopulateDb() {
   try {
@@ -62,39 +62,29 @@ async function getHtmlString(url) {
   return await rp.get(url);
 }
 
+async function postForm(options) {
+  return await rp(options);
+}
+
 async function hentRenholdsregisterdata(url) {
   const rawXml = await rp.get(url);
   const parsedJson = parser.toJson(rawXml, {object: true});
   return parsedJson.Register.Virksomhet;
 }
 
-async function scrapeKompetansesjekk(url) {
-  const htmlString = await getHtmlString(url);
-  const $ = cheerio.load(htmlString);
-  const names = $(".block-container .block-text h3")
-    .map((_, node) => {
-      const name = $(node).text();
-      return name && name.trim();
-    })
-    .get()
-    .filter((name) => name && name.length > 0);
-  const [heading] = names;
-
-  const certifications = $(".sertification-text-div")
-    .map((_, node) => {
-      const name = $(node).text();
-      return name && name.trim();
-    })
-    .get()
-    .filter((name) => name && name.length > 0);
-
-  const certification = certifications.includes("Mester: Godkjent")
-    ? "Mester: Godkjent"
-    : "";
-  return {
-    heading,
-    certification,
+async function scrapeKompetansesjekk(url, navn) {
+  const options = {
+    method: "POST",
+    uri: url,
+    form: {
+      valg: "mb",
+      text_s: navn,
+    },
   };
+  const result = await postForm(options);
+  const $ = cheerio.load(result);
+  const name = $(".result tbody tr td").eq(2).text();
+  return name;
 }
 
 async function scrapeVatromgodkjenning(url) {

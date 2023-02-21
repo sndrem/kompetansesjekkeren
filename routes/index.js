@@ -150,17 +150,17 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
       "Scraper",
       `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
     );
-    const {heading = "", certification = ""} =
-      await scraper.scrapeKompetansesjekk(
-        `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
-      );
-    const fantMester = heading.toLowerCase().includes(navn.toLowerCase());
-    const harMesterbrev = certification
+    const navnFraMesterregister = await scraper.scrapeKompetansesjekk(
+      `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`,
+      navn
+    );
+    const fantMester = navnFraMesterregister
       .toLowerCase()
-      .includes("mester: godkjent");
-    if (fantMester && harMesterbrev) {
+      .includes(navn.toLowerCase());
+
+    if (fantMester) {
       // Vi fant en match!
-      res.json({navn, harMesterbrev});
+      res.json({navn, harMesterbrev: true});
     } else {
       console.warn(
         `Fant ingen match mellom enhetsnavn fra Brreg og Mesterbrevregisteret for orgnr: ${orgnr}`
@@ -168,6 +168,7 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
       res.json(null);
     }
   } else {
+    console.warn("Fant ingen enheter i Brreg med orgnr: ", orgnr);
     res.json(null);
   }
 });
