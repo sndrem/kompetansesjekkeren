@@ -5,6 +5,7 @@ const db = require("../database/db");
 const scraper = require("../scraper/scraper");
 const enhetsService = require("../services/enhetsregister-service");
 const finanstilsynService = require("../services/finanstilsyn-service");
+const elvirksomhetsregisterService = require("../services/elvirksomhetsregister-service");
 const {mesterBrevKompetanseUrl} = require("../scraper/scraper");
 
 const slack = require("../alerting/slack").slackNotifiyer;
@@ -154,6 +155,12 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
       `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`,
       navn
     );
+
+    if (!navnFraMesterregister) {
+      res.status(500).json(null);
+      return;
+    }
+
     const fantMester = navnFraMesterregister
       .toLowerCase()
       .includes(navn.toLowerCase());
@@ -176,6 +183,12 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
 router.get("/sok/finanstilsyn", async function (req, res, next) {
   const org = sjekkForOrganisasjonsnummer(req, res);
   const data = await finanstilsynService.hentDataForEnhet(org);
+  res.json(data);
+});
+
+router.get("/sok/elvirksomhetsregisteret", async function (req, res, next) {
+  const org = sjekkForOrganisasjonsnummer(req, res);
+  const data = await elvirksomhetsregisterService.sokEtterVirksomhet(org);
   res.json(data);
 });
 
