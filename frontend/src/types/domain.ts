@@ -305,4 +305,47 @@ export type Featuretoggle =
   | "feil_for_renholdsregisteret"
   | "feil_for_sentralgodkjenning"
   | "vis_sammenligningsside"
-  | "feil_for_finanstilsynet";
+  | "feil_for_finanstilsynet"
+  | "feil_for_elvirksomhetsregisteret";
+
+export interface ElvirksomhetsregisterResult {
+  totalHits: number;
+  hitsReturned: number;
+  skipped: number;
+  hits: Hit[];
+}
+
+interface Hit {
+  name: string;
+  contactInfo: ContactInfo;
+  businessNumber: string;
+  organisationNumber: string;
+  organisationType: string;
+  id: string;
+  professionalResponsible: string;
+  responsibleDLE: string;
+  numberOfElectricityWorkers: string;
+  numberOfCaseWorkers: string;
+  numberOfApprentices: string;
+  tasks: Task[];
+  facilities: Task[];
+  equipments: any[];
+}
+
+interface Task {
+  id: number;
+  sortId: number;
+  name: string;
+  type: string;
+}
+
+interface ContactInfo {
+  visitingAddress: string;
+  postalCode: string;
+  postalName: string;
+  postAddress: string;
+  municipality: string;
+  email: string;
+  fax?: any;
+  phoneNumber: string;
+}

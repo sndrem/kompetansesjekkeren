@@ -16,13 +16,13 @@ interface Props {
 function MesterbrevStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
   const {orgnr} = state;
-  const {data} = useSWR<MesterbrevResultat>(
+  const {data, error} = useSWR<MesterbrevResultat>(
     genererSokeurl(SOK_MESTERBREV, orgnr)
   );
 
   const erFeil = useHentToggle("feil_for_mesterbrev", false);
 
-  if (erFeil) {
+  if (erFeil || error) {
     return (
       <Feilmelding
         size={props.size}

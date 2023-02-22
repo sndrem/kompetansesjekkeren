@@ -8,6 +8,7 @@ import OppsummeringEnhetsregister from "./oppsummering-enhetsregister";
 import VatromregisterStatuskort from "./vatromregister-statuskort";
 import MesterbrevStatuskort from "./mesterbrev-statuskort";
 import FinanstilsynStatuskort from "./finanstilsyn-statuskort";
+import ElvirksomhetsregisterStatuskort from "./elvirksomhetsregister-statuskort";
 
 function OppsummeringPage() {
   const state = useContext(StateContext);
@@ -21,6 +22,7 @@ function OppsummeringPage() {
         {state.submitted && <VatromregisterStatuskort size="large" />}
         {state.submitted && <MesterbrevStatuskort size="large" />}
         {state.submitted && <FinanstilsynStatuskort size="large" />}
+        {state.submitted && <ElvirksomhetsregisterStatuskort size="large" />}
       </Grid.Column>
       <Grid.Column width={5}>
         <OppsummeringEnhetsregister />

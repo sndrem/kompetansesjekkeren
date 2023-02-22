@@ -81,10 +81,18 @@ async function scrapeKompetansesjekk(url, navn) {
       text_s: navn,
     },
   };
-  const result = await postForm(options);
-  const $ = cheerio.load(result);
-  const name = $(".result tbody tr td").eq(2).text();
-  return name;
+  try {
+    const result = await postForm(options);
+    const $ = cheerio.load(result);
+    const name = $(".result tbody tr td").eq(2).text();
+    return name;
+  } catch (error) {
+    console.log(
+      "Det var problemer ved kobling til mesterbrevregisteret",
+      error
+    );
+    return null;
+  }
 }
 
 async function scrapeVatromgodkjenning(url) {

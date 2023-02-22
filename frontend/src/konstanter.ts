@@ -5,3 +5,4 @@ export const SOK_RENHOLDSREGISTERET = "/sok/renholdsregisteret";
 export const SOK_VATROM = "/sok/vatrom";
 export const SOK_MESTERBREV = "/sok/mesterbrev";
 export const SOK_FINANSTILSYN = "/sok/finanstilsyn";
+export const SOK_ELVIRKSOMHETSREGISTERET = "/sok/elvirksomhetsregisteret";
