@@ -147,16 +147,14 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
     const {navn} = enhet;
-    console.log(
-      "Scraper",
-      `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`
-    );
+    console.log("Scraper", `${mesterBrevKompetanseUrl}`);
     const navnFraMesterregister = await scraper.scrapeKompetansesjekk(
-      `${mesterBrevKompetanseUrl}${encodeURIComponent(navn)}`,
+      `${mesterBrevKompetanseUrl}`,
       navn
     );
 
     if (!navnFraMesterregister) {
+      console.log("Fant ikke navn hos Mesterregisteret");
       res.status(500).json(null);
       return;
     }
