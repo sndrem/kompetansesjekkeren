@@ -8,8 +8,6 @@ const iconv = require("iconv");
 const vatromUrl = "https://www.ffv.no/finn-godkjent-vatromsbedrift";
 const arbeidstilsynetUrl =
   "https://www.arbeidstilsynet.no/opendata/renhold_register.xml";
-const mesterBrevKompetanseUrl =
-  "https://mreg.mesterbrev.no/scripts/mb.wsc/web/sengine.html";
 
 async function scrapeAndPopulateDb() {
   try {
@@ -58,55 +56,10 @@ if (db.get("vatromsregister").size().value() === 0) {
   scrapeAndPopulateDb();
 }
 
-async function postForm(options) {
-  return await rp(options);
-}
-
 async function hentRenholdsregisterdata(url) {
   const rawXml = await rp.get(url);
   const parsedJson = parser.toJson(rawXml, {object: true});
   return parsedJson.Register.Virksomhet;
-}
-
-async function scrapeKompetansesjekk(url, navn) {
-  try {
-    const result = await rp(url, {
-      headers: {
-        accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-language": "nb,en-US;q=0.9,en;q=0.8",
-        "cache-control": "no-cache",
-        "content-type": "application/x-www-form-urlencoded; charset=utf-8",
-        pragma: "no-cache",
-        "upgrade-insecure-requests": "1",
-        Referer: "https://mreg.mesterbrev.no/scripts/mb.wsc/web/sengine.html",
-        "Referrer-Policy": "strict-origin-when-cross-origin",
-      },
-      body: `valg=mb&text_s=${navn
-        .replaceAll("Ø", "%D8")
-        .replaceAll("ø", "%D8")
-        .replaceAll("Æ", "%C6")
-        .replaceAll("æ", "%C6")
-        .replaceAll("Å", "%C5")
-        .replaceAll("å", "%C5")
-        .replaceAll(" ", "+")}`,
-      method: "POST",
-      encoding: null,
-    });
-    var ic = new iconv.Iconv("iso-8859-1", "utf-8");
-    var buf = ic.convert(result);
-    var utf8String = buf.toString("utf-8");
-    console.log(utf8String);
-    const $ = cheerio.load(utf8String);
-    const name = $(".result tbody tr td").eq(2).text();
-    return name;
-  } catch (error) {
-    console.log(
-      "Det var problemer ved kobling til mesterbrevregisteret",
-      error
-    );
-    return null;
-  }
 }
 
 async function scrapeVatromgodkjenning(url) {
@@ -200,7 +153,5 @@ function clean(text) {
 module.exports = {
   scrapeVatromgodkjenning,
   scrapeAndPopulateDb,
-  mesterBrevKompetanseUrl,
-  scrapeKompetansesjekk,
   scrapeEnhetsregisterDetaljer,
 };

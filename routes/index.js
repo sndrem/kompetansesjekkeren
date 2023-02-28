@@ -6,7 +6,9 @@ const scraper = require("../scraper/scraper");
 const enhetsService = require("../services/enhetsregister-service");
 const finanstilsynService = require("../services/finanstilsyn-service");
 const elvirksomhetsregisterService = require("../services/elvirksomhetsregister-service");
-const {mesterBrevKompetanseUrl} = require("../scraper/scraper");
+const mesterbrevService = require("../services/mesterbrev-service");
+const parser = require("xml2json");
+require("dotenv").config();
 
 const slack = require("../alerting/slack").slackNotifiyer;
 require("../cron-jobs/scrape-job");
@@ -147,31 +149,26 @@ router.get("/sok/mesterbrev", async function (req, res, next) {
   const enhet = await enhetsService.hentEnhetsdata(orgnr);
   if (enhet) {
     const {navn} = enhet;
-    console.log("Scraper", `${mesterBrevKompetanseUrl}`);
-    const navnFraMesterregister = await scraper.scrapeKompetansesjekk(
-      `${mesterBrevKompetanseUrl}`,
-      navn
-    );
+    mesterbrevService.hentMesterbrevdata(navn, (error, data) => {
+      if (error) {
+        console.log(
+          "Det skjedde en feil ved henting av data fra Mesterbrev",
+          error
+        );
+        res.json(null);
+      }
 
-    if (!navnFraMesterregister) {
-      console.log("Fant ikke navn hos Mesterregisteret");
-      res.status(500).json(null);
-      return;
-    }
-
-    const fantMester = navnFraMesterregister
-      .toLowerCase()
-      .includes(navn.toLowerCase());
-
-    if (fantMester) {
-      // Vi fant en match!
-      res.json({navn, harMesterbrev: true});
-    } else {
-      console.warn(
-        `Fant ingen match mellom enhetsnavn fra Brreg og Mesterbrevregisteret for orgnr: ${orgnr}`
-      );
-      res.json(null);
-    }
+      if (data && data.hasOwnProperty("pResultat")) {
+        const parsedJson = parser.toJson(data.pResultat, {object: true});
+        const orgNrFraMesterbrev = parsedJson?.Firmaliste?.Firma?.OrgNr ?? "";
+        if (orgNrFraMesterbrev === orgnr) {
+          res.json({navn, harMesterbrev: true});
+        } else {
+          console.warn(`Fant ikke bedrift med orgnr: ${orgnr} hos Mesterbrev`);
+          res.json(null);
+        }
+      }
+    });
   } else {
     console.warn("Fant ingen enheter i Brreg med orgnr: ", orgnr);
     res.json(null);
@@ -188,11 +185,6 @@ router.get("/sok/elvirksomhetsregisteret", async function (req, res, next) {
   const org = sjekkForOrganisasjonsnummer(req, res);
   const data = await elvirksomhetsregisterService.sokEtterVirksomhet(org);
   res.json(data);
-});
-
-router.get("/update/mesterbrev", async function (req, res, next) {
-  scraper.scrapeMesterbrevregisteret(mesterbrevUrl);
-  res.json({});
 });
 
 module.exports = router;
