@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
-import { Message, MessageSizeProp } from "semantic-ui-react";
-import { StateContext } from "../../pages/sokpage";
-import { Appstate } from "../../types/domain";
+import React, {useContext} from "react";
+import {Message, MessageSizeProp} from "semantic-ui-react";
+import {StateContext} from "../../pages/sokpage";
+import {Appstate} from "../../types/domain";
 import Kort from "./kort";
-import { useHentToggle } from "../../featureToggles/client";
+import {useHentToggle} from "../../featureToggles/client";
 import Feilmelding from "../feilmeldinger/feilmelding";
+import {trpc} from "../../api/trpcApi";
+import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
 
 interface Props {
   size: MessageSizeProp;
@@ -12,8 +14,11 @@ interface Props {
 
 function EnhetsregisterStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
-
   const erFeil = useHentToggle("feil_for_enhetsregister", false);
+  const orgnr = useOrgnrFraUrl();
+  const data = trpc.kompetansesjekker.enhetsregisteret.useQuery(orgnr, {
+    enabled: !!orgnr,
+  });
 
   if (erFeil) {
     return (
@@ -25,7 +30,7 @@ function EnhetsregisterStatuskort(props: Props) {
     );
   }
 
-  const { enhetsregisteret } = state;
+  const enhetsregisteret = data.data;
   if (!enhetsregisteret) {
     return (
       <Message size={props.size} color="red">

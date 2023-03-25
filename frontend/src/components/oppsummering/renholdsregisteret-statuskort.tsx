@@ -1,7 +1,8 @@
 import React, {useContext} from "react";
 import {Message, MessageSizeProp} from "semantic-ui-react";
-import useSWR from "swr";
+import {trpc} from "../../api/trpcApi";
 import {useHentToggle} from "../../featureToggles/client";
+import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
 import {SOK_RENHOLDSREGISTERET} from "../../konstanter";
 import {StateContext} from "../../pages/sokpage";
 import {Appstate, RenholdsregisterOrganisasjon} from "../../types/domain";
@@ -21,10 +22,9 @@ function gyldigBedrift(status: string): boolean {
 
 function RenholdsregisteretStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
-  const {orgnr} = state;
-  const {data: resultat} = useSWR<RenholdsregisterOrganisasjon>(
-    genererSokeurl(SOK_RENHOLDSREGISTERET, orgnr)
-  );
+  const orgnr = useOrgnrFraUrl();
+  const {data: resultat} =
+    trpc.kompetansesjekker.renholdsregisteret.useQuery(orgnr);
 
   const erFeil = useHentToggle("feil_for_renholdsregisteret", false);
 

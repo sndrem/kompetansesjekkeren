@@ -1,14 +1,14 @@
-import React, { useContext } from "react";
-import { Item, Segment, Message } from "semantic-ui-react";
-import { StateContext } from "../../pages/sokpage";
-import { Appstate } from "../../types/domain";
-import { oppdaterWebadresse } from "../../utils/utils";
+import React from "react";
+import {Item, Message, Segment} from "semantic-ui-react";
+import {trpc} from "../../api/trpcApi";
+import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
+import {oppdaterWebadresse} from "../../utils/utils";
 
 interface Props {
   orgnr: string;
 }
 
-export function OverordnetEnhet({ orgnr }: Props) {
+export function OverordnetEnhet({orgnr}: Props) {
   return (
     <Message warning>
       <Message.Header>Denne bedriften har en overordnet enhet</Message.Header>
@@ -22,13 +22,14 @@ export function OverordnetEnhet({ orgnr }: Props) {
 }
 
 function OppsummeringEnhetsregister() {
-  const state = useContext<Appstate>(StateContext);
+  const orgnr = useOrgnrFraUrl();
+  const {data} = trpc.kompetansesjekker.enhetsregisteret.useQuery(orgnr);
 
-  if (!state.enhetsregisteret) {
+  if (!data) {
     return null;
   }
 
-  const enhet = state.enhetsregisteret;
+  const enhet = data;
 
   return (
     <Segment>
@@ -106,7 +107,7 @@ function OppsummeringEnhetsregister() {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${state.orgnr}`}
+              href={`https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${orgnr}`}
             >
               Se mer om bedriften hos Brønnøysundregistrene
             </a>

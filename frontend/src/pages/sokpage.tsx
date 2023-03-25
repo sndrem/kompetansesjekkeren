@@ -1,22 +1,15 @@
-import React, {
-  Context,
-  createContext,
-  Dispatch,
-  useEffect,
-  useReducer,
-} from "react";
+import React, {Context, createContext, Dispatch, useEffect} from "react";
 import {RouteComponentProps} from "react-router";
 import {Divider, Grid, Header, Loader, Message} from "semantic-ui-react";
-import {trpc} from "../client";
+import {trpc} from "../api/trpcApi";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import OppsummeringPage from "../components/oppsummering/oppsummering-page";
 import Sokefelt from "../components/sokefelt/sokefelt";
-import {SOK_ENHET} from "../konstanter";
+import {useOrgnrFraUrl} from "../hooks/useOrgnrFraUrl";
 import {nyttigeLenker} from "../konstanter/konstanter";
 import {notifySlack} from "../services/slackService";
 import {EnhetsregisterActions} from "../types/actions";
-import {Appstate, EnhetsregisterEnhet, initialState} from "../types/domain";
-import {reducer} from "../types/reducer";
+import {Appstate, initialState} from "../types/domain";
 import "./sokpage.scss";
 
 export const StateContext = createContext<Appstate>(initialState);
@@ -36,83 +29,58 @@ export function hentData<T>(url: string, orgnr: string): Promise<T> {
   });
 }
 
-async function sokEtterEnhet(orgnr: string) {
-  return await trpc.kompetansesjekker.enhetsregisteret.query(orgnr);
-}
-
-async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
-  dispatch({type: "SOK/RESET"});
-  if (orgnr.length === 9) {
-    dispatch({type: "SETT_ORGNR", data: orgnr});
-    dispatch({type: "DATA/HENTER_DATA"});
-    sokEtterEnhet(orgnr)
-      .then((data) => {
-        dispatch({type: "HENTET_ENHET", data: data});
-      })
-      .catch((err) => {
-        dispatch({
-          type: "DATA/HENTING_AV_DATA_ERROR",
-          error: "Klarte ikke hente data fra enhetsregisteret",
-        });
-      });
-  } else {
-    dispatch({type: "SOK/RESET"});
-  }
-}
-
 function Sokpage(props: RouteComponentProps<MatchParams>) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const orgnr = useOrgnrFraUrl();
+  const {data, isLoading, error} =
+    trpc.kompetansesjekker.enhetsregisteret.useQuery(orgnr, {
+      enabled: !!orgnr,
+    });
 
   useEffect(() => {
-    const {orgnr} = props.match.params;
     if (orgnr) {
       notifySlack(orgnr);
-      sok(orgnr, dispatch);
     }
-  }, [props.match.params]);
+  }, [orgnr]);
 
   function sokPaOrgnr(orgnr: string) {
     props.history.push(`/orgnr/${orgnr}`);
   }
 
   return (
-    <DispatchContext.Provider value={dispatch}>
-      <StateContext.Provider value={state}>
-        <div className="sokeside">
-          <Sokefelt onSubmit={sokPaOrgnr} />
-        </div>
-        <NyttigeLenker lenker={nyttigeLenker} />
-        <Divider />
-        <div className="container">
-          <Loader active={state.loading}>Laster data...</Loader>
-          {state.error && (
-            <Message color="red">
-              <Message.Header>
-                Oisann{" "}
-                <span role="img" aria-label="Oisann-ikon">
-                  🙈
-                </span>
-              </Message.Header>
-              {state.error}
-            </Message>
-          )}
+    <>
+      <div className="sokeside">
+        <Sokefelt onSubmit={sokPaOrgnr} />
+      </div>
+      <NyttigeLenker lenker={nyttigeLenker} />
+      <Divider />
+      <div className="container">
+        <Loader active={isLoading}>Laster data...</Loader>
+        {error && (
+          <Message color="red">
+            <Message.Header>
+              Oisann{" "}
+              <span role="img" aria-label="Oisann-ikon">
+                🙈
+              </span>
+            </Message.Header>
+            {error?.message}
+          </Message>
+        )}
 
-          <Grid>
-            <Grid.Column width="16">
-              {state.enhetsregisteret && (
-                <Header as="h3">
-                  Du har søkt på {state.enhetsregisteret.navn} med orgnr:{" "}
-                  {state.enhetsregisteret.organisasjonsnummer}
-                </Header>
-              )}
-            </Grid.Column>
-            <div className="container">
-              <OppsummeringPage />
-            </div>
-          </Grid>
-        </div>
-      </StateContext.Provider>
-    </DispatchContext.Provider>
+        <Grid>
+          <Grid.Column width="16">
+            {data && (
+              <Header as="h3">
+                Du har søkt på {data?.navn} med orgnr: {orgnr}
+              </Header>
+            )}
+          </Grid.Column>
+          <div className="container">
+            <OppsummeringPage />
+          </div>
+        </Grid>
+      </div>
+    </>
   );
 }
 

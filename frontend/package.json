@@ -24,7 +24,6 @@
     "react-scripts": "5.0.0",
     "semantic-ui-react": "^2.1.2",
     "styled-components": "^5.3.3",
-    "swr": "^1.2.2",
     "typescript": "4.6.2",
     "kompetansesjekkeren-api": "file:../kompetansjekkeren-api"
   },

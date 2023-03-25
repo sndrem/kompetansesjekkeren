@@ -1,11 +1,12 @@
-import React, { useContext } from "react";
-import { Message, MessageSizeProp } from "semantic-ui-react";
-import useSWR from "swr";
-import { useHentToggle } from "../../featureToggles/client";
-import { SOK_SENTRALGODKJENNING } from "../../konstanter";
-import { StateContext } from "../../pages/sokpage";
-import { Appstate, SentralGodkjenningResultat } from "../../types/domain";
-import { genererSokeurl } from "../../utils/utils";
+import React, {useContext} from "react";
+import {Message, MessageSizeProp} from "semantic-ui-react";
+import {trpc} from "../../api/trpcApi";
+import {useHentToggle} from "../../featureToggles/client";
+import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
+import {SOK_SENTRALGODKJENNING} from "../../konstanter";
+import {StateContext} from "../../pages/sokpage";
+import {Appstate, SentralGodkjenningResultat} from "../../types/domain";
+import {genererSokeurl} from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
 import Kort from "./kort";
 
@@ -15,10 +16,9 @@ interface Props {
 
 function SentralGodkjenningStatuskort(props: Props) {
   const state = useContext<Appstate>(StateContext);
-  const { orgnr } = state;
-  const { data: resultat } = useSWR<SentralGodkjenningResultat>(
-    genererSokeurl(SOK_SENTRALGODKJENNING, orgnr)
-  );
+  const orgnr = useOrgnrFraUrl();
+  const {data: resultat} =
+    trpc.kompetansesjekker.sentralgodkjenning.useQuery(orgnr);
 
   const erFeil = useHentToggle("feil_for_sentralgodkjenning", false);
 

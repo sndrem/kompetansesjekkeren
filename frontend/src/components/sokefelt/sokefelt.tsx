@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
-import React, { useState } from "react";
-import { Form, Message, Header } from "semantic-ui-react";
+import {motion} from "framer-motion";
+import React, {useState} from "react";
+import {Form, Message, Header} from "semantic-ui-react";
 import styled from "styled-components";
+import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
 
 interface Props {
   onSubmit: (orgnr: string) => void;
@@ -23,7 +24,7 @@ export function removeSpaces(value: string): string {
 }
 
 function Sokefelt(props: Props) {
-  const [orgnr, setOrgnr] = useState("");
+  const [orgnr, setOrgnr] = useState(useOrgnrFraUrl());
   const [feilmelding, setFeilmelding] = useState("");
 
   function validerInput(orgnr: string) {
@@ -90,7 +91,7 @@ function Sokefelt(props: Props) {
         />
       </Form.Field>
       <Knapp
-        whileHover={{ scale: 1.1 }}
+        whileHover={{scale: 1.1}}
         transition={spring}
         onClick={() => validerInput(orgnr)}
       >

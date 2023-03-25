@@ -16,13 +16,13 @@ function OppsummeringPage() {
   return (
     <>
       <Grid.Column width={8} style={{marginBottom: "2rem"}}>
-        {state.submitted && <EnhetsregisterStatuskort size="large" />}
-        {state.submitted && <RenholdsregisteretStatuskort size="large" />}
-        {state.submitted && <SentralGodkjenningStatuskort size="large" />}
-        {state.submitted && <VatromregisterStatuskort size="large" />}
-        {state.submitted && <MesterbrevStatuskort size="large" />}
-        {state.submitted && <FinanstilsynStatuskort size="large" />}
-        {state.submitted && <ElvirksomhetsregisterStatuskort size="large" />}
+        <EnhetsregisterStatuskort size="large" />
+        <RenholdsregisteretStatuskort size="large" />
+        <SentralGodkjenningStatuskort size="large" />
+        <VatromregisterStatuskort size="large" />
+        <MesterbrevStatuskort size="large" />
+        <FinanstilsynStatuskort size="large" />
+        <ElvirksomhetsregisterStatuskort size="large" />
       </Grid.Column>
       <Grid.Column width={5}>
         <OppsummeringEnhetsregister />
