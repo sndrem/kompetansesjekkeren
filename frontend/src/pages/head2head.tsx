@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Button,
   Dimmer,
@@ -11,10 +11,10 @@ import {
 } from "semantic-ui-react";
 import styled from "styled-components";
 import Oppsummeringstabell from "../components/oppsummering/oppsummeringstabell";
-import { removeSpaces } from "../components/sokefelt/sokefelt";
-import { SOK_DETALJERT_ENHET } from "../konstanter";
-import { EnhetsregisterDetaljer } from "../types/domain";
-import { hentData } from "./sokpage";
+import {removeSpaces} from "../components/sokefelt/sokefelt";
+import {SOK_DETALJERT_ENHET} from "../konstanter";
+import {EnhetsregisterDetaljer} from "../types/domain";
+import {hentData} from "./sokpage";
 
 const Wrapper = styled.div`
   display: flex;

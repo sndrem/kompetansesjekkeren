@@ -13,13 +13,47 @@ require("dotenv").config();
 
 import {router, publicProcedure} from "../trpc";
 
+const HarOrgNr = z.string().length(9);
+
 export const kompetansesjekkerRouter = router({
   update: publicProcedure.mutation(async (req) => {
     console.log("Scraper og populerer database");
     const data = await scraper.scrapeAndPopulateDb();
     return {status: "Update OK", data};
   }),
+  enhetsregisteret: publicProcedure.input(HarOrgNr).query(async (req) => {
+    const {input} = req;
+    console.log(`Søker etter enhet med orgnr: ${input}`);
+    return await enhetsregisterService.hentEnhetsdata(input);
+  }),
+  enhetsregisteretDetaljer: publicProcedure
+    .input(HarOrgNr)
+    .query(async (req) => {
+      const {input} = req;
+      const dataFraEnhetsregister = await enhetsregisterService.hentEnhetsdata(
+        input
+      );
+      const enhet = await enhetsregisterService.hentDetaljer(input);
+      if (!enhet) {
+        throw new Error(`Fant ikke enhet med orgnr: ${input}`);
+      }
+      const detaljer = await scraper.scrapeEnhetsregisterDetaljer(enhet);
+      const mergedData = {...dataFraEnhetsregister, detaljer};
+      return mergedData;
+    }),
 });
+
+// router.get("/sok/enhetsregisteret/detaljer", async function (req, res, next) {
+//   const orgnr = sjekkForOrganisasjonsnummer(req, res);
+//   const dataFraEnhetsregister = await enhetsService.hentEnhetsdata(orgnr);
+//   const enhet = await enhetsService.hentDetaljer(orgnr);
+//   if (!enhet) {
+//     res.status(404).send(`Fant ikke enhet med orgnr: ${orgnr}`);
+//   }
+//   const detaljer = await scraper.scrapeEnhetsregisterDetaljer(enhet);
+//   const mergedData = {...dataFraEnhetsregister, detaljer};
+//   res.json(mergedData);
+// });
 
 // const slack = require("../alerting/slack").slackNotifiyer;
 // require("../cron-jobs/scrape-job");
@@ -35,23 +69,6 @@ export const kompetansesjekkerRouter = router({
 // router.get("/update", async function (req, res, next) {
 //   const response = await scraper.scrapeAndPopulateDb();
 //   res.json({status: "Update OK", data: response});
-// });
-
-// function sjekkForOrganisasjonsnummer(req, res) {
-//   if (!req.query.organisasjonsnummer) {
-//     res.status(400).json({
-//       status: 400,
-//       message: "Du mangler query-param 'organisasjonsnummer'",
-//     });
-//   } else {
-//     return req.query.organisasjonsnummer;
-//   }
-// }
-
-// router.get("/sok/enhetsregisteret", async function (req, res, next) {
-//   const orgnr = sjekkForOrganisasjonsnummer(req, res);
-//   const enhet = await enhetsService.hentEnhetsdata(orgnr);
-//   res.json(enhet);
 // });
 
 // router.get("/sok/enhetsregisteret/detaljer", async function (req, res, next) {

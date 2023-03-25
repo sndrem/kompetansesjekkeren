@@ -36,12 +36,16 @@ export function hentData<T>(url: string, orgnr: string): Promise<T> {
   });
 }
 
+async function sokEtterEnhet(orgnr: string) {
+  return await trpc.kompetansesjekker.enhetsregisteret.query(orgnr);
+}
+
 async function sok(orgnr: string, dispatch: Dispatch<EnhetsregisterActions>) {
   dispatch({type: "SOK/RESET"});
   if (orgnr.length === 9) {
     dispatch({type: "SETT_ORGNR", data: orgnr});
     dispatch({type: "DATA/HENTER_DATA"});
-    hentData<EnhetsregisterEnhet>(SOK_ENHET, orgnr)
+    sokEtterEnhet(orgnr)
       .then((data) => {
         dispatch({type: "HENTET_ENHET", data: data});
       })
@@ -67,11 +71,6 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
     }
   }, [props.match.params]);
 
-  async function updateDb() {
-    const response = await trpc.kompetansesjekker.update.mutate();
-    console.log(response);
-  }
-
   function sokPaOrgnr(orgnr: string) {
     props.history.push(`/orgnr/${orgnr}`);
   }
@@ -81,7 +80,6 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
       <StateContext.Provider value={state}>
         <div className="sokeside">
           <Sokefelt onSubmit={sokPaOrgnr} />
-          <button onClick={updateDb}>Oppdater db</button>
         </div>
         <NyttigeLenker lenker={nyttigeLenker} />
         <Divider />
