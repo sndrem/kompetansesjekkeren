@@ -1,8 +1,8 @@
-const soap = require("soap");
+import soap from "soap";
 const wsdlUrl =
   "https://mreg.mesterbrev.no/wsa/wsa1/wsdl?targetURI=urn:mbrev-org";
 
-const mesterbrevService = {
+export const mesterbrevService = {
   hentMesterbrevdata: async function (firmanavn, cb) {
     try {
       const client = await soap.createClientAsync(wsdlUrl, {});
@@ -19,5 +19,3 @@ const mesterbrevService = {
     }
   },
 };
-
-module.exports = mesterbrevService;

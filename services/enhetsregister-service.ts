@@ -1,4 +1,4 @@
-const rp = require("request-promise");
+import rp from "request-promise";
 
 const ENHETSREGISTERET_HOST_AND_PORT_HOVEDENHETER =
   "https://data.brreg.no/enhetsregisteret/api/enheter";
@@ -6,7 +6,7 @@ const ENHETSREGISTERET_HOST_AND_PORT_HOVEDENHETER =
 const ENHETSREGISTERET_HOST_AND_PORT_UNDERENHETER =
   "https://data.brreg.no/enhetsregisteret/api/underenheter";
 
-const enhetsregisterService = {
+export const enhetsregisterService = {
   hentEnhetsdata: async function (orgnr) {
     const hovedenhet = rp(
       `${ENHETSREGISTERET_HOST_AND_PORT_HOVEDENHETER}?organisasjonsnummer=${orgnr}`
@@ -56,5 +56,3 @@ const enhetsregisterService = {
     }
   },
 };
-
-module.exports = enhetsregisterService;

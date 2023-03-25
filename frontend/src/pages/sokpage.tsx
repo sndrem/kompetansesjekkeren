@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import {RouteComponentProps} from "react-router";
 import {Divider, Grid, Header, Loader, Message} from "semantic-ui-react";
+import {trpc} from "../client";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
 import OppsummeringPage from "../components/oppsummering/oppsummering-page";
 import Sokefelt from "../components/sokefelt/sokefelt";
@@ -66,6 +67,11 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
     }
   }, [props.match.params]);
 
+  async function updateDb() {
+    const response = await trpc.kompetansesjekker.update.mutate();
+    console.log(response);
+  }
+
   function sokPaOrgnr(orgnr: string) {
     props.history.push(`/orgnr/${orgnr}`);
   }
@@ -75,6 +81,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
       <StateContext.Provider value={state}>
         <div className="sokeside">
           <Sokefelt onSubmit={sokPaOrgnr} />
+          <button onClick={updateDb}>Oppdater db</button>
         </div>
         <NyttigeLenker lenker={nyttigeLenker} />
         <Divider />

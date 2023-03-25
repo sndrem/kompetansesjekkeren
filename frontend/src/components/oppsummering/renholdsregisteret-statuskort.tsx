@@ -50,7 +50,7 @@ function RenholdsregisteretStatuskort(props: Props) {
   const tekst = gyldigBedrift(resultat.Hovedenhet.Godkjenningsstatus)
     ? `${resultat.Hovedenhet.Navn} har status: ${resultat.Hovedenhet.Godkjenningsstatus}`
     : `${resultat.Hovedenhet.Navn} er ikke godkjent i Renholdsregisteret.`;
-  let underavdelinger = null;
+  let underavdelinger: any = null;
   if (resultat.Underenheter) {
     const avdeling = resultat.Underenheter?.Avdeling;
 
