@@ -135,28 +135,20 @@ export const kompetansesjekkerRouter = router({
     const enhet = await enhetsregisterService.hentEnhetsdata(input);
     if (enhet) {
       const {navn}: {navn: string} = enhet;
-      await mesterbrevService.hentMesterbrevdata(navn, (error, data) => {
-        if (error) {
-          console.log(
-            "Det skjedde en feil ved henting av data fra Mesterbrev",
-            error
-          );
+      const data: any = await mesterbrevService.hentMesterbrevdata(navn);
+
+      if (data && data.hasOwnProperty("pResultat")) {
+        const parsedJson = parser.toJson(data.pResultat, {object: true});
+        const orgNrFraMesterbrev = parsedJson?.Firmaliste?.Firma?.OrgNr ?? "";
+        if (orgNrFraMesterbrev === input) {
+          return {navn: navn, harMesterbrev: true};
+        } else {
+          console.warn(`Fant ikke bedrift med orgnr: ${input} hos Mesterbrev`);
           return null;
         }
-
-        if (data && data.hasOwnProperty("pResultat")) {
-          const parsedJson = parser.toJson(data.pResultat, {object: true});
-          const orgNrFraMesterbrev = parsedJson?.Firmaliste?.Firma?.OrgNr ?? "";
-          if (orgNrFraMesterbrev === input) {
-            return {navn, harMesterbrev: true};
-          } else {
-            console.warn(
-              `Fant ikke bedrift med orgnr: ${input} hos Mesterbrev`
-            );
-            return null;
-          }
-        }
-      });
+      } else {
+        return null;
+      }
     } else {
       console.warn("Fant ingen enheter i Brreg med orgnr: ", input);
       return null;

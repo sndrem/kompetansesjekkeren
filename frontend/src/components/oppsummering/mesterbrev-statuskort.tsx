@@ -15,60 +15,59 @@ interface Props {
 }
 
 function MesterbrevStatuskort(props: Props) {
-  return <p>Må fikse MesterbrevStatuskort</p>;
-  // const state = useContext<Appstate>(StateContext);
-  // const orgnr = useOrgnrFraUrl();
-  // const {data, error} = trpc.kompetansesjekker.mesterbrev.useQuery(orgnr);
+  const state = useContext<Appstate>(StateContext);
+  const orgnr = useOrgnrFraUrl();
+  const {data, error} = trpc.kompetansesjekker.mesterbrev.useQuery(orgnr);
 
-  // const erFeil = useHentToggle("feil_for_mesterbrev", false);
+  const erFeil = useHentToggle("feil_for_mesterbrev", false);
 
-  // if (erFeil || error) {
-  //   return (
-  //     <Feilmelding
-  //       size={props.size}
-  //       headerTekst="Mesterbrevsregisteret"
-  //       bodyTekst={
-  //         <>
-  //           <p>
-  //             Det er for øyeblikket ikke mulig å sjekke bedrifter hos
-  //             Mesterbrevsregisteret
-  //           </p>
-  //           <p>
-  //             Du kan manuelt sjekke for Mesterbrev hos{" "}
-  //             <a
-  //               target="_blank"
-  //               rel="noreferrer noopener"
-  //               href="https://www.mesterbrev.no/mesterregister/sok-mesterregisteret/"
-  //             >
-  //               https://www.mesterbrev.no
-  //             </a>
-  //           </p>
-  //         </>
-  //       }
-  //     ></Feilmelding>
-  //   );
-  // }
+  if (erFeil || error) {
+    return (
+      <Feilmelding
+        size={props.size}
+        headerTekst="Mesterbrevsregisteret"
+        bodyTekst={
+          <>
+            <p>
+              Det er for øyeblikket ikke mulig å sjekke bedrifter hos
+              Mesterbrevsregisteret
+            </p>
+            <p>
+              Du kan manuelt sjekke for Mesterbrev hos{" "}
+              <a
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://www.mesterbrev.no/mesterregister/sok-mesterregisteret/"
+              >
+                https://www.mesterbrev.no
+              </a>
+            </p>
+          </>
+        }
+      ></Feilmelding>
+    );
+  }
 
-  // if (!data) {
-  //   return (
-  //     <Message size={props.size} color="red">
-  //       <Message.Header>Mesterbrevsregisteret</Message.Header>
-  //       <p>Fant ingen data for {state.orgnr} hos Mesterbrevsregisteret.</p>
-  //     </Message>
-  //   );
-  // }
+  if (!data) {
+    return (
+      <Message size={props.size} color="red">
+        <Message.Header>Mesterbrevsregisteret</Message.Header>
+        <p>Fant ingen data for {state.orgnr} hos Mesterbrevsregisteret.</p>
+      </Message>
+    );
+  }
 
-  // const tekst = `${data?.navn} finnes i Mesterbrevsregisteret ✅`;
-  // return (
-  //   <Kort
-  //     size={props.size}
-  //     tittel="Mesterbrevsregisteret"
-  //     erOkStatus={data !== null}
-  //     orgnr={state.orgnr}
-  //   >
-  //     <p>{tekst}</p>
-  //   </Kort>
-  // );
+  const tekst = `${data?.navn} finnes i Mesterbrevsregisteret ✅`;
+  return (
+    <Kort
+      size={props.size}
+      tittel="Mesterbrevsregisteret"
+      erOkStatus={data !== null}
+      orgnr={state.orgnr}
+    >
+      <p>{tekst}</p>
+    </Kort>
+  );
 }
 
 export default MesterbrevStatuskort;
