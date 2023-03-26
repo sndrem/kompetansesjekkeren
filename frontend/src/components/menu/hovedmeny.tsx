@@ -1,12 +1,10 @@
-import React, { useState } from "react";
-import { Menu } from "semantic-ui-react";
-import { useLocation } from "react-router-dom";
-import { useHentToggle } from "../../featureToggles/client";
+import React, {useState} from "react";
+import {useLocation} from "react-router-dom";
+import {Menu} from "semantic-ui-react";
 
 function Hovedmeny() {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(location.pathname);
-  const visSammenligningToggle = useHentToggle("vis_sammenligningsside", true);
 
   return (
     <Menu inverted>
@@ -20,19 +18,6 @@ function Hovedmeny() {
       >
         Hjem
       </Menu.Item>
-
-      {visSammenligningToggle && (
-        <Menu.Item
-          href="#/sammenligning"
-          name="sammenligning"
-          active={activeItem === "/sammenligning"}
-          onClick={() => {
-            setActiveItem("/sammenligning");
-          }}
-        >
-          Sammenligne to bedrifter
-        </Menu.Item>
-      )}
     </Menu>
   );
 }

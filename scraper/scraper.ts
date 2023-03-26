@@ -1,9 +1,10 @@
+//@ts-nocheck
+// TODO Fjern ts-nocheck og typ opp skikkelig
 const cheerio = require("cheerio");
-const rp = require("request-promise");
-const db = require("../database/db");
-const slack = require("../alerting/slack").slackNotifiyer;
-const parser = require("xml2json");
-const iconv = require("iconv");
+import rp from "request-promise";
+import {db} from "../database/db";
+import slack from "../alerting/slack";
+import parser from "xml2json";
 
 const vatromUrl = "https://www.ffv.no/finn-godkjent-vatromsbedrift";
 const arbeidstilsynetUrl =
@@ -150,7 +151,7 @@ function clean(text) {
   return y;
 }
 
-module.exports = {
+export = {
   scrapeVatromgodkjenning,
   scrapeAndPopulateDb,
   scrapeEnhetsregisterDetaljer,

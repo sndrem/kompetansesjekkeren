@@ -5,11 +5,10 @@ const adapter = new FileSync("db.json");
 const db = low(adapter);
 
 db.defaults({
-    sistOppdatert: Date.now(),
-    vatromsregister: [],
-    mesterbrev: [],
-    renholdsregister: []
-})
-    .write();
+  sistOppdatert: Date.now(),
+  vatromsregister: [],
+  mesterbrev: [],
+  renholdsregister: [],
+}).write();
 
-module.exports = db;
+export {db};

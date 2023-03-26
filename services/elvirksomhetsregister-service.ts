@@ -1,10 +1,14 @@
+import {ElvirksomhetsregisterResult} from "../types/domain";
+
 const rp = require("request-promise");
 
 const DSB_SEARCH_URL =
   "https://elvirksomhetsregisteret.dsb.no/elreg/api/v1/electricianbusinesses/search";
 
-const elvirksomhetsregisterService = {
-  sokEtterVirksomhet: async function (orgnr) {
+export const elvirksomhetsregisterService = {
+  sokEtterVirksomhet: async function (
+    orgnr: string
+  ): Promise<ElvirksomhetsregisterResult | null> {
     try {
       const response = await rp(
         "https://elvirksomhetsregisteret.dsb.no/elreg/api/v1/electricianbusinesses/search",
@@ -38,5 +42,3 @@ const elvirksomhetsregisterService = {
     }
   },
 };
-
-module.exports = elvirksomhetsregisterService;

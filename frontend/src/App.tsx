@@ -1,55 +1,39 @@
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import React from "react";
 import {HashRouter, Redirect, Route, Switch} from "react-router-dom";
 import {Container} from "semantic-ui-react";
-import "./App.scss";
-import Feedback from "./components/feedback/feedback";
-import Sokpage from "./pages/sokpage";
 import Hovedmeny from "./components/menu/hovedmeny";
-import Head2Head from "./pages/head2head";
-import {SWRConfig} from "swr";
+import Sokpage from "./pages/sokpage";
+import {trpc} from "./api/trpcApi";
+import {httpBatchLink} from "@trpc/react-query";
+import "./App.scss";
 
-function fetcher(resource: any, init: any) {
-  return fetch(resource, init)
-    .then((res) => {
-      if (res.status === 404) {
-        return Promise.resolve(null);
-      }
-
-      if (res.status === 500) {
-        return Promise.reject("Feil ved spørring av ressurs");
-      }
-
-      if (!res.ok) {
-        throw new Error(`Could not fetch resource: ${resource}`);
-      }
-      return res.json();
-    })
-    .catch((err) => {
-      throw new Error(err);
-    });
-}
+const queryClient = new QueryClient();
+const trpcClient = trpc.createClient({
+  links: [
+    httpBatchLink({
+      url: "http://localhost:2022",
+    }),
+  ],
+});
 
 const App: React.FC = () => {
   return (
     <>
-      <SWRConfig
-        value={{
-          fetcher,
-        }}
-      >
-        <Container>
-          <HashRouter>
-            <Hovedmeny />
-            <Switch>
-              <Route path="/" exact component={Sokpage} />
-              <Route path="/orgnr/:orgnr" exact component={Sokpage} />
-              <Route path="/sammenligning" exact component={Head2Head} />
-              <Redirect from="*" to="/" />
-            </Switch>
-          </HashRouter>
-          <Feedback />
-        </Container>
-      </SWRConfig>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <Container>
+            <HashRouter>
+              <Hovedmeny />
+              <Switch>
+                <Route path="/" exact component={Sokpage} />
+                <Route path="/orgnr/:orgnr" exact component={Sokpage} />
+                <Redirect from="*" to="/" />
+              </Switch>
+            </HashRouter>
+          </Container>
+        </QueryClientProvider>
+      </trpc.Provider>
     </>
   );
 };
