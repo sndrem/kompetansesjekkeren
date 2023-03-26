@@ -13,7 +13,9 @@ const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
       url:
-        process.env.NODE_ENV === "production" ? "/" : "http://localhost:3000",
+        process.env.NODE_ENV === "production"
+          ? `${window.location.origin}`
+          : "http://localhost:3000",
     }),
   ],
 });
