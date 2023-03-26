@@ -1,12 +1,8 @@
-import React, {useContext} from "react";
+import React from "react";
 import {Message, MessageSizeProp} from "semantic-ui-react";
 import {trpc} from "../../api/trpcApi";
 import {useHentToggle} from "../../featureToggles/client";
 import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
-import {SOK_VATROM} from "../../konstanter";
-import {StateContext} from "../../pages/sokpage";
-import {Appstate, VatromregisterResultat} from "../../types/domain";
-import {genererSokeurl} from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
 import Kort from "./kort";
 
@@ -15,10 +11,11 @@ interface Props {
 }
 
 function VatromregisterStatuskort(props: Props) {
-  const state = useContext<Appstate>(StateContext);
   const orgnr = useOrgnrFraUrl();
 
-  const {data} = trpc.kompetansesjekker.vatrom.useQuery(orgnr);
+  const {data} = trpc.kompetansesjekker.vatrom.useQuery(orgnr, {
+    enabled: !!orgnr,
+  });
 
   const erFeil = useHentToggle("feil_for_vatrom", false);
 
@@ -36,7 +33,7 @@ function VatromregisterStatuskort(props: Props) {
     return (
       <Message size={props.size} color="red">
         <Message.Header>Fagrådet for våtrom</Message.Header>
-        <p>Fant ingen data for {state.orgnr} hos Fagrådet for våtrom.</p>
+        <p>Fant ingen data for {orgnr} hos Fagrådet for våtrom.</p>
       </Message>
     );
   }
@@ -49,7 +46,7 @@ function VatromregisterStatuskort(props: Props) {
       size={props.size}
       tittel="Fagrådet for våtrom"
       erOkStatus={data.godkjent}
-      orgnr={state.orgnr}
+      orgnr={orgnr}
     >
       <p>{tekst}</p>
       {data.nettside && (

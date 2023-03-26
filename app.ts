@@ -5,8 +5,6 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
-// const indexRouter = require("./routes/index");
-// const slackRouter = require("./routes/slack");
 
 import {router} from "./trpc";
 import {kompetansesjekkerRouter} from "./routes/kompetansesjekker";

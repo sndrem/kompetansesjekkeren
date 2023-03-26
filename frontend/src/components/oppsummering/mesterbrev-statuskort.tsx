@@ -1,12 +1,8 @@
-import React, {useContext} from "react";
+import React from "react";
 import {Message, MessageSizeProp} from "semantic-ui-react";
 import {trpc} from "../../api/trpcApi";
 import {useHentToggle} from "../../featureToggles/client";
 import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
-import {SOK_MESTERBREV} from "../../konstanter";
-import {StateContext} from "../../pages/sokpage";
-import {Appstate, MesterbrevResultat} from "../../types/domain";
-import {genererSokeurl} from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
 import Kort from "./kort";
 
@@ -15,9 +11,10 @@ interface Props {
 }
 
 function MesterbrevStatuskort(props: Props) {
-  const state = useContext<Appstate>(StateContext);
   const orgnr = useOrgnrFraUrl();
-  const {data, error} = trpc.kompetansesjekker.mesterbrev.useQuery(orgnr);
+  const {data, error} = trpc.kompetansesjekker.mesterbrev.useQuery(orgnr, {
+    enabled: !!orgnr,
+  });
 
   const erFeil = useHentToggle("feil_for_mesterbrev", false);
 
@@ -52,7 +49,7 @@ function MesterbrevStatuskort(props: Props) {
     return (
       <Message size={props.size} color="red">
         <Message.Header>Mesterbrevsregisteret</Message.Header>
-        <p>Fant ingen data for {state.orgnr} hos Mesterbrevsregisteret.</p>
+        <p>Fant ingen data for {orgnr} hos Mesterbrevsregisteret.</p>
       </Message>
     );
   }
@@ -63,7 +60,7 @@ function MesterbrevStatuskort(props: Props) {
       size={props.size}
       tittel="Mesterbrevsregisteret"
       erOkStatus={data !== null}
-      orgnr={state.orgnr}
+      orgnr={orgnr}
     >
       <p>{tekst}</p>
     </Kort>

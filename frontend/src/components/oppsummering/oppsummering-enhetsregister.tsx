@@ -23,7 +23,9 @@ export function OverordnetEnhet({orgnr}: Props) {
 
 function OppsummeringEnhetsregister() {
   const orgnr = useOrgnrFraUrl();
-  const {data} = trpc.kompetansesjekker.enhetsregisteret.useQuery(orgnr);
+  const {data} = trpc.kompetansesjekker.enhetsregisteret.useQuery(orgnr, {
+    enabled: !!orgnr,
+  });
 
   if (!data) {
     return null;

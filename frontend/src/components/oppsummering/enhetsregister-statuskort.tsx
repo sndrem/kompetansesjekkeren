@@ -1,19 +1,16 @@
-import React, {useContext} from "react";
+import React from "react";
 import {Message, MessageSizeProp} from "semantic-ui-react";
-import {StateContext} from "../../pages/sokpage";
-import {Appstate} from "../../types/domain";
-import Kort from "./kort";
-import {useHentToggle} from "../../featureToggles/client";
-import Feilmelding from "../feilmeldinger/feilmelding";
 import {trpc} from "../../api/trpcApi";
+import {useHentToggle} from "../../featureToggles/client";
 import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
+import Feilmelding from "../feilmeldinger/feilmelding";
+import Kort from "./kort";
 
 interface Props {
   size: MessageSizeProp;
 }
 
 function EnhetsregisterStatuskort(props: Props) {
-  const state = useContext<Appstate>(StateContext);
   const erFeil = useHentToggle("feil_for_enhetsregister", false);
   const orgnr = useOrgnrFraUrl();
   const data = trpc.kompetansesjekker.enhetsregisteret.useQuery(orgnr, {
@@ -35,7 +32,7 @@ function EnhetsregisterStatuskort(props: Props) {
     return (
       <Message size={props.size} color="red">
         <Message.Header>Enhetsregisteret</Message.Header>
-        <p>Fant ingen data for {state.orgnr} i Enhetsregisteret</p>
+        <p>Fant ingen data for {orgnr} i Enhetsregisteret</p>
       </Message>
     );
   }
@@ -47,7 +44,7 @@ function EnhetsregisterStatuskort(props: Props) {
   return (
     <Kort
       size={props.size}
-      orgnr={state.orgnr}
+      orgnr={orgnr}
       tittel="MVA-register (Brønnøysundregistrene)"
       erOkStatus={erMvaRegistrert ? true : false}
     >

@@ -1,10 +1,8 @@
-import React, {useContext} from "react";
+import React from "react";
 import {Message, MessageSizeProp} from "semantic-ui-react";
 import {trpc} from "../../api/trpcApi";
 import {useHentToggle} from "../../featureToggles/client";
 import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
-import {StateContext} from "../../pages/sokpage";
-import {Appstate} from "../../types/domain";
 import Feilmelding from "../feilmeldinger/feilmelding";
 import Kort from "./kort";
 
@@ -13,9 +11,10 @@ interface Props {
 }
 
 function FinanstilsynStatuskort(props: Props) {
-  const state = useContext<Appstate>(StateContext);
   const orgnr = useOrgnrFraUrl();
-  const {data} = trpc.kompetansesjekker.finanstilsynet.useQuery(orgnr);
+  const {data} = trpc.kompetansesjekker.finanstilsynet.useQuery(orgnr, {
+    enabled: !!orgnr,
+  });
   const erFeil = useHentToggle("feil_for_finanstilsynet", false);
 
   if (erFeil) {
@@ -35,11 +34,11 @@ function FinanstilsynStatuskort(props: Props) {
     );
   }
 
-  if (data?.hitsReturned === 0) {
+  if (!data || data?.hitsReturned === 0) {
     return (
       <Message size={props.size} color="red">
         <Message.Header>Finanstilsynet</Message.Header>
-        <p>Fant ingen data for {state.orgnr} hos Finanstilsynet.</p>
+        <p>Fant ingen data for {orgnr} hos Finanstilsynet.</p>
       </Message>
     );
   }
@@ -57,7 +56,7 @@ function FinanstilsynStatuskort(props: Props) {
       size={props.size}
       tittel="Finanstilsynet"
       erOkStatus={data !== null}
-      orgnr={state.orgnr}
+      orgnr={orgnr}
     >
       <p>{tekst}</p>
       {optionalRegnskapsforerData ? (

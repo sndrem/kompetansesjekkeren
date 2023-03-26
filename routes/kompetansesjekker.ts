@@ -13,6 +13,11 @@ require("dotenv").config();
 
 import {slackNotifiyer} from "../alerting/slack";
 import {publicProcedure, router} from "../trpc";
+import {
+  ArbeidstilsynetRecordStatus,
+  RenholdsregisterOrganisasjon,
+  VatromregisterResultat,
+} from "../types/domain";
 
 const HarOrgNr = z.string().length(9);
 
@@ -54,11 +59,12 @@ export const kompetansesjekkerRouter = router({
     }),
   vatrom: publicProcedure.input(HarOrgNr).query(async (req) => {
     const {input} = req;
-    const vatrom = db.get("vatromsregister").find({input}).value();
+    const vatrom = db.get("vatromsregister").find({orgnr: input}).value();
     if (!vatrom) {
+      console.log(`Fant ingen bedrift for orgnr: ${input} i Våtromsregisteret`);
       return null;
     } else {
-      return vatrom;
+      return vatrom as VatromregisterResultat;
     }
   }),
   renholdsregisteret: publicProcedure.input(HarOrgNr).query(async (req) => {
@@ -91,7 +97,9 @@ export const kompetansesjekkerRouter = router({
           .value();
       }
 
-      return arbeidstilsynetHovedenhet ? arbeidstilsynetHovedenhet : null;
+      return arbeidstilsynetHovedenhet
+        ? (arbeidstilsynetHovedenhet as RenholdsregisterOrganisasjon)
+        : null;
     } else {
       return null;
     }

@@ -1,4 +1,5 @@
 import rp from "request-promise";
+import {EnhetsregisterEnhet} from "../types/domain";
 
 const ENHETSREGISTERET_HOST_AND_PORT_HOVEDENHETER =
   "https://data.brreg.no/enhetsregisteret/api/enheter";
@@ -7,7 +8,7 @@ const ENHETSREGISTERET_HOST_AND_PORT_UNDERENHETER =
   "https://data.brreg.no/enhetsregisteret/api/underenheter";
 
 export const enhetsregisterService = {
-  hentEnhetsdata: async function (orgnr) {
+  hentEnhetsdata: async function (orgnr): Promise<EnhetsregisterEnhet | null> {
     const hovedenhet = rp(
       `${ENHETSREGISTERET_HOST_AND_PORT_HOVEDENHETER}?organisasjonsnummer=${orgnr}`
     );

@@ -1,12 +1,8 @@
-import React, {useContext} from "react";
+import React from "react";
 import {Message, MessageSizeProp} from "semantic-ui-react";
 import {trpc} from "../../api/trpcApi";
 import {useHentToggle} from "../../featureToggles/client";
 import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
-import {SOK_RENHOLDSREGISTERET} from "../../konstanter";
-import {StateContext} from "../../pages/sokpage";
-import {Appstate, RenholdsregisterOrganisasjon} from "../../types/domain";
-import {genererSokeurl} from "../../utils/utils";
 import Feilmelding from "../feilmeldinger/feilmelding";
 import Kort from "./kort";
 
@@ -21,10 +17,11 @@ function gyldigBedrift(status: string): boolean {
 }
 
 function RenholdsregisteretStatuskort(props: Props) {
-  const state = useContext<Appstate>(StateContext);
   const orgnr = useOrgnrFraUrl();
-  const {data: resultat} =
-    trpc.kompetansesjekker.renholdsregisteret.useQuery(orgnr);
+  const {data: resultat} = trpc.kompetansesjekker.renholdsregisteret.useQuery(
+    orgnr,
+    {enabled: !!orgnr}
+  );
 
   const erFeil = useHentToggle("feil_for_renholdsregisteret", false);
 
@@ -42,7 +39,7 @@ function RenholdsregisteretStatuskort(props: Props) {
     return (
       <Message size={props.size} color="red">
         <Message.Header>Renholdsregisteret</Message.Header>
-        <p>Fant ingen data for {state.orgnr} i Renholdsregisteret.</p>
+        <p>Fant ingen data for {orgnr} i Renholdsregisteret.</p>
       </Message>
     );
   }
@@ -78,7 +75,7 @@ function RenholdsregisteretStatuskort(props: Props) {
       size={props.size}
       tittel="Renholdsregisteret"
       erOkStatus={gyldigBedrift(resultat.Hovedenhet.Godkjenningsstatus)}
-      orgnr={state.orgnr}
+      orgnr={orgnr}
     >
       <p>{tekst}</p>
       <>

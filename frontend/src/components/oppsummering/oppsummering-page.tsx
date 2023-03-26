@@ -1,18 +1,15 @@
-import React, {useContext} from "react";
-import {StateContext} from "../../pages/sokpage";
+import React from "react";
 import {Grid} from "semantic-ui-react";
+import ElvirksomhetsregisterStatuskort from "./elvirksomhetsregister-statuskort";
 import EnhetsregisterStatuskort from "./enhetsregister-statuskort";
+import FinanstilsynStatuskort from "./finanstilsyn-statuskort";
+import MesterbrevStatuskort from "./mesterbrev-statuskort";
+import OppsummeringEnhetsregister from "./oppsummering-enhetsregister";
 import RenholdsregisteretStatuskort from "./renholdsregisteret-statuskort";
 import SentralGodkjenningStatuskort from "./sentralGodkjenning-statuskort";
-import OppsummeringEnhetsregister from "./oppsummering-enhetsregister";
 import VatromregisterStatuskort from "./vatromregister-statuskort";
-import MesterbrevStatuskort from "./mesterbrev-statuskort";
-import FinanstilsynStatuskort from "./finanstilsyn-statuskort";
-import ElvirksomhetsregisterStatuskort from "./elvirksomhetsregister-statuskort";
 
 function OppsummeringPage() {
-  const state = useContext(StateContext);
-
   return (
     <>
       <Grid.Column width={8} style={{marginBottom: "2rem"}}>
