@@ -15,7 +15,7 @@ const trpcClient = trpc.createClient({
       url:
         process.env.NODE_ENV === "production"
           ? `${window.location.host}`
-          : "http://localhost:2022",
+          : "http://localhost:3000",
     }),
   ],
 });

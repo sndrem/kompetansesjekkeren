@@ -1,15 +1,20 @@
-import dotenv from "dotenv";
-dotenv.config();
-import express from "express";
-import path from "path";
 import cookieParser from "cookie-parser";
-import logger from "morgan";
 import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import logger from "morgan";
+import path from "path";
+dotenv.config();
 
-import {router} from "./trpc";
+import * as trpcExpress from "@trpc/server/adapters/express";
 import {kompetansesjekkerRouter} from "./routes/kompetansesjekker";
-import {createHTTPServer} from "@trpc/server/adapters/standalone";
+import {router} from "./trpc";
 const PORT = 3000;
+
+const createContext = ({
+  req,
+  res,
+}: trpcExpress.CreateExpressContextOptions) => ({}); // no context
 
 export const appRouter = router({
   kompetansesjekker: kompetansesjekkerRouter,
@@ -17,21 +22,22 @@ export const appRouter = router({
 
 export type AppRouter = typeof appRouter;
 
-createHTTPServer({
-  middleware: cors(),
-  router: appRouter,
-  createContext() {
-    return {};
-  },
-}).listen(2022);
-
 const app = express();
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(cors());
 app.use(express.static(path.join(__dirname, "/public")));
+
+app.use(
+  "/",
+  trpcExpress.createExpressMiddleware({
+    router: appRouter,
+    createContext,
+  })
+);
 
 app.listen(process.env.PORT || PORT, () => {
   console.log(`Listening on port: ${PORT}`);
