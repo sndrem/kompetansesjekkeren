@@ -1,20 +1,19 @@
-var express = require("express");
-var rp = require("request-promise");
+import dotenv from "dotenv";
+import rp from "request-promise";
 import parser from "xml2json";
 import {z} from "zod";
+import "../cron-jobs/scrape-job";
 import {db} from "../database/db";
 import scraper from "../scraper/scraper";
 import {elvirksomhetsregisterService} from "../services/elvirksomhetsregister-service";
 import {enhetsregisterService} from "../services/enhetsregister-service";
 import {finanstilsynService} from "../services/finanstilsyn-service";
 import {mesterbrevService} from "../services/mesterbrev-service";
-require("../cron-jobs/scrape-job");
-require("dotenv").config();
+dotenv.config();
 
 import {slackNotifiyer} from "../alerting/slack";
 import {publicProcedure, router} from "../trpc";
 import {
-  ArbeidstilsynetRecordStatus,
   RenholdsregisterOrganisasjon,
   VatromregisterResultat,
 } from "../types/domain";
