@@ -12,7 +12,10 @@ const queryClient = new QueryClient();
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: "http://localhost:2022",
+      url:
+        process.env.NODE_ENV === "production"
+          ? `${window.location.host}`
+          : "http://localhost:2022",
     }),
   ],
 });
