@@ -4,13 +4,6 @@ export interface Lenke {
   url: string;
 }
 
-export type TypeTilbakemelding = "Bug" | "Ønske" | "Endring" | "Ros";
-
-export interface Tilbakemelding {
-  type: TypeTilbakemelding;
-  tilbakemelding: string;
-}
-
 export type Featuretoggle =
   | "feil_for_vatrom"
   | "feil_for_enhetsregister"

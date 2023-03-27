@@ -21,19 +21,16 @@
     "react-dom": "^17.0.2",
     "react-router": "^5.2.1",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "5.0.0",
     "semantic-ui-react": "^2.1.2",
     "styled-components": "^5.3.3",
-    "typescript": "4.6.2"
+    "typescript": "^5.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "dev": "cross-env REACT_APP_MILJO=dev PORT=3001 react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "dev": "npm start"
   },
-  "proxy": "http://localhost:3000",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -47,8 +44,11 @@
     ]
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
+    "@vitejs/plugin-react": "^3.1.0",
     "eslint": "^8.11.0",
-    "eslint-config-react-app": "^7.0.0"
+    "eslint-config-react-app": "^7.0.0",
+    "sass": "^1.60.0",
+    "vite": "^4.2.1",
+    "vite-tsconfig-paths": "^4.0.7"
   }
 }

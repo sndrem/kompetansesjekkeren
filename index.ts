@@ -9,6 +9,7 @@ dotenv.config();
 import * as trpcExpress from "@trpc/server/adapters/express";
 import {kompetansesjekkerRouter} from "./routes/kompetansesjekker";
 import {router} from "./trpc";
+import {slackRouter} from "./routes/slack";
 const PORT = 3000;
 
 const createContext = ({
@@ -31,6 +32,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use(express.static(path.join(__dirname, "/public")));
 
+app.use("/slack", slackRouter);
 app.use(
   "/",
   trpcExpress.createExpressMiddleware({
