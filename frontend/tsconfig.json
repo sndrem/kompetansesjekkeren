@@ -3,6 +3,7 @@
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "types": ["vite/client"],
+    "typeRoots": ["./node_modules/@types"],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
