@@ -1,5 +1,6 @@
 const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-const slack = require("slack-notify")(webhookUrl);
+import SlackNotify from "slack-notify";
+const slack = SlackNotify(webhookUrl);
 
 export const slackNotifiyer = {
   utvikling: (text) => {
