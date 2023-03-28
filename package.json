@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx nodemon index.ts --ignore db.json",
     "start": "node dist/index.js",
-    "build": "rm -rf dist && tsc && cd frontend && npm install && npm run build"
+    "build": "rm -rf dist && tsc && cd frontend && npm install && vite build && cp -r ./dist ../dist/public"
   },
   "dependencies": {
     "@trpc/server": "^10.18.0",
