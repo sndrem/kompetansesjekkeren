@@ -11,7 +11,7 @@ import {finanstilsynService} from "../services/finanstilsyn-service";
 import {mesterbrevService} from "../services/mesterbrev-service";
 dotenv.config();
 
-import {slackNotifiyer} from "../alerting/slack";
+import {slackNotifyer} from "../alerting/slack";
 import {publicProcedure, router} from "../trpc";
 import {
   RenholdsregisterOrganisasjon,
@@ -127,7 +127,7 @@ export const kompetansesjekkerRouter = router({
         return JSON.parse(data)["dibk-sgdata"];
       } catch (error) {
         console.log("Klarte ikke hente data fra sentralgodkjenning", error);
-        slackNotifiyer.utvikling(
+        slackNotifyer.utvikling(
           `Klarte ikke hente data fra sentral godkjenning for orgnr: ${input}`
         );
         return null;
