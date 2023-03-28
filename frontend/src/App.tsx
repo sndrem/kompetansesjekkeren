@@ -1,12 +1,12 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {httpBatchLink} from "@trpc/react-query";
 import React from "react";
-import {HashRouter, Redirect, Route, Switch} from "react-router-dom";
+import {HashRouter, Navigate, Route, Routes} from "react-router-dom";
 import {Container} from "semantic-ui-react";
+import {trpc} from "./api/trpcApi";
+import "./App.scss";
 import Hovedmeny from "./components/menu/hovedmeny";
 import Sokpage from "./pages/sokpage";
-import {trpc} from "./api/trpcApi";
-import {httpBatchLink} from "@trpc/react-query";
-import "./App.scss";
 
 const queryClient = new QueryClient();
 const trpcClient = trpc.createClient({
@@ -28,11 +28,11 @@ const App: React.FC = () => {
           <Container>
             <HashRouter>
               <Hovedmeny />
-              <Switch>
-                <Route path="/" exact component={Sokpage} />
-                <Route path="/orgnr/:orgnr" exact component={Sokpage} />
-                <Redirect from="*" to="/" />
-              </Switch>
+              <Routes>
+                <Route path="/" element={<Sokpage />} />
+                <Route path="/orgnr/:orgnr" element={<Sokpage />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
             </HashRouter>
           </Container>
         </QueryClientProvider>

@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {RouteComponentProps} from "react-router";
+import {useNavigate} from "react-router";
 import {Divider, Grid, Header, Loader, Message} from "semantic-ui-react";
 import {trpc} from "../api/trpcApi";
 import NyttigeLenker from "../components/nyttige-lenker/nyttige-lenker";
@@ -10,12 +10,9 @@ import {nyttigeLenker} from "../konstanter/konstanter";
 import {notifySlack} from "../services/slackService";
 import "./sokpage.scss";
 
-interface MatchParams {
-  orgnr: string;
-}
-
-function Sokpage(props: RouteComponentProps<MatchParams>) {
+function Sokpage() {
   const orgnr = useOrgnrFraUrl();
+  const navigate = useNavigate();
   const {data, isInitialLoading, error} =
     trpc.kompetansesjekker.enhetsregisteret.useQuery(orgnr, {
       enabled: !!orgnr,
@@ -28,7 +25,7 @@ function Sokpage(props: RouteComponentProps<MatchParams>) {
   }, [orgnr]);
 
   function sokPaOrgnr(orgnr: string) {
-    props.history.push(`/orgnr/${orgnr}`);
+    navigate(`/orgnr/${orgnr}`);
   }
 
   return (

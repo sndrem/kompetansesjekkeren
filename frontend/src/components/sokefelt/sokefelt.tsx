@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Form, Message, Header, Button} from "semantic-ui-react";
+import {Button, Form, Header, Message} from "semantic-ui-react";
 import styled from "styled-components";
 import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
 
@@ -89,13 +89,7 @@ function Sokefelt(props: Props) {
           aria-describedby="orgnr-sok"
         />
       </Form.Field>
-      <Knapp
-        whileHover={{scale: 1.1}}
-        transition={spring}
-        onClick={() => validerInput(orgnr)}
-      >
-        Søk
-      </Knapp>
+      <Knapp onClick={() => validerInput(orgnr)}>Søk</Knapp>
     </Form>
   );
 }
