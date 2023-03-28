@@ -5,8 +5,8 @@ import {slackNotifyer} from "../alerting/slack";
 slackRouter.post("/", async function (req, res, next) {
   const organisasjonsnummer = req.body.organisasjonsnummer;
   if (organisasjonsnummer) {
-    console.log("Lagrer organisasjonsnummer");
-    await slackNotifyer.utvikling(
+    console.log("Sender melding om søk på orgnr til Slack");
+    slackNotifyer.utvikling(
       `Nytt søk på organisasjonsnummer: ${organisasjonsnummer} - https://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=${organisasjonsnummer}`
     );
     res.status(200).json({status: "ok"});
