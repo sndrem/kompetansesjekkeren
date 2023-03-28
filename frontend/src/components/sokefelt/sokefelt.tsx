@@ -1,6 +1,5 @@
-import {motion} from "framer-motion";
 import React, {useState} from "react";
-import {Form, Message, Header} from "semantic-ui-react";
+import {Form, Message, Header, Button} from "semantic-ui-react";
 import styled from "styled-components";
 import {useOrgnrFraUrl} from "../../hooks/useOrgnrFraUrl";
 
@@ -8,7 +7,7 @@ interface Props {
   onSubmit: (orgnr: string) => void;
 }
 
-const Knapp = styled(motion.button)`
+const Knapp = styled(Button)`
   background: #2185d0;
   color: white;
   padding: 1rem;
