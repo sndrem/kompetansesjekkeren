@@ -1,6 +1,6 @@
 //@ts-nocheck
 // TODO Fjern ts-nocheck og typ opp skikkelig
-const cheerio = require("cheerio");
+import * as cheerio from "cheerio";
 import rp from "request-promise";
 import {db} from "../database/db";
 import slack from "../alerting/slack";
@@ -9,6 +9,8 @@ import parser from "xml2json";
 const vatromUrl = "https://www.ffv.no/finn-godkjent-vatromsbedrift";
 const arbeidstilsynetUrl =
   "https://www.arbeidstilsynet.no/opendata/renhold_register.xml";
+const ekomUrl =
+  "https://stenonicprdnoea01.blob.core.windows.net/enonicpubliccontainer/autosys/alleAutorisasjoner.htm";
 
 async function scrapeAndPopulateDb() {
   try {
@@ -24,11 +26,16 @@ async function scrapeAndPopulateDb() {
     const renholdsregisterdata = await hentRenholdsregisterdata(
       arbeidstilsynetUrl
     );
+    console.log(
+      `Henter data for Ekom ${ekomUrl} og legger til i databasen :clock12:`
+    );
+    const ekomdata = await hentEkomData(ekomUrl);
     // Sett data fra scraping
     const data = {
       sistOppdatert: Date.now(),
       vatromsregister: vatromdata,
       renholdsregister: renholdsregisterdata,
+      ekomregister: {...ekomdata},
     };
 
     db.setState(data).write();
@@ -38,9 +45,11 @@ async function scrapeAndPopulateDb() {
     console.log(
       `Scraping ferdig ${now.toLocaleDateString()} kl. ${now.toLocaleTimeString()}. La til ${
         vatromdata.length
-      } bedrifter fra våtromsregisteret og ${
+      } bedrifter fra våtromsregisteret, ${
         renholdsregisterdata.length
-      } fra renholdsregisteret i databasen.`
+      } fra renholdsregisteret og ${
+        ekomdata.length
+      } bedrifter for Ekom i databasen.`
     );
     return data;
   } catch (e) {
@@ -140,6 +149,34 @@ async function scrapeEnhetsregisterDetaljer(htmlString) {
   });
 
   return result;
+}
+
+async function hentEkomData(ekomUrl: string) {
+  const htmlString = await rp.get(ekomUrl);
+  const $ = cheerio.load(htmlString);
+  const rows = $("#autorisasjonstabell tbody tr");
+  const bedrifter = {
+    KIA: [],
+    TIA: [],
+    RIA: [],
+    ENA: [],
+  };
+  rows.map((_, td) => {
+    const autorisasjonsnummer = $(td).children().eq(0).text();
+    const kategori = $(td).children().eq(1).text();
+    const firmanavn = $(td).children().eq(2).text();
+    const organisasjonsnummer = $(td).children().eq(3).text();
+    const underenhet = $(td).children().eq(4).text();
+    const bedrift = {
+      autorisasjonsnummer,
+      kategori,
+      firmanavn,
+      organisasjonsnummer,
+      underenhet,
+    };
+    bedrifter[bedrift.kategori].push(bedrift);
+  });
+  return bedrifter;
 }
 
 function clean(text) {

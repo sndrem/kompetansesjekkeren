@@ -12,4 +12,5 @@ export type Featuretoggle =
   | "feil_for_sentralgodkjenning"
   | "vis_sammenligningsside"
   | "feil_for_finanstilsynet"
-  | "feil_for_elvirksomhetsregisteret";
+  | "feil_for_elvirksomhetsregisteret"
+  | "feil_for_ekomregister";

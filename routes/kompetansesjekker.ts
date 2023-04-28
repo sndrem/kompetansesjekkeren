@@ -14,6 +14,7 @@ dotenv.config();
 import {slackNotifyer} from "../alerting/slack";
 import {publicProcedure, router} from "../trpc";
 import {
+  EkomBedrift,
   RenholdsregisterOrganisasjon,
   VatromregisterResultat,
 } from "../types/domain";
@@ -103,6 +104,25 @@ export const kompetansesjekkerRouter = router({
       return null;
     }
   }),
+  ekomregisteret: publicProcedure
+    .input(
+      z.object({
+        orgnr: HarOrgNr,
+        kategori: z.enum(["KIA", "RIA", "TIA", "ENA"]),
+      })
+    )
+    .query(async (req) => {
+      const {input} = req;
+      const {orgnr, kategori} = input;
+      const ekomBedrift = await db
+        .get("ekomregister")
+        .get(kategori)
+        .find({
+          organisasjonsnummer: orgnr,
+        })
+        .value();
+      return ekomBedrift ? (ekomBedrift as EkomBedrift) : null;
+    }),
   sentralgodkjenning: publicProcedure.input(HarOrgNr).query(async (req) => {
     const {input} = req;
     console.log(

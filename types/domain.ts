@@ -325,3 +325,11 @@ interface ContactInfo {
   fax?: any;
   phoneNumber: string;
 }
+
+export interface EkomBedrift {
+  autorisasjonsnummer: string;
+  kategori: "TIA" | "RIA" | "KIA" | "ENA";
+  firmanavn: string;
+  organisasjonsnummer: string;
+  underenhet?: string;
+}

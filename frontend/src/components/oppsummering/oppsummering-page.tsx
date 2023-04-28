@@ -8,6 +8,10 @@ import OppsummeringEnhetsregister from "./oppsummering-enhetsregister";
 import RenholdsregisteretStatuskort from "./renholdsregisteret-statuskort";
 import SentralGodkjenningStatuskort from "./sentralGodkjenning-statuskort";
 import VatromregisterStatuskort from "./vatromregister-statuskort";
+import KiaRegisterStatusKort from "./KiaRegister-statusKort";
+import TiaRegisterStatusKort from "./TiaRegister-statusKort";
+import RiaRegisterStatusKort from "./RiaRegister-statusKort";
+import EnaRegisterStatusKort from "./EnaRegister-statusKort";
 
 function OppsummeringPage() {
   return (
@@ -20,6 +24,10 @@ function OppsummeringPage() {
         <MesterbrevStatuskort size="large" />
         <FinanstilsynStatuskort size="large" />
         <ElvirksomhetsregisterStatuskort size="large" />
+        <KiaRegisterStatusKort size="large" />
+        <TiaRegisterStatusKort size="large" />
+        <RiaRegisterStatusKort size="large" />
+        <EnaRegisterStatusKort size="large" />
       </Grid.Column>
       <Grid.Column width={5}>
         <OppsummeringEnhetsregister />
