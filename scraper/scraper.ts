@@ -66,7 +66,7 @@ if (db.get("vatromsregister").size().value() === 0) {
   scrapeAndPopulateDb();
 }
 
-async function hentRenholdsregisterdata(url) {
+async function hentRenholdsregisterdata(url: string) {
   const rawXml = await rp.get(url);
   const parsedJson = parser.toJson(rawXml, {object: true});
   return parsedJson.Register.Virksomhet;

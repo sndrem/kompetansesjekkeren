@@ -9,7 +9,7 @@ dotenv.config();
 import * as trpcExpress from "@trpc/server/adapters/express";
 import {kompetansesjekkerRouter} from "./routes/kompetansesjekker";
 import {router} from "./trpc";
-import {slackRouter} from "./routes/slack";
+import {slackRouter, slackRouterV2} from "./routes/slack";
 const PORT = 3000;
 
 const createContext = ({
@@ -19,6 +19,7 @@ const createContext = ({
 
 export const appRouter = router({
   kompetansesjekker: kompetansesjekkerRouter,
+  slack: slackRouterV2,
 });
 
 export type AppRouter = typeof appRouter;
